@@ -76,9 +76,9 @@ def SampledData(tagname, starttime, endtime, interval):
     global piServer
     if not piServer:
         connectPIServer()
-    timeRange = AFTimeRange(starttime, endtime)
-    span = AFTimeSpan.Parse(interval)
-    tag = PIPoint.FindPIPoint(piServer, tagname)
+    timeRange = Time.AFTimeRange(starttime, endtime)
+    span = Time.AFTimeSpan.Parse(interval)
+    tag = PI.PIPoint.FindPIPoint(piServer, tagname)
     pivalues = tag.InterpolatedValues(timeRange, span, "", False)
     return pd.DataFrame([__value_to_dict(x.Value, x.Timestamp.UtcTime) for x in pivalues])
 
