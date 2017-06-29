@@ -48,6 +48,13 @@ def connectPIAFServer(serverName = ''):
     piafServer.Connect()
     piafDB = piafServer.Databases.DefaultDatabase
 
+def SearchTags(query, source = None):
+    global piServer
+    if not piServer:
+        connectPIServer()
+    tags = PI.PIPoint.FindPIPoints(piServer, query, source, None)
+    return [tag.Name for tag in tags]
+
 def CurrentValue(tagname):
     global piServer
     if not piServer:
