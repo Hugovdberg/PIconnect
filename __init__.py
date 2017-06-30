@@ -25,9 +25,11 @@ from OSIsoft.AF import UI
 from OSIsoft.AF import UnitsOfMeasure
 
 from PISeries import PISeries
+
 piServer = None
 piafServer = None
 piafDB = None
+
 
 def connectPIServer(serverName = ''):
     global piServer
@@ -37,6 +39,7 @@ def connectPIServer(serverName = ''):
     else:
         piServer = piServers[serverName]
     piServer.Connect(False)
+
 
 def connectPIAFServer(serverName = '', database = ''):
     global piafServer
@@ -52,12 +55,14 @@ def connectPIAFServer(serverName = '', database = ''):
     else:
         piafDB = piafServer.Databases.get_Item(database)
 
+
 def SearchTags(query, source = None):
     global piServer
     if not piServer:
         connectPIServer()
     tags = PI.PIPoint.FindPIPoints(piServer, query, source, None)
     return [tag.Name for tag in tags]
+
 
 def CurrentValue(tagname):
     # Check whether a single tag was passed or a list of tags
@@ -104,14 +109,20 @@ def __CurrentValuePIAF(elementpath):
                     [lastData.Value],
                     lastData.UOM.Name)
 
+
 def CompressedData(tagname, starttime, endtime):
     global piServer
     if not piServer:
         connectPIServer()
     timeRange = Time.AFTimeRange(starttime, endtime)
     tag = PI.PIPoint.FindPIPoint(piServer, tagname)
-    pivalues = tag.RecordedValues(timeRange, Data.AFBoundaryType.Inside, None, None)
-    return pd.DataFrame([__value_to_dict(x.Value, x.Timestamp.UtcTime) for x in pivalues])
+    pivalues = tag.RecordedValues(timeRange,
+                                  Data.AFBoundaryType.Inside,
+                                  None,
+                                  None)
+    return pd.DataFrame([__value_to_dict(x.Value, x.Timestamp.UtcTime)
+                         for x in pivalues])
+
 
 def SampledData(tagname, starttime, endtime, interval):
     global piServer
@@ -121,7 +132,10 @@ def SampledData(tagname, starttime, endtime, interval):
     span = Time.AFTimeSpan.Parse(interval)
     tag = PI.PIPoint.FindPIPoint(piServer, tagname)
     pivalues = tag.InterpolatedValues(timeRange, span, "", False)
-    return pd.DataFrame([__value_to_dict(x.Value, x.Timestamp.UtcTime) for x in pivalues])
+    return pd.DataFrame([__value_to_dict(x.Value, x.Timestamp.UtcTime)
+                         for x in pivalues])
+
+
 def __timestamp_to_index(timestamp):
     local_tz = pytz.timezone('Europe/Amsterdam')
     return datetime.datetime(
@@ -134,18 +148,22 @@ def __timestamp_to_index(timestamp):
         timestamp.Millisecond*1000
         ).replace(tzinfo = pytz.utc).astimezone(local_tz)
 
+
 def __value_to_dict(value, timestamp):
     local_tz = pytz.timezone('Europe/Amsterdam')
     return {
         'Value': value,
-        'Timestamp': datetime.datetime(timestamp.Year,
-                                       timestamp.Month,
-                                       timestamp.Day,
-                                       timestamp.Hour,
-                                       timestamp.Minute,
-                                       timestamp.Second,
-                                       timestamp.Millisecond*1000).replace(tzinfo = pytz.utc).astimezone(local_tz)
+        'Timestamp': datetime.datetime(
+            timestamp.Year,
+            timestamp.Month,
+            timestamp.Day,
+            timestamp.Hour,
+            timestamp.Minute,
+            timestamp.Second,
+            timestamp.Millisecond*1000
+            ).replace(tzinfo = pytz.utc).astimezone(local_tz)
     }
+
 
 def __disconnect():
     global piServer
