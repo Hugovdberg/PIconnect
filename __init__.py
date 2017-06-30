@@ -24,6 +24,7 @@ from OSIsoft.AF import Time
 from OSIsoft.AF import UI
 from OSIsoft.AF import UnitsOfMeasure
 
+from PISeries import PISeries
 piServer = None
 piafServer = None
 piafDB = None
@@ -59,12 +60,49 @@ def SearchTags(query, source = None):
     return [tag.Name for tag in tags]
 
 def CurrentValue(tagname):
+    # Check whether a single tag was passed or a list of tags
+    if isinstance(tagname, list):
+        currentvalues = list()
+        for tag in tagname:
+            currentvalues.append(CurrentValue(tag))
+        return pd.concat(currentvalues, axis = 1)
+    elif not isinstance(tagname, basestring):
+        raise TypeError('Argument tagname must be either a list or a string')
+
+    # Determine whether a PI tag was passed or a PI-AF element
+    if tagname.find('|') == -1:
+        return __CurrentValuePI(tagname)
+    elif len(tagname.split('|')) == 2:
+        return __CurrentValuePIAF(tagname)
+    else:
+        raise ValueError('Argument must be either a PI-tag'
+            ' or a PI-AF path of the form ElementPath|Attribute')
+
+
+def __CurrentValuePI(tagname):
     global piServer
     if not piServer:
         connectPIServer()
     tag = PI.PIPoint.FindPIPoint(piServer, tagname)
     lastData = tag.Snapshot()
-    return pd.DataFrame([__value_to_dict(lastData.Value, lastData.Timestamp.UtcTime)])
+    return PISeries(tagname,
+                    [__timestamp_to_index(lastData.Timestamp.UtcTime)],
+                    [lastData.Value])
+
+
+def __CurrentValuePIAF(elementpath):
+    global piafDB
+    if not piafDB:
+        connectPIAFServer()
+
+    element, attribute = elementpath.split('|')
+    elem = piafDB.Elements.get_Item(element)
+    attr = elem.Attributes.get_Item(attribute)
+    lastData = attr.GetValue()
+    return PISeries(elementpath,
+                    [__timestamp_to_index(lastData.Timestamp.UtcTime)],
+                    [lastData.Value],
+                    lastData.UOM.Name)
 
 def CompressedData(tagname, starttime, endtime):
     global piServer
@@ -84,6 +122,17 @@ def SampledData(tagname, starttime, endtime, interval):
     tag = PI.PIPoint.FindPIPoint(piServer, tagname)
     pivalues = tag.InterpolatedValues(timeRange, span, "", False)
     return pd.DataFrame([__value_to_dict(x.Value, x.Timestamp.UtcTime) for x in pivalues])
+def __timestamp_to_index(timestamp):
+    local_tz = pytz.timezone('Europe/Amsterdam')
+    return datetime.datetime(
+        timestamp.Year,
+        timestamp.Month,
+        timestamp.Day,
+        timestamp.Hour,
+        timestamp.Minute,
+        timestamp.Second,
+        timestamp.Millisecond*1000
+        ).replace(tzinfo = pytz.utc).astimezone(local_tz)
 
 def __value_to_dict(value, timestamp):
     local_tz = pytz.timezone('Europe/Amsterdam')
