@@ -37,7 +37,7 @@ def connectPIServer(serverName = ''):
         piServer = piServers[serverName]
     piServer.Connect(False)
 
-def connectPIAFServer(serverName = ''):
+def connectPIAFServer(serverName = '', database = ''):
     global piafServer
     global piafDB
     piServers = AF.PISystems()
@@ -46,7 +46,10 @@ def connectPIAFServer(serverName = ''):
     else:
         piafServer = piServers[serverName]
     piafServer.Connect()
-    piafDB = piafServer.Databases.DefaultDatabase
+    if database == '':
+        piafDB = piafServer.Databases.DefaultDatabase
+    else:
+        piafDB = piafServer.Databases.get_Item(database)
 
 def SearchTags(query, source = None):
     global piServer
