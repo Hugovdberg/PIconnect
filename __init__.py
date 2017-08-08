@@ -1,4 +1,6 @@
 import sys
+import datetime
+
 import clr
 import pandas as pd
 
@@ -44,4 +46,6 @@ def get_tag_values(tagname, starttime, endtime):
     timeRange = Time.AFTimeRange(starttime, endtime)
     tag = PI.PIPoint.FindPIPoint(piServer, tagname)
     pivalues = tag.RecordedValues(timeRange, 0, None, None)
-    return pd.DataFrame([{'Value': x.Value, 'Timestamp': x.Timestamp.LocalTime} for x in pivalues])
+    df = pd.DataFrame([{'Value': x.Value, 'Timestamp': x.Timestamp.LocalTime} for x in pivalues])
+    df.Timestamp = df.Timestamp.apply(lambda x: datetime.datetime(x.Year, x.Month, x.Day, x.Hour, x.Minute, x.Second, x.Millisecond*1000), convert_dtype = True)
+    return df
