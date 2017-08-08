@@ -4,6 +4,7 @@ import datetime
 import sys
 import os
 import pandas as pd
+from pandas import Series
 import pytz
 
 piaf_sdk = os.getenv('PIHOME', 'C:\\Program Files\\PIPC')
@@ -35,6 +36,75 @@ piServer = None
 piafServer = None
 piafDB = None
 
+class PIserver(object):
+    def __init__(self, serverName = None):
+        piServers = PI.PIServers()
+        if serverName:
+            piServer = piServers[serverName]
+        else:
+            piServer = piServers.DefaultPIServer
+        self.connection = piServer
+
+    def __enter__(self):
+        self.connection.Connect(False)
+        return self
+
+    def __exit__(self, *args):
+        self.connection.Disconnect()
+
+    def __repr__(self):
+        return '%s(%s)' % (self.__class__.__name__, self.connection.Name)
+
+    def search(self, query, source = None):
+        tags = PI.PIPoint.FindPIPoints(self.connection, query, source, None)
+        return [PIpoint(tag) for tag in tags]
+
+class PIpoint(object):
+    def __init__(self, pipoint):
+        self.pipoint = pipoint
+        self.tag = pipoint.Name
+
+    def __repr__(self):
+        return '%s(%s)' % (self.__class__.__name__, self.tag)
+
+    @property
+    def current_value(self):
+        return self.pipoint.Snapshot().Value
+
+    def compressed_data(self, starttime, endtime):
+        timeRange = Time.AFTimeRange(starttime, endtime)
+        pivalues = self.pipoint.RecordedValues(timeRange,
+                                               Data.AFBoundaryType.Inside,
+                                               None,
+                                               None)
+        timestamps, values = [], []
+        for value in pivalues:
+            timestamps.append(PIpoint.__timestamp_to_index(value.Timestamp.UtcTime))
+            values.append(value.Value)
+        return Series(name=self.tag, index=timestamps, data=values)
+
+    def sampled_data(self, starttime, endtime, interval):
+        timeRange = Time.AFTimeRange(starttime, endtime)
+        span = Time.AFTimeSpan.Parse(interval)
+        pivalues = self.pipoint.InterpolatedValues(timeRange, span, "", False)
+        timestamps, values = [], []
+        for value in pivalues:
+            timestamps.append(PIpoint.__timestamp_to_index(value.Timestamp.UtcTime))
+            values.append(value.Value)
+        return Series(name=self.tag, index=timestamps, data=values)
+
+    @staticmethod
+    def __timestamp_to_index(timestamp):
+        local_tz = pytz.timezone('Europe/Amsterdam')
+        return datetime.datetime(
+            timestamp.Year,
+            timestamp.Month,
+            timestamp.Day,
+            timestamp.Hour,
+            timestamp.Minute,
+            timestamp.Second,
+            timestamp.Millisecond*1000
+            ).replace(tzinfo = pytz.utc).astimezone(local_tz)
 def connectPIServer(serverName = ''):
     global piServer
     piServers = PI.PIServers()
