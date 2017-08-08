@@ -1,4 +1,5 @@
 import sys
+import os.path
 import datetime
 import pytz
 import atexit
@@ -6,7 +7,14 @@ import atexit
 import clr
 import pandas as pd
 
-sys.path.append('C:\\Program Files\\PIPC\\AF\\PublicAssemblies\\4.0\\')
+piaf_sdk_32 = 'C:\\Program Files\\PIPC\\AF\\PublicAssemblies\\4.0\\'
+piaf_sdk_64 = 'C:\\Program Files (x86)\\PIPC\\AF\\PublicAssemblies\\4.0\\'
+if os.path.isdir(piaf_sdk_32):
+    sys.path.append(piaf_sdk_32)
+elif os.path.isdir(piaf_sdk_64):
+    sys.path.append(piaf_sdk_64)
+else:
+    raise ImportError('PIAF SDK not found, check installation')
 
 clr.AddReference('OSIsoft.AFSDK')
 from OSIsoft import AF
