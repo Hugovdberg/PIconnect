@@ -1,12 +1,10 @@
+import atexit
+import clr
+import datetime
 import sys
 import os
-import os.path
-import datetime
-import pytz
-import atexit
-
-import clr
 import pandas as pd
+import pytz
 
 piaf_sdk = os.getenv('PIHOME', 'C:\\Program Files\\PIPC')
 piaf_sdk += '\\AF\\PublicAssemblies\\4.0\\'
@@ -36,7 +34,6 @@ from PISeries import PISeries
 piServer = None
 piafServer = None
 piafDB = None
-
 
 def connectPIServer(serverName = ''):
     global piServer
