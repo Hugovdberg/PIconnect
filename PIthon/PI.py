@@ -139,12 +139,24 @@ class PIPoint(object):
                         value=values,
                         uom=self.units_of_measurement)
 
-    def sampled_data(self, start_time, end_time, interval):
-        '''
+    def sampled_data(self,
+                     start_time,
+                     end_time,
+                     interval,
+                     filter_expression=None):
+        ''' sampled_data returns a PISeries of the data between *start_time* and *end_time*,
+            interpolated to a fixed time interval between values.
+
+            *filter_expression* is an optional string to filter the returned
+            values, see OSIsoft PI documentation for more information.
         '''
         time_range = AF.Time.AFTimeRange(start_time, end_time)
         interval = AF.Time.AFTimeSpan.Parse(interval)
-        pivalues = self.pi_point.InterpolatedValues(time_range, interval, "", False)
+        include_filtered_values = False
+        pivalues = self.pi_point.InterpolatedValues(time_range,
+                                                    interval,
+                                                    filter_expression,
+                                                    include_filtered_values)
         timestamps, values = [], []
         for value in pivalues:
             timestamps.append(PISeries.timestamp_to_index(value.Timestamp.UtcTime))
