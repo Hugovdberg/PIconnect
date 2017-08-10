@@ -25,7 +25,7 @@ class PIServer(object):
         self.connection.Disconnect()
 
     def __repr__(self):
-        return u'%s(%s)' % (self.__class__.__name__, self.server_name)
+        return u'%s(\\\\%s)' % (self.__class__.__name__, self.server_name)
 
     @property
     def server_name(self):
