@@ -83,6 +83,12 @@ class PIPoint(object):
         return self.pi_point.CurrentValue().Value
 
     @property
+    def last_update(self):
+        ''' The time at which the current_value was last updated
+        '''
+        return PISeries.timestamp_to_index(self.pi_point.CurrentValue().Timestamp.UtcTime)
+
+    @property
     def raw_attributes(self):
         ''' A dict of the raw attributes of the PI Point as reported by the server
         '''
