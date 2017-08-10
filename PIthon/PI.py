@@ -2,7 +2,8 @@
     Core containers for connections to PI databases
 '''
 from AFSDK import AF
-from PIData import PISeries
+from PIData import PISeries, list_of_strings_recursor
+
 
 class PIServer(object):
     ''' A context manager for connections to a PI server
@@ -33,16 +34,14 @@ class PIServer(object):
         '''
         return self.connection.Name
 
+    @list_of_strings_recursor
     def search(self, query, source = None):
         ''' Searches for tags matching a querystring or a list of querystrings
             on the connected server
         '''
-        if isinstance(query, list):
-            return [p for q in query for p in self.search(q, source)]
-        elif not isinstance(query, basestring):
-            raise TypeError('Argument query must be either a string or a list of strings')
         return [PIPoint(pi_point) for pi_point in
                 AF.PI.PIPoint.FindPIPoints(self.connection, query, source, None)]
+
 
 class PIPoint(object):
     ''' A reference to a PI Point to get data and corresponding metadata from the server
@@ -150,7 +149,6 @@ class PIPoint(object):
         for value in pivalues:
             timestamps.append(PISeries.timestamp_to_index(value.Timestamp.UtcTime))
             values.append(value.Value)
-
         return PISeries(tag=self.tag,
                         timestamp=timestamps,
                         value=values,
