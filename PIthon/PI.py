@@ -37,16 +37,12 @@ class PIServer(object):
         ''' Searches for tags matching a querystring or a list of querystrings
             on the connected server
         '''
-        findPIPoints = AF.PI.PIPoint.FindPIPoints
         if isinstance(query, list):
             return [p for q in query for p in self.search(q, source)]
         elif not isinstance(query, basestring):
             raise TypeError('Argument query must be either a string or a list of strings')
-
-        return [PIPoint(pi_point) for pi_point in findPIPoints(self.connection,
-                                                               query,
-                                                               source,
-                                                               None)]
+        return [PIPoint(pi_point) for pi_point in
+                AF.PI.PIPoint.FindPIPoints(self.connection, query, source, None)]
 
 class PIPoint(object):
     ''' A reference to a PI Point to get data and corresponding metadata from the server
