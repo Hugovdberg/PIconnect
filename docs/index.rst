@@ -10,6 +10,12 @@ Welcome to PIthon's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+.. automodule:: PIthon
+   :members:
+.. automodule:: PIthon.PI
+   :members:
+.. automodule:: PIthon.PIAF
+   :members:
 
 
 Indices and tables
