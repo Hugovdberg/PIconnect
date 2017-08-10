@@ -12,13 +12,11 @@ class PIServer(object):
 
     version = semver.format_version(0, 1, 0)
 
-    def __init__(self, server_name = None):
-        pi_servers = AF.PI.PIServers()
-        if server_name:
-            pi_server = pi_servers[server_name]
-        else:
-            pi_server = pi_servers.DefaultPIServer
-        self.connection = pi_server
+    servers = {server.Name: server for server in AF.PI.PIServers()}
+    default_server = AF.PI.PIServers().DefaultPIServer
+
+    def __init__(self, server = None):
+        self.connection = self.servers.get(server, self.default_server)
 
     def __enter__(self):
         force_connection = False # Don't force to retry connecting if previous attempt failed
