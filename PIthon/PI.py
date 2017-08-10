@@ -1,8 +1,6 @@
 ''' PI
     Core containers for connections to PI databases
 '''
-import semver
-
 from AFSDK import AF
 from PIData import PISeries
 
@@ -10,7 +8,7 @@ class PIServer(object):
     ''' A context manager for connections to a PI server
     '''
 
-    version = semver.format_version(0, 1, 0)
+    version = '0.2.0'
 
     servers = {server.Name: server for server in AF.PI.PIServers()}
     default_server = AF.PI.PIServers().DefaultPIServer
@@ -57,7 +55,7 @@ class PIPoint(object):
     ''' A reference to a PI Point to get data and corresponding metadata from the server
     '''
 
-    version = semver.format_version(0, 1, 0)
+    version = '0.1.0'
 
     __boundary_types = {
         'inside': AF.Data.AFBoundaryType.Inside,
