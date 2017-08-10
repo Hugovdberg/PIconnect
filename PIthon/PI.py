@@ -1,24 +1,21 @@
 ''' PI
     Core containers for connections to PI databases
 '''
-import semver
-
 from AFSDK import AF
-from PIData import PISeries
+from PIData import PISeries, list_of_strings_recursor
+
 
 class PIServer(object):
     ''' A context manager for connections to a PI server
     '''
 
-    version = semver.format_version(0, 1, 0)
+    version = '0.2.0'
 
-    def __init__(self, server_name = None):
-        pi_servers = AF.PI.PIServers()
-        if server_name:
-            pi_server = pi_servers[server_name]
-        else:
-            pi_server = pi_servers.DefaultPIServer
-        self.connection = pi_server
+    servers = {server.Name: server for server in AF.PI.PIServers()}
+    default_server = AF.PI.PIServers().DefaultPIServer
+
+    def __init__(self, server = None):
+        self.connection = self.servers.get(server, self.default_server)
 
     def __enter__(self):
         force_connection = False # Don't force to retry connecting if previous attempt failed
@@ -29,7 +26,7 @@ class PIServer(object):
         self.connection.Disconnect()
 
     def __repr__(self):
-        return u'%s(%s)' % (self.__class__.__name__, self.server_name)
+        return u'%s(\\\\%s)' % (self.__class__.__name__, self.server_name)
 
     @property
     def server_name(self):
@@ -37,29 +34,20 @@ class PIServer(object):
         '''
         return self.connection.Name
 
+    @list_of_strings_recursor
     def search(self, query, source = None):
         ''' Searches for tags matching a querystring or a list of querystrings
             on the connected server
         '''
-        findPIPoints = AF.PI.PIPoint.FindPIPoints
-        if isinstance(query, list):
-            pi_points, queries = [], query
-            for query in queries:
-                pi_points.extend(self.search(query, source))
-            return pi_points
-        elif not isinstance(query, basestring):
-            raise TypeError('Argument query must be either a string or a list of strings')
+        return [PIPoint(pi_point) for pi_point in
+                AF.PI.PIPoint.FindPIPoints(self.connection, query, source, None)]
 
-        return [PIPoint(pi_point) for pi_point in findPIPoints(self.connection,
-                                                               query,
-                                                               source,
-                                                               None)]
 
 class PIPoint(object):
     ''' A reference to a PI Point to get data and corresponding metadata from the server
     '''
 
-    version = semver.format_version(0, 1, 0)
+    version = '0.1.0'
 
     __boundary_types = {
         'inside': AF.Data.AFBoundaryType.Inside,
@@ -85,6 +73,12 @@ class PIPoint(object):
             retrieved through the units_of_measurement property
         '''
         return self.pi_point.CurrentValue().Value
+
+    @property
+    def last_update(self):
+        ''' The time at which the current_value was last updated
+        '''
+        return PISeries.timestamp_to_index(self.pi_point.CurrentValue().Timestamp.UtcTime)
 
     @property
     def raw_attributes(self):
@@ -155,7 +149,6 @@ class PIPoint(object):
         for value in pivalues:
             timestamps.append(PISeries.timestamp_to_index(value.Timestamp.UtcTime))
             values.append(value.Value)
-
         return PISeries(tag=self.tag,
                         timestamp=timestamps,
                         value=values,
