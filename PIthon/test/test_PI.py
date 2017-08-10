@@ -13,7 +13,7 @@ class TestServer(unittest.TestCase):
 
     def test_search_multiple_strings(self):
         with PI.PIServer() as server:
-            points = server.search(['L_140_053', 'M_127*'])
+            points = server.search(['L_140_053*', 'M_127*'])
             self.assertIsInstance(points, list)
             for point in points:
                 self.assertIsInstance(point, PI.PI.PIPoint)
@@ -58,9 +58,13 @@ class TestServer(unittest.TestCase):
             point = server.search('L_140_053_FQIS053_01_Meetwaarde')[0]
             self.assertIsInstance(point, PI.PI.PIPoint)
             self.assertTrue('compressed_data' in dir(point))
+            data = point.compressed_data('01-07-2017', '02-07-2017')
+            self.assertEqual(data.size, 70)
 
     def test_sampled_data(self):
         with PI.PIServer() as server:
             point = server.search('L_140_053_FQIS053_01_Meetwaarde')[0]
             self.assertIsInstance(point, PI.PI.PIPoint)
             self.assertTrue('sampled_data' in dir(point))
+            data = point.sampled_data('01-07-2017', '02-07-2017', '1h')
+            self.assertEqual(data.size, 25)
