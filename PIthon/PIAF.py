@@ -3,7 +3,7 @@
 '''
 
 from AFSDK import AF
-from PIData import PISeries
+from PIData import PISeries, list_of_strings_recursor
 
 class PIAFDatabase(object):
     ''' A context manager for connections to the PI Asset Framework database
@@ -51,6 +51,7 @@ class PIAFDatabase(object):
         '''
         return {c.Name: PIAFElement(c) for c in self.database.Elements}
 
+    @list_of_strings_recursor
     def descendant(self, path):
         ''' Get a descendant of the database from an exact path
         '''
@@ -89,6 +90,7 @@ class PIAFElement(object):
         '''
         return {c.Name: self.__class__(c) for c in self.element.Elements}
 
+    @list_of_strings_recursor
     def descendant(self, path):
         ''' Get a descendant of the current element from an exact path
         '''
