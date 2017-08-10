@@ -39,10 +39,7 @@ class PIServer(object):
         '''
         findPIPoints = AF.PI.PIPoint.FindPIPoints
         if isinstance(query, list):
-            pi_points, queries = [], query
-            for query in queries:
-                pi_points.extend(self.search(query, source))
-            return pi_points
+            return [p for q in query for p in self.search(q, source)]
         elif not isinstance(query, basestring):
             raise TypeError('Argument query must be either a string or a list of strings')
 
