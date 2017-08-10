@@ -39,10 +39,11 @@ def list_of_strings_recursor(str_f):
     ''' Decorator to make a function that operates on a string (and possibly other
         arguments) also accept a list of strings, and return a single list of results
     '''
-    def recursor(string, *args):
+    def recursor(self, string, *args):
         if isinstance(string, list):
-            return [y for x in string for y in recursor(x, *args)]
+            return [y for x in string for y in recursor(self, x, *args)]
         elif not isinstance(string, basestring):
-            raise TypeError('Argument query must be either a string or a list of strings')
-        return str_f(string, *args)
+            raise TypeError('Argument query must be either a string or a list of strings,'
+                            'got type ' + str(type(string)))
+        return str_f(self, string, *args)
     return recursor
