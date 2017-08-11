@@ -2,14 +2,14 @@
     Core containers for connections to PI databases
 '''
 from AFSDK import AF
-from PIData import PISeries, list_of_strings_recursor
+from PIData import PISeries
 
 
 class PIServer(object):
     ''' A context manager for connections to a PI server
     '''
 
-    version = '0.2.0'
+    version = '0.2.1'
 
     servers = {server.Name: server for server in AF.PI.PIServers()}
     default_server = AF.PI.PIServers().DefaultPIServer
@@ -34,11 +34,15 @@ class PIServer(object):
         '''
         return self.connection.Name
 
-    @list_of_strings_recursor
     def search(self, query, source = None):
         ''' Searches for tags matching a querystring or a list of querystrings
             on the connected server
         '''
+        if isinstance(query, list):
+            return [y for x in query for y in self.search(x, source)]
+        elif not isinstance(query, basestring):
+            raise TypeError('Argument query must be either a string or a list of strings,'
+                            'got type ' + str(type(query)))
         return [PIPoint(pi_point) for pi_point in
                 AF.PI.PIPoint.FindPIPoints(self.connection, query, source, None)]
 

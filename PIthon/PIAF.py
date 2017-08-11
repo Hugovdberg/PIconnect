@@ -3,7 +3,7 @@
 '''
 
 from AFSDK import AF
-from PIData import PISeries, list_of_strings_recursor
+from PIData import PISeries
 
 class PIAFDatabase(object):
     ''' A context manager for connections to the PI Asset Framework database
