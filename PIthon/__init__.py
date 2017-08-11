@@ -6,4 +6,4 @@ from AFSDK import AF
 from PI import PIServer
 from PIAF import PIAFDatabase
 
-__version__ = (0, 2, 0)
+__version__ = (0, 2, 1)
