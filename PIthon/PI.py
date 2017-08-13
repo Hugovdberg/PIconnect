@@ -1,8 +1,8 @@
 ''' PI
     Core containers for connections to PI databases
 '''
-from AFSDK import AF
-from PIData import PISeries
+from PIthon.AFSDK import AF
+from PIthon.PIData import PISeries
 
 
 class PIServer(object):
@@ -14,11 +14,11 @@ class PIServer(object):
     servers = {server.Name: server for server in AF.PI.PIServers()}
     default_server = AF.PI.PIServers().DefaultPIServer
 
-    def __init__(self, server = None):
+    def __init__(self, server=None):
         self.connection = self.servers.get(server, self.default_server)
 
     def __enter__(self):
-        force_connection = False # Don't force to retry connecting if previous attempt failed
+        force_connection = False  # Don't force to retry connecting if previous attempt failed
         self.connection.Connect(force_connection)
         return self
 
@@ -34,7 +34,7 @@ class PIServer(object):
         '''
         return self.connection.Name
 
-    def search(self, query, source = None):
+    def search(self, query, source=None):
         ''' Searches for tags matching a querystring or a list of querystrings
             on the connected server
         '''
@@ -63,6 +63,7 @@ class PIPoint(object):
         self.pi_point = pi_point
         self.tag = pi_point.Name
         self.__attributes_loaded = False
+        self.__raw_attributes = {}
 
     def __repr__(self):
         return u'%s(%s, %s; Current Value: %s %s)' % (self.__class__.__name__,
@@ -129,7 +130,7 @@ class PIPoint(object):
         else:
             raise ValueError('Argument boundary_type must be one of ' +
                              ', '.join(sorted(boundary_types.keys())))
-        include_filtered_values = False # Leave out values excluded by filter_expression
+        include_filtered_values = False  # Leave out values excluded by filter_expression
         pivalues = self.pi_point.RecordedValues(time_range,
                                                 boundary_type,
                                                 filter_expression,

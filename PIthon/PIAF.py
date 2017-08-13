@@ -1,9 +1,10 @@
 ''' PIAF
-	Core containers for connections to the PI Asset Framework
+    Core containers for connections to the PI Asset Framework
 '''
 
-from AFSDK import AF
-from PIData import PISeries
+from PIthon.AFSDK import AF
+from PIthon.PIData import PISeries
+
 
 class PIAFDatabase(object):
     ''' A context manager for connections to the PI Asset Framework database
@@ -19,7 +20,8 @@ class PIAFDatabase(object):
         self.server = server['server']
         if not server['databases']:
             server['databases'] = {x.Name: x for x in self.server.Databases}
-        self.database = server['databases'].get(database, self.server.Databases.DefaultDatabase)
+        self.database = server['databases'].get(database,
+                                                self.server.Databases.DefaultDatabase)
 
     def __enter__(self):
         self.server.Connect()
