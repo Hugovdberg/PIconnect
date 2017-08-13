@@ -1,0 +1,3 @@
+At this point copyright is held by Hugo van den Berg
+(hugo dot van dot den dot berg at brabantwater dot nl), options to make this open source
+are under investigation
