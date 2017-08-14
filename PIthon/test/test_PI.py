@@ -3,11 +3,22 @@
 import datetime
 import unittest
 import PIthon as PI
+from PIthon.test.fakes import FakePIPoint
 
 
 class TestServer(unittest.TestCase):
     ''' TestServer tests connecting to the server
     '''
+
+    def test_connection(self):
+        try:
+            PI.PIServer()
+        except:
+            self.fail("PI.PIServer() raised Exception unexpectedly.")
+
+
+class TestSearchPIPoints(unittest.TestCase):
+    """Test searching for PI Points on the default server."""
 
     def test_search_single_string(self):
         ''' tests searching for PI point using a single string
@@ -26,6 +37,26 @@ class TestServer(unittest.TestCase):
             self.assertIsInstance(points, list)
             for point in points:
                 self.assertIsInstance(point, PI.PI.PIPoint)
+
+
+class TestPIPoint(unittest.TestCase):
+    """Test valid interface of PIPoint."""
+
+    def setUp(self):
+        import datetime
+        self.point = FakePIPoint(values=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                                 timestamps=[datetime.datetime.fromtimestamp(x)
+                                             for x in [1502654535.813251,
+                                                       1502671554.038452,
+                                                       1502695584.315902,
+                                                       1502704569.874902,
+                                                       1502709576.898902,
+                                                       1502713512.168902,
+                                                       1502718534.453902,
+                                                       1502722585.816163,
+                                                       1502731598.316851,
+                                                       1502732545.013568
+                                                       ]])
 
     def test_current_value(self):
         ''' tests retrieving the current value from a PI point
