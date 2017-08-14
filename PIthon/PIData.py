@@ -1,6 +1,4 @@
-''' PIData
-    Storage containers for PI data
-'''
+"""Storage containers for PI data."""
 
 import datetime
 from pandas import Series
@@ -8,10 +6,7 @@ import pytz
 
 
 class PISeries(Series):
-    ''' An extension to pandas.Series which always uses the timestamps as index and
-        the PI tag as name
-    '''
-
+    """Extension to pandas.Series with PI metadata."""
     version = '0.1.0'
 
     def __init__(self, tag, timestamp, value, uom=None, *args, **kwargs):
@@ -25,9 +20,10 @@ class PISeries(Series):
 
     @staticmethod
     def timestamp_to_index(timestamp):
-        ''' Conversion of AF Date to local timestamp
-            TODO: Allow to define timezone, default to UTC?
-        '''
+        """Convert AFTime object to datetime.datetime in local timezone.
+
+           TODO: Allow to define timezone, default to UTC?
+        """
         local_tz = pytz.timezone('Europe/Amsterdam')
         return datetime.datetime(
             timestamp.Year,

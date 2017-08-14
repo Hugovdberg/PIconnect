@@ -1,7 +1,4 @@
-''' PIthon
-    A python connector to the OSISoft PI and PI-AF databases
-
-'''
+"""Connector to the OSISoft PI and PI-AF databases."""
 from PIthon.AFSDK import AF
 from PIthon.PI import PIServer
 from PIthon.PIAF import PIAFDatabase

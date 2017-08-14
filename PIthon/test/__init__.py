@@ -1,5 +1,4 @@
-''' Main module for the PIthon.test package
-'''
+"""Main module for the PIthon.test package."""
 import unittest
 
 from PIthon.test.test_PI import TestServer
