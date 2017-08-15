@@ -1,5 +1,4 @@
-''' Main module for the PIthon.test package
-'''
+"""Main module for the PIthon.test package."""
 import unittest
 
 if __name__ == '__main__':
