@@ -1,6 +1,9 @@
 """Test communication with the PI System."""
 import datetime
 import unittest
+
+import pytz
+
 import PIthon as PI
 from PIthon.test.fakes import FakePIPoint
 
@@ -9,10 +12,11 @@ class TestServer(unittest.TestCase):
     """Test connecting to the server"""
 
     def test_connection(self):
+        """Test that creating a PI.PIServer object without arguments raises no exception"""
         try:
             PI.PIServer()
-        except:
-            self.fail("PI.PIServer() raised Exception unexpectedly.")
+        except Exception as e:
+            self.fail("PI.PIServer() raised %s unexpectedly." % e.__class__.__name__)
 
 
 class TestSearchPIPoints(unittest.TestCase):
@@ -39,75 +43,73 @@ class TestPIPoint(unittest.TestCase):
     """Test valid interface of PIPoint."""
 
     def setUp(self):
-        import datetime
-        self.point = FakePIPoint(values=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                                 timestamps=[datetime.datetime.fromtimestamp(x)
-                                             for x in [1502654535.813251,
-                                                       1502671554.038452,
-                                                       1502695584.315902,
-                                                       1502704569.874902,
-                                                       1502709576.898902,
-                                                       1502713512.168902,
-                                                       1502718534.453902,
-                                                       1502722585.816163,
-                                                       1502731598.316851,
-                                                       1502732545.013568
-                                                       ]])
+        self.tag = 'TEST_140_053_FQIS053_01_Meetwaarde'
+        self.values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        self.timestamp_numbers = [
+            1502654535.813,
+            1502671554.038,
+            1502695584.315,
+            1502704569.874,
+            1502709576.898,
+            1502713512.168,
+            1502718534.453,
+            1502722585.816,
+            1502731598.316,
+            1502732545.013
+        ]
+        self.timestamps = [datetime.datetime.fromtimestamp(x, tz=pytz.utc)
+                           for x in self.timestamp_numbers]
+        self.attributes = {
+            'engunits': 'm3/h',
+            'descriptor': 'Flow'
+        }
+        self.point = PI.PI.PIPoint(FakePIPoint(tag=self.tag,
+                                               values=self.values,
+                                               timestamps=self.timestamps,
+                                               attributes=self.attributes))
+
+    def test_name(self):
+        """Test retrieving the name of the PI Point."""
+        self.assertEqual(self.point.tag, self.tag)
 
     def test_current_value(self):
         """Test retrieving the current value from a PI point."""
-        with PI.PIServer() as server:
-            point = server.search('L_140_053_FQIS053_01_Meetwaarde')[0]
-            self.assertIsInstance(point, PI.PI.PIPoint)
-            self.assertTrue('current_value' in dir(point))
-            self.assertIsInstance(point.current_value, float)
+        self.assertEqual(self.point.current_value, self.values[-1])
 
     def test_last_update(self):
         """Test retrieving the last update timestamp."""
-        with PI.PIServer() as server:
-            point = server.search('L_140_053_FQIS053_01_Meetwaarde')[0]
-            self.assertIsInstance(point, PI.PI.PIPoint)
-            self.assertTrue('last_update' in dir(point))
-            self.assertIsInstance(point.last_update, datetime.datetime)
+        origin = datetime.datetime(1970, 1, 1).replace(tzinfo=pytz.utc)
+        self.assertAlmostEqual((self.point.last_update - origin).total_seconds(),
+                               self.timestamp_numbers[-1])
 
     def test_units_of_measurement(self):
         """Test retrieving the units of measurement of the returned PI point."""
-        with PI.PIServer() as server:
-            point = server.search('L_140_053_FQIS053_01_Meetwaarde')[0]
-            self.assertIsInstance(point, PI.PI.PIPoint)
-            self.assertTrue('units_of_measurement' in dir(point))
-            self.assertIsInstance(point.units_of_measurement, basestring)
+        self.assertEqual(self.point.units_of_measurement, self.attributes['engunits'])
 
     def test_description(self):
         """Test retrieving the description of the PI point."""
-        with PI.PIServer() as server:
-            point = server.search('L_140_053_FQIS053_01_Meetwaarde')[0]
-            self.assertIsInstance(point, PI.PI.PIPoint)
-            self.assertTrue('description' in dir(point))
-            self.assertIsInstance(point.description, basestring)
+        self.assertEqual(self.point.description, self.attributes['descriptor'])
 
     def test_raw_attributes(self):
         """Test retrieving the attributes of the PI point as a dict."""
-        with PI.PIServer() as server:
-            point = server.search('L_140_053_FQIS053_01_Meetwaarde')[0]
-            self.assertIsInstance(point, PI.PI.PIPoint)
-            self.assertTrue('raw_attributes' in dir(point))
-            self.assertIsInstance(point.raw_attributes, dict)
+        self.assertEqual(self.point.raw_attributes, self.attributes)
 
-    def test_compressed_data(self):
+    def test_compressed_data_values(self):
         """Test retrieving some compressed data from the server."""
-        with PI.PIServer() as server:
-            point = server.search('L_140_053_FQIS053_01_Meetwaarde')[0]
-            self.assertIsInstance(point, PI.PI.PIPoint)
-            self.assertTrue('compressed_data' in dir(point))
-            data = point.compressed_data('01-07-2017', '02-07-2017')
-            self.assertEqual(data.size, 70)
+        data = self.point.compressed_data('01-07-2017', '02-07-2017')
+        self.assertEqual(list(data.values), self.values)
 
-    def test_sampled_data(self):
+    def test_compressed_data_timestamps(self):
+        """Test retrieving some compressed data from the server."""
+        data = self.point.compressed_data('01-07-2017', '02-07-2017')
+        self.assertEqual(list(data.index), self.timestamps)
+
+    def test_sampled_data_values(self):
+        """Test retrieving some compressed data from the server."""
+        data = self.point.sampled_data('01-07-2017', '02-07-2017', '1h')
+        self.assertEqual(list(data.values), self.values)
+
+    def test_sampled_data_timestamps(self):
         """Test retrieving some sampled data from the server."""
-        with PI.PIServer() as server:
-            point = server.search('L_140_053_FQIS053_01_Meetwaarde')[0]
-            self.assertIsInstance(point, PI.PI.PIPoint)
-            self.assertTrue('sampled_data' in dir(point))
-            data = point.sampled_data('01-07-2017', '02-07-2017', '1h')
-            self.assertEqual(data.size, 25)
+        data = self.point.sampled_data('01-07-2017', '02-07-2017', '1h')
+        self.assertEqual(list(data.index), self.timestamps)
