@@ -2,7 +2,7 @@
     Core containers for connections to PI databases
 """
 from PIthon.AFSDK import AF
-from PIthon.PIData import PISeries
+from PIthon.PIData import PISeries, add_const_to_pi, add_func_to_pi
 
 
 class PIServer(object):
@@ -52,7 +52,7 @@ class PIPoint(object):
 
         TODO: Build a PI datacontainer from which PIPoint and PIAFAttribute subclass.
     """
-    version = '0.1.0'
+    version = '0.2.0'
 
     __boundary_types = {
         'inside': AF.Data.AFBoundaryType.Inside,
@@ -73,10 +73,14 @@ class PIPoint(object):
                                                       self.current_value,
                                                       self.units_of_measurement)
 
+    def current_value_(self):
+        """Return the last recorded value for this PI Point."""
+        return self.pi_point.CurrentValue().Value
+
     @property
     def current_value(self):
         """Return the last recorded value for this PI Point."""
-        return self.pi_point.CurrentValue().Value
+        return self.current_value_()
 
     @property
     def last_update(self):
@@ -190,3 +194,29 @@ class PIPoint(object):
             self.pi_point.LoadAttributes([])
             self.__attributes_loaded = True
         self.__raw_attributes = {att.Key: att.Value for att in self.pi_point.GetAttributes([])}
+
+    def __add__(self, other):
+        """Return VirtualPIPoint with values replaced with incremented value.
+
+           Addition works by wrapping the current_value and sampled_data functions in
+           a new functions that stores the given increment.
+        """
+        new = VirtualPIPoint(self.pi_point)
+        if isinstance(other, PIPoint):
+            new.current_value_ = add_func_to_pi(other.current_value_)(self.current_value_)
+            new.sampled_data = add_func_to_pi(other.sampled_data)(self.sampled_data)
+        else:
+            new.current_value_ = add_const_to_pi(other)(self.current_value_)
+            new.sampled_data = add_const_to_pi(other)(self.sampled_data)
+        return new
+
+    def __radd__(self, other):
+        """Return normal addition value"""
+        return self.__add__(other)
+
+
+class VirtualPIPoint(PIPoint):
+    """Virtual PIPoint for calculated values"""
+    def compressed_data(self, *args, **kwargs):
+        raise NotImplementedError('%s at this point has no sensible implementation for ' +
+                                  'compressed_data' % self.__class__.__name__)

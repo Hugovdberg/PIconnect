@@ -1,8 +1,9 @@
 """Storage containers for PI data."""
-
 import datetime
+
 from pandas import Series
 import pytz
+import wrapt
 
 
 class PISeries(Series):
@@ -34,3 +35,21 @@ class PISeries(Series):
             timestamp.Second,
             timestamp.Millisecond * 1000
         ).replace(tzinfo=pytz.utc).astimezone(local_tz)
+
+
+def add_const_to_pi(increment):
+    """Return decorator to add data to PI Data for constructing virtual PI Points."""
+    @wrapt.decorator
+    def adder(func, instance, args, kwargs):
+        """Return function value incremented by a fixed value."""
+        return func(*args, **kwargs) + increment
+    return adder
+
+
+def add_func_to_pi(increment):
+    """Return decorator to add data to PI Data for constructing virtual PI Points."""
+    @wrapt.decorator
+    def adder(func, instance, args, kwargs):
+        """Return function value incremented by a fixed value."""
+        return func(*args, **kwargs) + increment(*args, **kwargs)
+    return adder
