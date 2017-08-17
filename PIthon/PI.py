@@ -2,7 +2,7 @@
     Core containers for connections to PI databases
 """
 from PIthon.AFSDK import AF
-from PIthon.PIData import PISeries, add_const_to_pi, add_func_to_pi
+from PIData import PISeries, add_numops, operators
 
 
 class PIServer(object):
@@ -47,6 +47,15 @@ class PIServer(object):
                 AF.PI.PIPoint.FindPIPoints(self.connection, query, source, None)]
 
 
+@add_numops(
+    numops=operators,
+    members=[
+        '_current_value',
+        'sampled_data'
+    ],
+    newclassname='VirtualPIPoint',
+    attributes=['pi_point']
+)
 class PIPoint(object):
     """Reference to a PI Point to get data and corresponding metadata from the server.
 
@@ -73,14 +82,14 @@ class PIPoint(object):
                                                       self.current_value,
                                                       self.units_of_measurement)
 
-    def current_value_(self):
-        """Return the last recorded value for this PI Point."""
+    def _current_value(self):
+        """Return the last recorded value for this PI Point (internal use only)."""
         return self.pi_point.CurrentValue().Value
 
     @property
     def current_value(self):
         """Return the last recorded value for this PI Point."""
-        return self.current_value_()
+        return self._current_value()
 
     @property
     def last_update(self):
@@ -101,7 +110,10 @@ class PIPoint(object):
 
     @property
     def description(self):
-        """Return the description of the PI Point."""
+        """Return the description of the PI Point.
+
+        TODO: Add setter to alter displayed description
+        """
         self.__load_attributes()
         return self.__raw_attributes['descriptor']
 
@@ -138,8 +150,8 @@ class PIPoint(object):
             raise ValueError(
                 'Argument boundary_type must be one of ' + ', '.join(
                     '"%s"' % x for x in sorted(self.__boundary_types.keys())
-                    )
                 )
+            )
         include_filtered_values = False  # Leave out values excluded by filter_expression
         pivalues = self.pi_point.RecordedValues(time_range,
                                                 boundary_type,
@@ -194,29 +206,3 @@ class PIPoint(object):
             self.pi_point.LoadAttributes([])
             self.__attributes_loaded = True
         self.__raw_attributes = {att.Key: att.Value for att in self.pi_point.GetAttributes([])}
-
-    def __add__(self, other):
-        """Return VirtualPIPoint with values replaced with incremented value.
-
-           Addition works by wrapping the current_value and sampled_data functions in
-           a new functions that stores the given increment.
-        """
-        new = VirtualPIPoint(self.pi_point)
-        if isinstance(other, PIPoint):
-            new.current_value_ = add_func_to_pi(other.current_value_)(self.current_value_)
-            new.sampled_data = add_func_to_pi(other.sampled_data)(self.sampled_data)
-        else:
-            new.current_value_ = add_const_to_pi(other)(self.current_value_)
-            new.sampled_data = add_const_to_pi(other)(self.sampled_data)
-        return new
-
-    def __radd__(self, other):
-        """Return normal addition value"""
-        return self.__add__(other)
-
-
-class VirtualPIPoint(PIPoint):
-    """Virtual PIPoint for calculated values"""
-    def compressed_data(self, *args, **kwargs):
-        raise NotImplementedError('%s at this point has no sensible implementation for ' +
-                                  'compressed_data' % self.__class__.__name__)

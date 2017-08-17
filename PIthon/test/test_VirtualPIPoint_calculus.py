@@ -1,30 +1,60 @@
 """Test VirtualPIPoint calculus."""
-import unittest
 import PIthon as PI
+from PIthon.test.fakes import VirtualTestCase
 
-
-class TestVirtualAddition(unittest.TestCase):
+class TestVirtualAddition(VirtualTestCase):
     """Test VirtualPIPoint addition."""
 
     def test_add_integer_current_value(self):
         """Test adding an integer to a PIPoint via the current value."""
-        with PI.PIServer() as server:
-            point = server.search('L_140_053_FQIS053_01_Meetwaarde')[0]
-            point2 = point + 1
-            self.assertEqual(point.current_value + 1, point2.current_value)
+        point2 = self.point + 1
+        self.assertAlmostEqual(point2.current_value, self.values[-1] + 1)
 
     def test_add_integer_reverse_current_value(self):
         """Test adding a PIPoint to an integer via the current value."""
-        with PI.PIServer() as server:
-            point = server.search('L_140_053_FQIS053_01_Meetwaarde')[0]
-            point2 = 1 + point
-            self.assertEqual(point.current_value + 1, point2.current_value)
+        point2 = 1 + self.point
+        self.assertAlmostEqual(point2.current_value, self.values[-1] + 1)
 
     def test_add_pipoints_current_value(self):
         """Test adding two PIPoints via the current value."""
-        with PI.PIServer() as server:
-            point_053 = server.search('L_140_053_LT053_01_Meetwaarde')[0]
-            point_054 = server.search('L_140_054_LT054_01_Meetwaarde')[0]
-            total = point_053 + point_054
-            self.assertEqual(point_053.current_value + point_054.current_value,
-                             total.current_value)
+        total = self.point + self.point
+        self.assertAlmostEqual(total.current_value, self.values[-1] + self.values[-1])
+
+
+class TestVirtualMultiplication(VirtualTestCase):
+    """Test VirtualPIPoint addition."""
+
+    def test_multiply_integer_current_value(self):
+        """Test adding an integer to a PIPoint via the current value."""
+        point2 = self.point * 1
+        self.assertAlmostEqual(point2.current_value, self.values[-1] * 1)
+
+    def test_multiply_integer_reverse_current_value(self):
+        """Test adding a PIPoint to an integer via the current value."""
+        point2 = 1 * self.point
+        self.assertAlmostEqual(point2.current_value, self.values[-1] * 1)
+
+    def test_multiply_pipoints_current_value(self):
+        """Test adding two PIPoints via the current value."""
+        total = self.point * self.point
+        self.assertAlmostEqual(total.current_value, self.values[-1] * self.values[-1])
+
+    def test_multiply_integer_two_current_value(self):
+        """Test adding an integer to a PIPoint via the current value."""
+        point2 = self.point * 2
+        self.assertAlmostEqual(point2.current_value, self.values[-1] * 2)
+
+    def test_multiply_integer_two_reverse_current_value(self):
+        """Test adding a PIPoint to an integer via the current value."""
+        point2 = 2 * self.point
+        self.assertAlmostEqual(point2.current_value, self.values[-1] * 2)
+
+    def test_multiply_float_two_current_value(self):
+        """Test adding an integer to a PIPoint via the current value."""
+        point2 = self.point * 2.0
+        self.assertAlmostEqual(point2.current_value, self.values[-1] * 2.0)
+
+    def test_multiply_float_two_reverse_current_value(self):
+        """Test adding a PIPoint to an integer via the current value."""
+        point2 = 2.0 * self.point
+        self.assertAlmostEqual(point2.current_value, self.values[-1] * 2.0)
