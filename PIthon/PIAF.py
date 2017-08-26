@@ -1,6 +1,7 @@
 """Core containers for connections to the PI Asset Framework."""
 from PIthon.AFSDK import AF
 from PIthon.PIData import PISeries
+from PIthon._operators import add_operators, operators
 
 
 class PIAFDatabase(object):
@@ -88,6 +89,15 @@ class PIAFElement(object):
 
 
 class PIAFAttribute(object):
+@add_operators(
+    operators=operators,
+    members=[
+        '_current_value',
+        'sampled_data'
+    ],
+    newclassname='VirtualPIPoint',
+    attributes=['pi_point']
+)
     """Container for attributes of PI AF elements in the database."""
     version = '0.0.1'
 

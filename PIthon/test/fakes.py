@@ -5,7 +5,8 @@ import unittest
 import pytz
 
 import PIthon as PI
-from PIthon.PIData import add_numops, operators
+from PIthon._operators import add_operators, operators
+
 
 class FakeAFTime(object):
     """Fake AFTime to mask away SDK complexity."""
@@ -42,8 +43,8 @@ class FakePIPoint_(object):
         self.attributes = [FakeKeyValue(*att) for att in attributes.iteritems()]
 
 
-@add_numops(
-    numops=operators,
+@add_operators(
+    operators=operators,
     members=[
         '_current_value',
         'sampled_data'

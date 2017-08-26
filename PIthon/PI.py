@@ -2,7 +2,8 @@
     Core containers for connections to PI databases
 """
 from PIthon.AFSDK import AF
-from PIData import PISeries, add_numops, operators
+from PIData import PISeries
+from PIthon._operators import add_operators, operators
 
 
 class PIServer(object):
@@ -47,8 +48,8 @@ class PIServer(object):
                 AF.PI.PIPoint.FindPIPoints(self.connection, query, source, None)]
 
 
-@add_numops(
-    numops=operators,
+@add_operators(
+    operators=operators,
     members=[
         '_current_value',
         'sampled_data'
@@ -206,3 +207,7 @@ class PIPoint(object):
             self.pi_point.LoadAttributes([])
             self.__attributes_loaded = True
         self.__raw_attributes = {att.Key: att.Value for att in self.pi_point.GetAttributes([])}
+
+    def _current_value(self):
+        """Return the last recorded value for this PI Point (internal use only)."""
+        return self.pi_point.CurrentValue().Value
