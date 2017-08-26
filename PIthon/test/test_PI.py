@@ -93,22 +93,22 @@ class TestPIPoint(VirtualTestCase):
         """Test retrieving the attributes of the PI point as a dict."""
         self.assertEqual(self.point.raw_attributes, self.attributes)
 
-    def test_compressed_data_values(self):
-        """Test retrieving some compressed data from the server."""
-        data = self.point.compressed_data('01-07-2017', '02-07-2017')
+    def test_recorded_values_values(self):
+        """Test retrieving some recorded data from the server."""
+        data = self.point.recorded_values('01-07-2017', '02-07-2017')
         self.assertEqual(list(data.values), self.values)
 
-    def test_compressed_data_timestamps(self):
-        """Test retrieving some compressed data from the server."""
-        data = self.point.compressed_data('01-07-2017', '02-07-2017')
+    def test_recorded_values_timestamps(self):
+        """Test retrieving some recorded data from the server."""
+        data = self.point.recorded_values('01-07-2017', '02-07-2017')
         self.assertEqual(list(data.index), self.timestamps)
 
     def test_sampled_data_values(self):
-        """Test retrieving some compressed data from the server."""
+        """Test retrieving some interpolated data from the server."""
         data = self.point.sampled_data('01-07-2017', '02-07-2017', '1h')
         self.assertEqual(list(data.values), self.values)
 
     def test_sampled_data_timestamps(self):
-        """Test retrieving some sampled data from the server."""
+        """Test retrieving some interpolated data from the server."""
         data = self.point.sampled_data('01-07-2017', '02-07-2017', '1h')
         self.assertEqual(list(data.index), self.timestamps)
