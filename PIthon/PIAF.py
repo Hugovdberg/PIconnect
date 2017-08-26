@@ -1,6 +1,6 @@
 """Core containers for connections to the PI Asset Framework."""
 from PIthon.AFSDK import AF
-from PIthon.PIData import PISeries
+from PIthon.PIData import PISeries, PISeriesContainer
 from PIthon._operators import add_operators, operators
 
 
@@ -88,7 +88,6 @@ class PIAFElement(object):
         return {a.Name: PIAFAttribute(self, a) for a in self.element.Attributes}
 
 
-class PIAFAttribute(object):
 @add_operators(
     operators=operators,
     members=[
@@ -98,6 +97,7 @@ class PIAFAttribute(object):
     newclassname='VirtualPIPoint',
     attributes=['pi_point']
 )
+class PIAFAttribute(PISeriesContainer):
     """Container for attributes of PI AF elements in the database."""
     version = '0.0.1'
 
@@ -148,3 +148,11 @@ class PIAFAttribute(object):
     def units_of_measurement(self):
         """Return the units of measurement in which values for this element are reported."""
         return self.attribute.DefaultUOM
+
+    def _recorded_values(self, time_range, boundary_type, filter_expression):
+        include_filtered_values = False
+        return self.attribute.Data.RecordedValues(time_range,
+                                                  boundary_type,
+                                                  self.attribute.DefaultUOM,
+                                                  filter_expression,
+                                                  include_filtered_values)
