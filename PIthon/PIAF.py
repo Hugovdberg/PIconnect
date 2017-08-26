@@ -92,14 +92,14 @@ class PIAFElement(object):
     operators=operators,
     members=[
         '_current_value',
-        'sampled_data'
+        'interpolated_values'
     ],
-    newclassname='VirtualPIPoint',
-    attributes=['pi_point']
+    newclassname='VirtualPIAFAttribute',
+    attributes=['element', 'attribute']
 )
 class PIAFAttribute(PISeriesContainer):
     """Container for attributes of PI AF elements in the database."""
-    version = '0.0.1'
+    version = '0.1.0'
 
     def __init__(self, element, attribute):
         self.element = element
@@ -137,7 +137,7 @@ class PIAFAttribute(PISeriesContainer):
     @property
     def current_value(self):
         """Return the current value of the attribute."""
-        return self.attribute.GetValue().Value
+        return self._current_value()
 
     @property
     def last_update(self):
@@ -149,6 +149,9 @@ class PIAFAttribute(PISeriesContainer):
         """Return the units of measurement in which values for this element are reported."""
         return self.attribute.DefaultUOM
 
+    def _current_value(self):
+        return self.attribute.GetValue().Value
+
     def _recorded_values(self, time_range, boundary_type, filter_expression):
         include_filtered_values = False
         return self.attribute.Data.RecordedValues(time_range,
@@ -156,3 +159,12 @@ class PIAFAttribute(PISeriesContainer):
                                                   self.attribute.DefaultUOM,
                                                   filter_expression,
                                                   include_filtered_values)
+
+    def _interpolated_values(self, time_range, interval, filter_expression):
+        """Internal function to actually query the pi point"""
+        include_filtered_values = False
+        return self.attribute.Data.InterpolatedValues(time_range,
+                                                      interval,
+                                                      self.attribute.DefaultUOM,
+                                                      filter_expression,
+                                                      include_filtered_values)

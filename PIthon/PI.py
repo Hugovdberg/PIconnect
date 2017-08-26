@@ -52,7 +52,7 @@ class PIServer(object):
     operators=operators,
     members=[
         '_current_value',
-        'sampled_data'
+        'interpolated_values'
     ],
     newclassname='VirtualPIPoint',
     attributes=['pi_point']
@@ -108,40 +108,6 @@ class PIPoint(PISeriesContainer):
         self.__load_attributes()
         return self.__raw_attributes['descriptor']
 
-    def sampled_data(self,
-                     start_time,
-                     end_time,
-                     interval,
-                     filter_expression=None):
-        """Return a PISeries of interpolated data.
-
-           Data is returned between *start_time* and *end_time* at a fixed
-           *interval*. All three values are parsed by AF.Time and the first two
-           allow for time specification relative to "now" by use of the asterisk.
-
-           *filter_expression* is an optional string to filter the returned
-           values, see OSIsoft PI documentation for more information.
-
-           The AF SDK allows for inclusion of filtered data, with filtered values
-           marked as such. At this point PIthon does not support this and filtered
-           values are always left out entirely.
-        """
-        time_range = AF.Time.AFTimeRange(start_time, end_time)
-        interval = AF.Time.AFTimeSpan.Parse(interval)
-        include_filtered_values = False
-        pivalues = self.pi_point.InterpolatedValues(time_range,
-                                                    interval,
-                                                    filter_expression,
-                                                    include_filtered_values)
-        timestamps, values = [], []
-        for value in pivalues:
-            timestamps.append(PISeries.timestamp_to_index(value.Timestamp.UtcTime))
-            values.append(value.Value)
-        return PISeries(tag=self.name,
-                        timestamp=timestamps,
-                        value=values,
-                        uom=self.units_of_measurement)
-
     def __load_attributes(self):
         """Load the raw attributes of the PI Point from the server"""
         if not self.__attributes_loaded:
@@ -163,3 +129,11 @@ class PIPoint(PISeriesContainer):
                                             boundary_type,
                                             filter_expression,
                                             include_filtered_values)
+
+    def _interpolated_values(self, time_range, interval, filter_expression):
+        """Internal function to actually query the pi point"""
+        include_filtered_values = False
+        return self.pi_point.InterpolatedValues(time_range,
+                                                interval,
+                                                filter_expression,
+                                                include_filtered_values)

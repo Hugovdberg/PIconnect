@@ -50,7 +50,7 @@ class TestSearchPIPoints(VirtualTestCase):
     def test_search_integer_raises_error(self):
         """Tests searching for PI points using an integer raises a TypeError."""
         with PI.PIServer() as server, self.assertRaises(TypeError):
-            points = server.search(1)
+            server.search(1)
 
 
 class TestPIPoint(VirtualTestCase):
@@ -103,12 +103,12 @@ class TestPIPoint(VirtualTestCase):
         data = self.point.recorded_values('01-07-2017', '02-07-2017')
         self.assertEqual(list(data.index), self.timestamps)
 
-    def test_sampled_data_values(self):
+    def test_interpolated_values_values(self):
         """Test retrieving some interpolated data from the server."""
-        data = self.point.sampled_data('01-07-2017', '02-07-2017', '1h')
+        data = self.point.interpolated_values('01-07-2017', '02-07-2017', '1h')
         self.assertEqual(list(data.values), self.values)
 
-    def test_sampled_data_timestamps(self):
+    def test_interpolated_values_timestamps(self):
         """Test retrieving some interpolated data from the server."""
-        data = self.point.sampled_data('01-07-2017', '02-07-2017', '1h')
+        data = self.point.interpolated_values('01-07-2017', '02-07-2017', '1h')
         self.assertEqual(list(data.index), self.timestamps)
