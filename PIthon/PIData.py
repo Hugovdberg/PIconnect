@@ -56,7 +56,7 @@ class PISeriesContainer(object):
                         start_time,
                         end_time,
                         boundary_type='inside',
-                        filter_expression=None):
+                        filter_expression=''):
         """Return a PISeries of recorded data.
 
            Data is returned between the given *start_time* and *end_time*, inclusion
@@ -103,7 +103,7 @@ class PISeriesContainer(object):
                             start_time,
                             end_time,
                             interval,
-                            filter_expression=None):
+                            filter_expression=''):
         """Return a PISeries of interpolated data.
 
            Data is returned between *start_time* and *end_time* at a fixed
@@ -119,6 +119,7 @@ class PISeriesContainer(object):
         """
         time_range = AF.Time.AFTimeRange(start_time, end_time)
         interval = AF.Time.AFTimeSpan.Parse(interval)
+        filter_expression = self._normalize_filter_expression(filter_expression)
         pivalues = self._interpolated_values(time_range,
                                              interval,
                                              filter_expression)
@@ -130,3 +131,6 @@ class PISeriesContainer(object):
                         timestamp=timestamps,
                         value=values,
                         uom=self.units_of_measurement)
+
+    def _normalize_filter_expression(self, filter_expression):
+        return filter_expression

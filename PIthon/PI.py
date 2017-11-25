@@ -137,3 +137,6 @@ class PIPoint(PISeriesContainer):
                                                 interval,
                                                 filter_expression,
                                                 include_filtered_values)
+
+    def _normalize_filter_expression(self, filter_expression):
+        return filter_expression.replace('%tag%', self.tag)
