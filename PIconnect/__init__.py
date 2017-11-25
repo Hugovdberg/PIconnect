@@ -1,4 +1,4 @@
-""" PIthon
+""" PIconnect
     Connector to the OSISoft PI and PI-AF databases.
 """
 # Copyright 2017 Hugo van den Berg, Stijn de Jong
@@ -20,8 +20,8 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 # THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from PIthon.AFSDK import AF
-from PIthon.PI import PIServer
-from PIthon.PIAF import PIAFDatabase
+from PIconnect.AFSDK import AF
+from PIconnect.PI import PIServer
+from PIconnect.PIAF import PIAFDatabase
 
-__version__ = (0, 3, 0)
+__version__ = "0.4.0"

@@ -20,8 +20,8 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 # THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from PIthon.AFSDK import AF
-from PIthon.PIData import PISeries
+from PIconnect.AFSDK import AF
+from PIconnect.PIData import PISeries
 
 
 class PIAFDatabase(object):

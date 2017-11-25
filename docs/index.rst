@@ -1,4 +1,4 @@
-Welcome to PIthon's documentation!
+Welcome to PIconnect's documentation!
 ==================================
 
 Contents:

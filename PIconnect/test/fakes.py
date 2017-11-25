@@ -1,4 +1,4 @@
-""" PIthon.test.fakes
+""" PIconnect.test.fakes
     Fake classes to mask SDK complexity
 """
 # Copyright 2017 Hugo van den Berg, Stijn de Jong

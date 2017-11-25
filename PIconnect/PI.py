@@ -20,8 +20,8 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 # THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from PIthon.AFSDK import AF
-from PIthon.PIData import PISeries
+from PIconnect.AFSDK import AF
+from PIconnect.PIData import PISeries
 
 
 class PIServer(object):
@@ -55,7 +55,7 @@ class PIServer(object):
 
            PI Points are matched to *query*, which can be provided as a string or
            a list of strings. In either case a single, unnested, list of
-           Pithon.PI.PIPoints is returned.
+           PIconnect.PI.PIPoints is returned.
         """
         if isinstance(query, list):
             return [y for x in query for y in self.search(x, source)]
@@ -143,7 +143,7 @@ class PIPoint(object):
            values, see OSIsoft PI documentation for more information.
 
            The AF SDK allows for inclusion of filtered data, with filtered values
-           marked as such. At this point PIthon does not support this and filtered
+           marked as such. At this point PIconnect does not support this and filtered
            values are always left out entirely.
         """
         time_range = AF.Time.AFTimeRange(start_time, end_time)
@@ -184,7 +184,7 @@ class PIPoint(object):
            values, see OSIsoft PI documentation for more information.
 
            The AF SDK allows for inclusion of filtered data, with filtered values
-           marked as such. At this point PIthon does not support this and filtered
+           marked as such. At this point PIconnect does not support this and filtered
            values are always left out entirely.
         """
         time_range = AF.Time.AFTimeRange(start_time, end_time)

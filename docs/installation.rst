@@ -8,13 +8,13 @@ Installation
 Stable release
 --------------
 
-To install PIthon, run this command in your terminal:
+To install PIconnect, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install PIthon
+    $ pip install PIconnect
 
-This is the preferred method to install PIthon, as it will always install the most recent stable release.
+This is the preferred method to install PIconnect, as it will always install the most recent stable release.
 
 If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.
@@ -26,19 +26,19 @@ you through the process.
 From sources
 ------------
 
-The sources for PIthon can be downloaded from the `Github repo`_.
+The sources for PIconnect can be downloaded from the `Github repo`_.
 
 You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/Hugovdberg/PIthon
+    $ git clone git://github.com/Hugovdberg/PIconnect
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl  -OL https://github.com/Hugovdberg/PIthon/tarball/master
+    $ curl  -OL https://github.com/Hugovdberg/PIconnect/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +47,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/Hugovdberg/PIthon
-.. _tarball: https://github.com/Hugovdberg/PIthon/tarball/master
+.. _Github repo: https://github.com/Hugovdberg/PIconnect
+.. _tarball: https://github.com/Hugovdberg/PIconnect/tarball/master

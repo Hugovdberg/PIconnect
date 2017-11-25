@@ -1,5 +1,5 @@
-""" PIthon.test
-    Main module for the PIthon.test package.
+""" PIconnect.test
+    Main module for the PIconnect.test package.
 """
 
 import unittest

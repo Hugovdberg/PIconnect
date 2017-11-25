@@ -1,4 +1,4 @@
-""" PIthon.test.test_PI
+""" PIconnect.test.test_PI
     Test communication with the PI System.
 """
 # Copyright 2017 Hugo van den Berg, Stijn de Jong
@@ -25,8 +25,8 @@ import unittest
 
 import pytz
 
-import PIthon as PI
-from PIthon.test.fakes import FakePIPoint
+import PIconnect as PI
+from PIconnect.test.fakes import FakePIPoint
 
 
 class TestServer(unittest.TestCase):

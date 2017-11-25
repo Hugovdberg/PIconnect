@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Tests for `PIthon` package."""
+"""Tests for `PIconnect` package."""
 
 import pytest
 
 # from click.testing import CliRunner
 
-import PIthon
-# from PIthon import cli
+import PIconnect
+# from PIconnect import cli
 
 
 @pytest.fixture
@@ -32,7 +32,7 @@ def test_content(response):
 #     runner = CliRunner()
 #     result = runner.invoke(cli.main)
 #     assert result.exit_code == 0
-#     assert 'PIthon.cli.main' in result.output
+#     assert 'PIconnect.cli.main' in result.output
 #     help_result = runner.invoke(cli.main, ['--help'])
 #     assert help_result.exit_code == 0
 #     assert '--help  Show this message and exit.' in help_result.output
