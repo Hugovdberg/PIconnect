@@ -44,6 +44,7 @@ cover/
 nosetests.xml
 coverage.xml
 *,cover
+.hypothesis/
 
 # Translations
 *.mo
@@ -57,3 +58,6 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# pyenv python configuration file
+.python-version

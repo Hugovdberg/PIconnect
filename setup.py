@@ -13,31 +13,47 @@ from setuptools import setup, find_packages
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-    long_description = f.read()
+with open(path.join(here, 'README.rst'), encoding='utf-8') as readme_file:
+    readme = readme_file.read()
+
+with open(path.join(here, 'HISTORY.rst'), encoding='utf-8') as history_file:
+    history = history_file.read()
+
+
+requirements = [
+    'pythonnet',
+    # 'Click>=6.0',
+    # TODO: put package requirements here
+]
+
+setup_requirements = [
+    'pytest-runner',
+    # TODO(Hugovdberg): put setup requirements (distutils extensions, etc.) here
+]
+
+test_requirements = [
+    'pytest',
+    # TODO: put package test requirements here
+]
 
 setup(
-    name='PIthon',
-
-    # Versions should comply with PEP440.  For a discussion on single-sourcing
-    # the version across setup.py and the project code, see
-    # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.2.1',
-
-    description='A python connector to the OSISoft PI and PI-AF databases',
-    long_description=long_description,
-
-    # The project's main homepage.
-    url='https://bitbucket.org/brabantwater/pithon',
+    name='PIconnect',
+    version='0.4.0',
+    description="Python connector to OSIsoft PI SDK",
+    long_description=readme + '\n\n' + history,
 
     # Author details
     author='Hugo van den Berg',
     author_email='hugo.van.den.berg@brabantwater.nl',
+    url='https://github.com/Hugovdberg/PIthon',
 
-    # Choose your license
-    license='Proprietary',
-
-    # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
+    # You can just specify the packages manually here if your project is
+    # simple. Or you can use find_packages().
+    packages=find_packages(include=['PIthon']),
+    include_package_data=True,
+    install_requires=requirements,
+    license="MIT license",
+    zip_safe=False,
     classifiers=[
         # How mature is this project? Common values are
         #   3 - Alpha
@@ -50,7 +66,7 @@ setup(
         'Topic :: Database',
 
         # Pick your license as you wish (should match "license" above)
-        'License :: Other/Proprietary License',
+        'License :: OSI Approved :: MIT License',
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
@@ -61,13 +77,12 @@ setup(
         # 'Programming Language :: Python :: 3.4',
         # 'Programming Language :: Python :: 3.5',
     ],
+    test_suite='tests',
+    tests_require=test_requirements,
+    setup_requires=setup_requirements,
 
     # What does your project relate to?
-    keywords='OSIsoft PI ProcessInformation',
-
-    # You can just specify the packages manually here if your project is
-    # simple. Or you can use find_packages().
-    packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+    keywords='OSIsoft PI ProcessInformation PIthon',
 
     # Alternatively, if you want to distribute just a my_module.py, uncomment
     # this:
@@ -106,7 +121,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     # entry_points={
     #     'console_scripts': [
-    #         'sample=sample:main',
-    #     ],
+    #         'pithon=PIthon.cli:main'
+    #     ]
     # },
 )
