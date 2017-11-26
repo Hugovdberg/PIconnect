@@ -1,6 +1,6 @@
 """Test communication with the PI AF system"""
-import PIthon as PI
-from PIthon.test.fakes import VirtualTestCase
+import PIconnect as PI
+from PIconnect.test.fakes import VirtualTestCase
 
 
 class TestAFDatabase(VirtualTestCase):
@@ -15,18 +15,15 @@ class TestAFDatabase(VirtualTestCase):
 
     def test_server_name(self):
         """Test that the server reports the same name as which was connected to."""
-        server = PI.PIAFDatabase('PIAF_server', 'BasisStructuur')
-        self.assertEqual(server.server_name, 'PIAF_server')
-
-    def test_database_name(self):
-        """Test that the server reports the same name as which was connected to."""
-        server = PI.PIAFDatabase('PIAF_server', 'BasisStructuur')
-        self.assertEqual(server.database_name, 'BasisStructuur')
-
-    def test_repr(self):
-        """Test that the server representation matches the connected server."""
-        server = PI.PIAFDatabase('PIAF_server', 'BasisStructuur')
-        self.assertEqual(repr(server), 'PIAFDatabase(\\\\PIAF_server\\BasisStructuur)')
+        AFserver = PI.AF.PISystems().DefaultPISystem.Name
+        database = PI.AF.PISystems().DefaultPISystem.Databases.DefaultDatabase.Name
+        server = PI.PIAFDatabase(AFserver, database)
+        self.assertEqual(server.server_name,
+                         AFserver)
+        self.assertEqual(server.database_name,
+                         'BasisStructuur')
+        self.assertEqual(repr(server),
+                         'PIAFDatabase(\\\\{s}\\{d})'.format(s=AFserver, d=database))
 
 
 class TestDatabaseDescendants(VirtualTestCase):

@@ -1,9 +1,28 @@
 """ PI
     Core containers for connections to PI databases
 """
-from PIthon.AFSDK import AF
-from PIData import PISeries, PISeriesContainer
-from PIthon._operators import add_operators, operators
+# Copyright 2017 Hugo van den Berg, Stijn de Jong
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this
+# software and associated documentation files (the "Software"), to deal in the Software
+# without restriction, including without limitation the rights to use, copy, modify,
+# merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to the following
+# conditions:
+
+# The above copyright notice and this permission notice shall be included in all copies
+# or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+# CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+# THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+from PIconnect.AFSDK import AF
+from PIconnect.PIData import PISeries, PISeriesContainer
+from PIconnect._operators import add_operators, operators
 
 
 class PIServer(object):
@@ -37,7 +56,7 @@ class PIServer(object):
 
            PI Points are matched to *query*, which can be provided as a string or
            a list of strings. In either case a single, unnested, list of
-           Pithon.PI.PIPoints is returned.
+           PIconnect.PI.PIPoints is returned.
         """
         if isinstance(query, list):
             return [y for x in query for y in self.search(x, source)]

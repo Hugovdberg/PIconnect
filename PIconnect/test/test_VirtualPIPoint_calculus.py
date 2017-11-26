@@ -1,6 +1,6 @@
 """Test VirtualPIPoint calculus."""
-import PIthon as PI
-from PIthon.test.fakes import VirtualTestCase
+import PIconnect as PI
+from PIconnect.test.fakes import VirtualTestCase
 
 class TestVirtualAddition(VirtualTestCase):
     """Test VirtualPIPoint addition."""

@@ -44,6 +44,7 @@ cover/
 nosetests.xml
 coverage.xml
 *,cover
+.hypothesis/
 
 # Translations
 *.mo
@@ -60,3 +61,6 @@ target/
 
 # Sublime configuration
 *Sublime*
+
+# pyenv python configuration file
+.python-version

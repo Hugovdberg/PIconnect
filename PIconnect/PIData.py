@@ -4,7 +4,7 @@ import datetime
 from pandas import Series
 import pytz
 
-from PIthon.AFSDK import AF
+from PIconnect.AFSDK import AF
 
 
 class PISeries(Series):
@@ -75,7 +75,7 @@ class PISeriesContainer(object):
            values, see OSIsoft PI documentation for more information.
 
            The AF SDK allows for inclusion of filtered data, with filtered values
-           marked as such. At this point PIthon does not support this and filtered
+           marked as such. At this point PIconnect does not support this and filtered
            values are always left out entirely.
         """
         time_range = AF.Time.AFTimeRange(start_time, end_time)
@@ -114,7 +114,7 @@ class PISeriesContainer(object):
            values, see OSIsoft PI documentation for more information.
 
            The AF SDK allows for inclusion of filtered data, with filtered values
-           marked as such. At this point PIthon does not support this and filtered
+           marked as such. At this point PIconnect does not support this and filtered
            values are always left out entirely.
         """
         time_range = AF.Time.AFTimeRange(start_time, end_time)
