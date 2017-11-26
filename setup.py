@@ -45,11 +45,11 @@ setup(
     # Author details
     author='Hugo van den Berg',
     author_email='hugo.van.den.berg@brabantwater.nl',
-    url='https://github.com/Hugovdberg/PIthon',
+    url='https://github.com/Hugovdberg/PIconnect',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    packages=find_packages(include=['PIthon']),
+    packages=find_packages(include=['PIconnect']),
     include_package_data=True,
     install_requires=requirements,
     license="MIT license",
@@ -82,7 +82,7 @@ setup(
     setup_requires=setup_requirements,
 
     # What does your project relate to?
-    keywords='OSIsoft PI ProcessInformation PIthon',
+    keywords='OSIsoft PI ProcessInformation PIconnect',
 
     # Alternatively, if you want to distribute just a my_module.py, uncomment
     # this:
@@ -121,7 +121,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     # entry_points={
     #     'console_scripts': [
-    #         'pithon=PIthon.cli:main'
+    #         'piconnect=PIconnect.cli:main'
     #     ]
     # },
 )

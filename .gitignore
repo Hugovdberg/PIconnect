@@ -59,5 +59,8 @@ docs/_build/
 # PyBuilder
 target/
 
+# Sublime configuration
+*Sublime*
+
 # pyenv python configuration file
 .python-version

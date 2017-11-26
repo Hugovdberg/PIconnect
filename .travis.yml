@@ -25,5 +25,5 @@ script: tox
 #     secure: PLEASE_REPLACE_ME
 #   on:
 #     tags: true
-#     repo: Hugovdberg/PIthon
+#     repo: Hugovdberg/PIconnect
 #     python: 2.7

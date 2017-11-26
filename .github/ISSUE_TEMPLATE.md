@@ -1,4 +1,4 @@
-* PIthon version:
+* PIconnect version:
 * Python version:
 * Operating System:
 

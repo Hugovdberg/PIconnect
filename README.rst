@@ -1,6 +1,6 @@
-======
-PIthon
-======
+=========
+PIconnect
+=========
 
 A python connector to the OSISoft PI and PI-AF databases
 ========================================================
@@ -10,18 +10,18 @@ provides a number of classes, mostly mirroring the AF SDK structure, but at the 
 implementing the cool stuff we use Python for. Connections to the database are therefore
 implemented as context managers, to allow opening a connection using a with statement.
 
-.. image:: https://img.shields.io/pypi/v/pithon.svg
-        :target: https://pypi.python.org/pypi/pithon
+.. image:: https://img.shields.io/pypi/v/PIconnect.svg
+        :target: https://pypi.python.org/pypi/PIconnect
 
-.. image:: https://img.shields.io/travis/Hugovdberg/PIthon.svg
-        :target: https://travis-ci.org/Hugovdberg/PIthon
+.. image:: https://img.shields.io/travis/Hugovdberg/PIconnect.svg
+        :target: https://travis-ci.org/Hugovdberg/PIconnect
 
 .. image:: https://readthedocs.org/projects/pithon/badge/?version=latest
         :target: https://pithon.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://pyup.io/repos/github/Hugovdberg/pithon/shield.svg
-     :target: https://pyup.io/repos/github/Hugovdberg/pithon/
+.. image:: https://pyup.io/repos/github/Hugovdberg/PIconnect/shield.svg
+     :target: https://pyup.io/repos/github/Hugovdberg/PIconnect/
      :alt: Updates
 
 

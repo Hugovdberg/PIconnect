@@ -48,7 +48,7 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 
 lint: ## check style with flake8
-	flake8 PIthon tests
+	flake8 PIconnect tests
 
 test: ## run tests quickly with the default Python
 	py.test
@@ -58,15 +58,15 @@ test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source PIthon -m pytest
+	coverage run --source PIconnect -m pytest
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
 docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/PIthon.rst
+	rm -f docs/PIconnect.rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ PIthon
+	sphinx-apidoc -o docs/ PIconnect
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	$(BROWSER) docs/_build/html/index.html
