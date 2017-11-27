@@ -20,8 +20,9 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 # THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from PIthon.AFSDK import AF
-from PIthon.PIData import PISeries
+from PIconnect.AFSDK import AF
+from PIconnect.PIData import PISeries, PISeriesContainer
+from PIconnect._operators import add_operators, operators
 
 
 class PIAFDatabase(object):
@@ -108,9 +109,18 @@ class PIAFElement(object):
         return {a.Name: PIAFAttribute(self, a) for a in self.element.Attributes}
 
 
-class PIAFAttribute(object):
+@add_operators(
+    operators=operators,
+    members=[
+        '_current_value',
+        'interpolated_values'
+    ],
+    newclassname='VirtualPIAFAttribute',
+    attributes=['element', 'attribute']
+)
+class PIAFAttribute(PISeriesContainer):
     """Container for attributes of PI AF elements in the database."""
-    version = '0.0.1'
+    version = '0.1.0'
 
     def __init__(self, element, attribute):
         self.element = element
@@ -148,7 +158,7 @@ class PIAFAttribute(object):
     @property
     def current_value(self):
         """Return the current value of the attribute."""
-        return self.attribute.GetValue().Value
+        return self._current_value()
 
     @property
     def last_update(self):
@@ -159,3 +169,23 @@ class PIAFAttribute(object):
     def units_of_measurement(self):
         """Return the units of measurement in which values for this element are reported."""
         return self.attribute.DefaultUOM
+
+    def _current_value(self):
+        return self.attribute.GetValue().Value
+
+    def _recorded_values(self, time_range, boundary_type, filter_expression):
+        include_filtered_values = False
+        return self.attribute.Data.RecordedValues(time_range,
+                                                  boundary_type,
+                                                  self.attribute.DefaultUOM,
+                                                  filter_expression,
+                                                  include_filtered_values)
+
+    def _interpolated_values(self, time_range, interval, filter_expression):
+        """Internal function to actually query the pi point"""
+        include_filtered_values = False
+        return self.attribute.Data.InterpolatedValues(time_range,
+                                                      interval,
+                                                      self.attribute.DefaultUOM,
+                                                      filter_expression,
+                                                      include_filtered_values)

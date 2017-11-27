@@ -1,4 +1,4 @@
-""" PIthon.test.test_PI
+""" PIconnect.test.test_PI
     Test communication with the PI System.
 """
 # Copyright 2017 Hugo van den Berg, Stijn de Jong
@@ -21,15 +21,13 @@
 # THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import datetime
-import unittest
-
 import pytz
 
-import PIthon as PI
-from PIthon.test.fakes import FakePIPoint
+import PIconnect as PI
+from PIconnect.test.fakes import VirtualTestCase
 
 
-class TestServer(unittest.TestCase):
+class TestServer(VirtualTestCase):
     """Test connecting to the server"""
 
     def test_connection(self):
@@ -39,8 +37,18 @@ class TestServer(unittest.TestCase):
         except Exception as e:
             self.fail("PI.PIServer() raised %s unexpectedly." % e.__class__.__name__)
 
+    def test_server_name(self):
+        """Test that the server reports the same name as which was connected to."""
+        server = PI.PIServer('PI_server')
+        self.assertEqual(server.server_name, 'PI_server')
 
-class TestSearchPIPoints(unittest.TestCase):
+    def test_repr(self):
+        """Test that the server representation matches the connected server."""
+        server = PI.PIServer('PI_server')
+        self.assertEqual(repr(server), 'PIServer(\\\\PI_server)')
+
+
+class TestSearchPIPoints(VirtualTestCase):
     """Test searching for PI Points on the default server."""
 
     def test_search_single_string(self):
@@ -59,35 +67,25 @@ class TestSearchPIPoints(unittest.TestCase):
             for point in points:
                 self.assertIsInstance(point, PI.PI.PIPoint)
 
+    def test_search_integer_raises_error(self):
+        """Tests searching for PI points using an integer raises a TypeError."""
+        with PI.PIServer() as server, self.assertRaises(TypeError):
+            server.search(1)
 
-class TestPIPoint(unittest.TestCase):
+
+class TestPIPoint(VirtualTestCase):
     """Test valid interface of PIPoint."""
 
-    def setUp(self):
-        self.tag = 'TEST_140_053_FQIS053_01_Meetwaarde'
-        self.values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        self.timestamp_numbers = [
-            1502654535.813,
-            1502671554.038,
-            1502695584.315,
-            1502704569.874,
-            1502709576.898,
-            1502713512.168,
-            1502718534.453,
-            1502722585.816,
-            1502731598.316,
-            1502732545.013
-        ]
-        self.timestamps = [datetime.datetime.fromtimestamp(x, tz=pytz.utc)
-                           for x in self.timestamp_numbers]
-        self.attributes = {
-            'engunits': 'm3/h',
-            'descriptor': 'Flow'
-        }
-        self.point = PI.PI.PIPoint(FakePIPoint(tag=self.tag,
-                                               values=self.values,
-                                               timestamps=self.timestamps,
-                                               attributes=self.attributes))
+    def test_repr(self):
+        """Test representation of the PI Point."""
+        self.assertEqual(repr(self.point),
+                         '%s(%s, %s; Current Value: %s %s)' % (
+                            'PIPoint',
+                            self.tag,
+                            self.attributes['descriptor'],
+                            self.values[-1],
+                            self.attributes['engunits']
+                            ))
 
     def test_name(self):
         """Test retrieving the name of the PI Point."""
@@ -115,22 +113,22 @@ class TestPIPoint(unittest.TestCase):
         """Test retrieving the attributes of the PI point as a dict."""
         self.assertEqual(self.point.raw_attributes, self.attributes)
 
-    def test_compressed_data_values(self):
-        """Test retrieving some compressed data from the server."""
-        data = self.point.compressed_data('01-07-2017', '02-07-2017')
+    def test_recorded_values_values(self):
+        """Test retrieving some recorded data from the server."""
+        data = self.point.recorded_values('01-07-2017', '02-07-2017')
         self.assertEqual(list(data.values), self.values)
 
-    def test_compressed_data_timestamps(self):
-        """Test retrieving some compressed data from the server."""
-        data = self.point.compressed_data('01-07-2017', '02-07-2017')
+    def test_recorded_values_timestamps(self):
+        """Test retrieving some recorded data from the server."""
+        data = self.point.recorded_values('01-07-2017', '02-07-2017')
         self.assertEqual(list(data.index), self.timestamps)
 
-    def test_sampled_data_values(self):
-        """Test retrieving some compressed data from the server."""
-        data = self.point.sampled_data('01-07-2017', '02-07-2017', '1h')
+    def test_interpolated_values_values(self):
+        """Test retrieving some interpolated data from the server."""
+        data = self.point.interpolated_values('01-07-2017', '02-07-2017', '1h')
         self.assertEqual(list(data.values), self.values)
 
-    def test_sampled_data_timestamps(self):
-        """Test retrieving some sampled data from the server."""
-        data = self.point.sampled_data('01-07-2017', '02-07-2017', '1h')
+    def test_interpolated_values_timestamps(self):
+        """Test retrieving some interpolated data from the server."""
+        data = self.point.interpolated_values('01-07-2017', '02-07-2017', '1h')
         self.assertEqual(list(data.index), self.timestamps)

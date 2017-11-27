@@ -44,6 +44,7 @@ cover/
 nosetests.xml
 coverage.xml
 *,cover
+.hypothesis/
 
 # Translations
 *.mo
@@ -57,3 +58,9 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Sublime configuration
+*Sublime*
+
+# pyenv python configuration file
+.python-version
