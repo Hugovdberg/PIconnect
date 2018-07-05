@@ -61,6 +61,10 @@ target/
 
 # Sublime configuration
 *Sublime*
+*sublime*
 
 # pyenv python configuration file
 .python-version
+
+# Visual studio configuration
+.vscode/

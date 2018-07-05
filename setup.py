@@ -10,37 +10,38 @@ from os import path
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
 
-here = path.abspath(path.dirname(__file__))
+HERE = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as readme_file:
-    readme = readme_file.read()
+with open(path.join(HERE, 'README.rst'), encoding='utf-8') as readme_file:
+    README = readme_file.read()
 
-with open(path.join(here, 'HISTORY.rst'), encoding='utf-8') as history_file:
-    history = history_file.read()
+with open(path.join(HERE, 'HISTORY.rst'), encoding='utf-8') as history_file:
+    HISTORY = history_file.read()
 
 
-requirements = [
+REQUIREMENTS = [
     'pythonnet',
+    'future'
     # 'Click>=6.0',
     # TODO: put package requirements here
 ]
 
-setup_requirements = [
+SETUP_REQUIREMENTS = [
     'pytest-runner',
     # TODO(Hugovdberg): put setup requirements (distutils extensions, etc.) here
 ]
 
-test_requirements = [
+TEST_REQUIREMENTS = [
     'pytest',
     # TODO: put package test requirements here
 ]
 
 setup(
     name='PIconnect',
-    version='0.5.1',
+    version='0.6.0',
     description="Python connector to OSIsoft PI SDK",
-    long_description=readme + '\n\n' + history,
+    long_description=README + '\n\n' + HISTORY,
 
     # Author details
     author='Hugo van den Berg',
@@ -51,7 +52,7 @@ setup(
     # simple. Or you can use find_packages().
     packages=find_packages(include=['PIconnect']),
     include_package_data=True,
-    install_requires=requirements,
+    install_requires=REQUIREMENTS,
     license="MIT license",
     zip_safe=False,
     classifiers=[
@@ -78,8 +79,8 @@ setup(
         # 'Programming Language :: Python :: 3.5',
     ],
     test_suite='tests',
-    tests_require=test_requirements,
-    setup_requires=setup_requirements,
+    tests_require=TEST_REQUIREMENTS,
+    setup_requires=SETUP_REQUIREMENTS,
 
     # What does your project relate to?
     keywords='OSIsoft PI ProcessInformation PIconnect',
