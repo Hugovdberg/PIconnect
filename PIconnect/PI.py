@@ -19,6 +19,16 @@
 # HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 # THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+from __future__ import (absolute_import, division,
+                        print_function, unicode_literals)
+from builtins import (bytes, dict, int, list, object, range, str,
+                      ascii, chr, hex, input, next, oct, open,
+                      pow, round, super,
+                      filter, map, zip)
+try:
+    from __builtin__ import str as builtin_str
+except ImportError:
+    from builtins import str as builtin_str
 
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer
@@ -60,11 +70,11 @@ class PIServer(object):
         """
         if isinstance(query, list):
             return [y for x in query for y in self.search(x, source)]
-        elif not isinstance(query, basestring):
-            raise TypeError('Argument query must be either a string or a list of strings,' +
-                            'got type ' + str(type(query)))
+        # elif not isinstance(query, str):
+        #     raise TypeError('Argument query must be either a string or a list of strings,' +
+        #                     'got type ' + str(type(query)))
         return [PIPoint(pi_point) for pi_point in
-                AF.PI.PIPoint.FindPIPoints(self.connection, query, source, None)]
+                AF.PI.PIPoint.FindPIPoints(self.connection, builtin_str(query), source, None)]
 
 
 @add_operators(
@@ -132,7 +142,8 @@ class PIPoint(PISeriesContainer):
         if not self.__attributes_loaded:
             self.pi_point.LoadAttributes([])
             self.__attributes_loaded = True
-        self.__raw_attributes = {att.Key: att.Value for att in self.pi_point.GetAttributes([])}
+        self.__raw_attributes = {
+            att.Key: att.Value for att in self.pi_point.GetAttributes([])}
 
     @property
     def name(self):
