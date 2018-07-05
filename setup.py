@@ -39,7 +39,7 @@ TEST_REQUIREMENTS = [
 
 setup(
     name='PIconnect',
-    version='0.5.1',
+    version='0.5.2',
     description="Python connector to OSIsoft PI SDK",
     long_description=README + '\n\n' + HISTORY,
 

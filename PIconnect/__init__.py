@@ -24,4 +24,4 @@ from PIconnect.AFSDK import AF
 from PIconnect.PI import PIServer
 from PIconnect.PIAF import PIAFDatabase
 
-__version__ = '0.5.1'
+__version__ = '0.5.2'
