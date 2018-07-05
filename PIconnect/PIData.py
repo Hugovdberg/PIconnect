@@ -1,4 +1,10 @@
 """Storage containers for PI data."""
+from __future__ import (absolute_import, division,
+                        print_function, unicode_literals)
+from builtins import (bytes, dict, int, list, object, range, str,
+                      ascii, chr, hex, input, next, oct, open,
+                      pow, round, super,
+                      filter, map, zip)
 import datetime
 
 from pandas import Series
@@ -50,7 +56,21 @@ class PISeriesContainer(object):
     }
 
     def __init__(self):
+        self.name = None
+        self.units_of_measurement = None
         self.__recorded_values = None
+
+    def _recorded_values(self, *args, **kwargs):
+        """Abstract implementation for recorded values
+
+        The internals for retrieving recorded values from PI and PI-AF are
+        different and should therefore be implemented by the respective data
+        containers.
+        """
+        pass
+
+    def _interpolated_values(self, *args, **kwargs):
+        pass
 
     def recorded_values(self,
                         start_time,
@@ -79,9 +99,8 @@ class PISeriesContainer(object):
            values are always left out entirely.
         """
         time_range = AF.Time.AFTimeRange(start_time, end_time)
-        if boundary_type.lower() in self.__boundary_types:
-            boundary_type = self.__boundary_types[boundary_type.lower()]
-        else:
+        boundary_type = self.__boundary_types.get(boundary_type.lower())
+        if boundary_type is None:
             raise ValueError(
                 'Argument boundary_type must be one of ' + ', '.join(
                     '"%s"' % x for x in sorted(self.__boundary_types.keys())
