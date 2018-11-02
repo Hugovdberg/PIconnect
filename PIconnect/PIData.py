@@ -87,12 +87,6 @@ class PISeriesContainer(object):
     def _filtered_summaries(self, *args, **kwargs):
         return NotImplementedError('_filtered_summaries must be implemented by a concrete subclass')
 
-    def _summary(self, *args, **kwargs):
-        pass
-
-    def _filtered_summary(self, *args, **kwargs):
-        pass
-
     def recorded_values(self,
                         start_time,
                         end_time,
