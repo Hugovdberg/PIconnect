@@ -11,6 +11,7 @@ from pandas import Series
 import pytz
 
 from PIconnect.AFSDK import AF
+from PIconnect.PIConsts import SummaryType
 
 
 class PISeries(Series):
@@ -72,6 +73,12 @@ class PISeriesContainer(object):
     def _interpolated_values(self, *args, **kwargs):
         pass
 
+    def _summary(self, *args, **kwargs):
+        pass
+
+    def _filtered_summary(self, *args, **kwargs):
+        pass
+
     def recorded_values(self,
                         start_time,
                         end_time,
@@ -111,7 +118,8 @@ class PISeriesContainer(object):
                                          filter_expression)
         timestamps, values = [], []
         for value in pivalues:
-            timestamps.append(PISeries.timestamp_to_index(value.Timestamp.UtcTime))
+            timestamps.append(PISeries.timestamp_to_index(
+                value.Timestamp.UtcTime))
             values.append(value.Value)
         return PISeries(tag=self.name,
                         timestamp=timestamps,
@@ -138,18 +146,50 @@ class PISeriesContainer(object):
         """
         time_range = AF.Time.AFTimeRange(start_time, end_time)
         interval = AF.Time.AFTimeSpan.Parse(interval)
-        filter_expression = self._normalize_filter_expression(filter_expression)
+        filter_expression = self._normalize_filter_expression(
+            filter_expression)
         pivalues = self._interpolated_values(time_range,
                                              interval,
                                              filter_expression)
         timestamps, values = [], []
         for value in pivalues:
-            timestamps.append(PISeries.timestamp_to_index(value.Timestamp.UtcTime))
+            timestamps.append(PISeries.timestamp_to_index(
+                value.Timestamp.UtcTime))
             values.append(value.Value)
         return PISeries(tag=self.name,
                         timestamp=timestamps,
                         value=values,
                         uom=self.units_of_measurement)
+
+    def summary(self,
+                start_time,
+                end_time,
+                summary_type,
+                calculation_basis,
+                time_type):
+        """Return one or more summary values over a single time range.
+        """
+        time_range = AF.Time.AFTimeRange(start_time, end_time)
+        summary_type = int(summary_type)
+        calculation_basis = int(calculation_basis)
+        time_type = int(time_type)
+        pivalues = self._summary(time_range,
+                                 summary_type,
+                                 calculation_basis,
+                                 time_type)
+        timestamps, values, keys = zip(*[
+            (
+                PISeries.timestamp_to_index(value.Timestamp.UtcTime),
+                value.Value,
+                SummaryType.get_item(value.Key)
+            )
+            for value in pivalues
+        ])
+        return PISeries(tag=self.name,
+                        timestamp=timestamps,
+                        value=values,
+                        SummaryType=keys
+                        )
 
     def _normalize_filter_expression(self, filter_expression):
         return filter_expression
