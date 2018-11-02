@@ -11,8 +11,12 @@ import pytz
 from pandas import DataFrame, Series
 
 from PIconnect.AFSDK import AF
+<< << << < HEAD
 from PIconnect.PIConsts import (CalculationBasis, ExpressionSampleType,
                                 SummaryType, TimestampCalculation)
+== == == =
+from PIconnect.PIConsts import SummaryType
+>>>>>> > Add summary method to PISeriesContainer class
 
 
 class PISeries(Series):
@@ -82,6 +86,12 @@ class PISeriesContainer(object):
 
     def _filtered_summaries(self, *args, **kwargs):
         return NotImplementedError('_filtered_summaries must be implemented by a concrete subclass')
+
+    def _summary(self, *args, **kwargs):
+        pass
+
+    def _filtered_summary(self, *args, **kwargs):
+        pass
 
     def recorded_values(self,
                         start_time,
