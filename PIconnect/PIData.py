@@ -1,17 +1,18 @@
 """Storage containers for PI data."""
-from __future__ import (absolute_import, division,
-                        print_function, unicode_literals)
-from builtins import (bytes, dict, int, list, object, range, str,
-                      ascii, chr, hex, input, next, oct, open,
-                      pow, round, super,
-                      filter, map, zip)
-import datetime
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
-from pandas import Series
+import datetime
+from builtins import (ascii, bytes, chr, dict, filter, hex, input, int, list,
+                      map, next, object, oct, open, pow, range, round, str,
+                      super, zip)
+
 import pytz
+from pandas import DataFrame, Series
 
 from PIconnect.AFSDK import AF
-from PIconnect.PIConsts import SummaryType
+from PIconnect.PIConsts import (CalculationBasis, SummaryType,
+                                TimestampCalculation)
 
 
 class PISeries(Series):
@@ -167,32 +168,61 @@ class PISeriesContainer(object):
     def summary(self,
                 start_time,
                 end_time,
-                summary_type,
-                calculation_basis,
-                time_type):
+                summary_types,
+                calculation_basis=CalculationBasis.TIME_WEIGHTED,
+                time_type=TimestampCalculation.AUTO):
         """Return one or more summary values over a single time range.
         """
         time_range = AF.Time.AFTimeRange(start_time, end_time)
-        summary_type = int(summary_type)
+        summary_types = int(summary_types)
         calculation_basis = int(calculation_basis)
         time_type = int(time_type)
         pivalues = self._summary(time_range,
-                                 summary_type,
+                                 summary_types,
                                  calculation_basis,
                                  time_type)
-        timestamps, values, keys = zip(*[
-            (
-                PISeries.timestamp_to_index(value.Timestamp.UtcTime),
-                value.Value,
-                SummaryType.get_item(value.Key)
-            )
-            for value in pivalues
-        ])
-        return PISeries(tag=self.name,
-                        timestamp=timestamps,
-                        value=values,
-                        SummaryType=keys
-                        )
+        df = DataFrame()
+        for summary in pivalues:
+            key = SummaryType(summary.Key).name
+            value = summary.Value
+            timestamp = PISeries.timestamp_to_index(value.Timestamp.UtcTime)
+            value = value.Value
+            df = df.join(DataFrame(data={key: value}, index=[timestamp]),
+                         how='outer')
+        return df
+
+    def summaries(self,
+                  start_time,
+                  end_time,
+                  interval,
+                  summary_types,
+                  calculation_basis=CalculationBasis.TIME_WEIGHTED,
+                  time_type=TimestampCalculation.AUTO):
+        """Return one or more summary values over a single time range.
+        """
+        time_range = AF.Time.AFTimeRange(start_time, end_time)
+        interval = AF.Time.AFTimeSpan.Parse(interval)
+        summary_types = int(summary_types)
+        calculation_basis = int(calculation_basis)
+        time_type = int(time_type)
+        pivalues = self._summaries(time_range,
+                                   interval,
+                                   summary_types,
+                                   calculation_basis,
+                                   time_type)
+        df = DataFrame()
+        for summary in pivalues:
+            key = SummaryType(summary.Key).name
+            timestamps, values = zip(*[
+                (
+                    PISeries.timestamp_to_index(value.Timestamp.UtcTime),
+                    value.Value
+                )
+                for value in summary.Value
+            ])
+            df = df.join(DataFrame(data={key: values}, index=timestamps),
+                         how='outer')
+        return df
 
     def _normalize_filter_expression(self, filter_expression):
         return filter_expression
