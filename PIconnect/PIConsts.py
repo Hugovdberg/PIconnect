@@ -1,36 +1,9 @@
 from enum import IntFlag, IntEnum
+from PIconnect.AFSDK import AF
 
 
-class _IntFlag(IntFlag):
-    @classmethod
-    def has_value(cls, value):
-        return any(value == item.value for item in cls)
-
-    @classmethod
-    def get_item(cls, value, default=None):
-        for item in cls:
-            if value == item.value:
-                return item
-        else:
-            return default
-
-
-class _IntEnum(IntEnum):
-    @classmethod
-    def has_value(cls, value):
-        return any(value == item.value for item in cls)
-
-    @classmethod
-    def get_item(cls, value, default=None):
-        for item in cls:
-            if value == item.value:
-                return item
-        else:
-            return default
-
-
-class SummaryType(_IntFlag):
-    NONE = 0
+class SummaryType(IntFlag):
+    NONE = AF.Data.AFSummaryTpes.None
     TOTAL = 1
     AVERAGE = 2
     MINIMUM = 4
@@ -45,7 +18,7 @@ class SummaryType(_IntFlag):
     ALL_FOR_NON_NUMERIC = 8320
 
 
-class CalculationBasis(_IntEnum):
+class CalculationBasis(IntEnum):
     TIME_WEIGHTED = 0
     EVENT_WEIGHTED = 1
     TIME_WEIGHTED_CONTINUOUS = 2
@@ -55,7 +28,7 @@ class CalculationBasis(_IntEnum):
     EVENT_WEIGHTED_INCLUDE_BOTH_ENDS = 6
 
 
-class TimestampCalculation(_IntEnum):
+class TimestampCalculation(IntEnum):
     AUTO = 0
     EARLIEST_TIME = 1
     MOST_RECENT_TIME = 2
