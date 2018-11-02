@@ -3,7 +3,7 @@ from PIconnect.AFSDK import AF
 
 
 class SummaryType(IntFlag):
-    NONE = AF.Data.AFSummaryTpes.None
+    NONE = 0
     TOTAL = 1
     AVERAGE = 2
     MINIMUM = 4
