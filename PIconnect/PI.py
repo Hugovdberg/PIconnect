@@ -168,5 +168,30 @@ class PIPoint(PISeriesContainer):
                                                 filter_expression,
                                                 include_filtered_values)
 
+    def _summary(self, time_range, summary_types, calculation_basis, time_type):
+        return self.pi_point.Summary(time_range,
+                                     summary_types,
+                                     calculation_basis,
+                                     time_type)
+
+    def _summaries(self, time_range, interval, summary_types, calculation_basis, time_type):
+        return self.pi_point.Summaries(time_range,
+                                       interval,
+                                       summary_types,
+                                       calculation_basis,
+                                       time_type)
+
+    def _filtered_summaries(self, time_range, interval, filter_expression,
+                            summary_types, calculation_basis, filter_evaluation,
+                            filter_interval, time_type):
+        return self.pi_point.FilteredSummaries(time_range,
+                                               interval,
+                                               filter_expression,
+                                               summary_types,
+                                               calculation_basis,
+                                               filter_evaluation,
+                                               filter_interval,
+                                               time_type)
+
     def _normalize_filter_expression(self, filter_expression):
         return filter_expression.replace('%tag%', self.tag)
