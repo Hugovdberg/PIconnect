@@ -11,19 +11,8 @@ import pytz
 from pandas import DataFrame, Series
 
 from PIconnect.AFSDK import AF
-<< << << < HEAD
-<< << << < HEAD
 from PIconnect.PIConsts import (CalculationBasis, ExpressionSampleType,
                                 SummaryType, TimestampCalculation)
-== == == =
-from PIconnect.PIConsts import SummaryType
->>>>>> > Add summary method to PISeriesContainer class
-== == == =
-from PIconnect.PIConsts import (CalculationBasis, SummaryType,
-                                TimestampCalculation)
->>>>>> > Sorted imports
-renamed summary_type to summary_types
-added summaries interface
 
 
 class PISeries(Series):
