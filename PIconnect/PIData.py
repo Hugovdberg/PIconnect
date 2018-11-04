@@ -11,8 +11,8 @@ import pytz
 from pandas import DataFrame, Series
 
 from PIconnect.AFSDK import AF
-from PIconnect.PIConsts import (CalculationBasis, SummaryType,
-                                TimestampCalculation)
+from PIconnect.PIConsts import (CalculationBasis, ExpressionSampleType,
+                                SummaryType, TimestampCalculation)
 
 
 class PISeries(Series):
@@ -198,7 +198,7 @@ class PISeriesContainer(object):
                   summary_types,
                   calculation_basis=CalculationBasis.TIME_WEIGHTED,
                   time_type=TimestampCalculation.AUTO):
-        """Return one or more summary values over a single time range.
+        """Return one or more summary values for each interval within a time range.
         """
         time_range = AF.Time.AFTimeRange(start_time, end_time)
         interval = AF.Time.AFTimeSpan.Parse(interval)
@@ -210,6 +210,45 @@ class PISeriesContainer(object):
                                    summary_types,
                                    calculation_basis,
                                    time_type)
+        df = DataFrame()
+        for summary in pivalues:
+            key = SummaryType(summary.Key).name
+            timestamps, values = zip(*[
+                (
+                    PISeries.timestamp_to_index(value.Timestamp.UtcTime),
+                    value.Value
+                )
+                for value in summary.Value
+            ])
+            df = df.join(DataFrame(data={key: values}, index=timestamps),
+                         how='outer')
+        return df
+
+    def filtered_summaries(self,
+                           start_time,
+                           end_time,
+                           interval,
+                           filter_expression,
+                           summary_types,
+                           calculation_basis=CalculationBasis.TIME_WEIGHTED,
+                           filter_evaluation=ExpressionSampleType.EXPRESSION_RECORDED_VALUES,
+                           filter_interval=None,
+                           time_type=TimestampCalculation.AUTO):
+        """Return one or more summary values for each interval within a time range.
+        """
+        time_range = AF.Time.AFTimeRange(start_time, end_time)
+        interval = AF.Time.AFTimeSpan.Parse(interval)
+        filter_expression = self._normalize_filter_expression(
+            filter_expression)
+        filter_interval = AF.Time.AFTimeSpan.Parse(filter_interval)
+        pivalues = self._filtered_summaries(time_range,
+                                            interval,
+                                            filter_expression,
+                                            summary_types,
+                                            calculation_basis,
+                                            filter_evaluation,
+                                            filter_interval,
+                                            time_type)
         df = DataFrame()
         for summary in pivalues:
             key = SummaryType(summary.Key).name

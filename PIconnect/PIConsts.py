@@ -32,3 +32,8 @@ class TimestampCalculation(IntEnum):
     AUTO = 0
     EARLIEST_TIME = 1
     MOST_RECENT_TIME = 2
+
+
+class ExpressionSampleType(IntEnum):
+    EXPRESSION_RECORDED_VALUES = 0
+    INTERVAL = 1
