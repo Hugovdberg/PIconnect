@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 pandas = "*"
 wrapt = "*"
+future = "*"
 
 [dev-packages]
 bumpversion = "*"
