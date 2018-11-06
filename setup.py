@@ -20,7 +20,6 @@ with open(path.join(HERE, 'README.rst'), encoding='utf-8') as readme_file:
 with open(path.join(HERE, 'HISTORY.rst'), encoding='utf-8') as history_file:
     HISTORY = history_file.read()
 
-
 REQUIREMENTS = [
     'future',
     'pandas',
