@@ -22,7 +22,9 @@ with open(path.join(HERE, 'HISTORY.rst'), encoding='utf-8') as history_file:
 
 
 REQUIREMENTS = [
-    'future'
+    'future',
+    'pandas',
+    'wrapt'
 ]
 if os.name == 'nt':
     REQUIREMENTS += [
