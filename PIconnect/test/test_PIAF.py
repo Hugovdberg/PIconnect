@@ -18,7 +18,8 @@ class TestAFDatabase(VirtualTestCase):
         try:
             PI.PIAFDatabase()
         except Exception as e:
-            self.fail("PI.PIAFDatabase() raised %s unexpectedly." % e.__class__.__name__)
+            self.fail("PI.PIAFDatabase() raised %s unexpectedly." %
+                      e.__class__.__name__)
 
     def test_server_name(self):
         """Test that the server reports the same name as which was connected to."""
@@ -28,7 +29,7 @@ class TestAFDatabase(VirtualTestCase):
         self.assertEqual(server.server_name,
                          AFserver)
         self.assertEqual(server.database_name,
-                         'BasisStructuur')
+                         'TestDatabase')
         self.assertEqual(repr(server),
                          'PIAFDatabase(\\\\{s}\\{d})'.format(s=AFserver, d=database))
 

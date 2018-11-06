@@ -36,6 +36,7 @@ from PIconnect._operators import add_operators, operators
 
 class FakeAFTime(object):
     """Fake AFTime to mask away SDK complexity."""
+
     def __init__(self, timestamp):
         self.UtcTime = lambda x: None
         self.UtcTime.Year = timestamp.year
@@ -49,6 +50,7 @@ class FakeAFTime(object):
 
 class FakeKeyValue(object):
     """Container for fake Key:Value pairs"""
+
     def __init__(self, key, value):
         self.Key = key
         self.Value = value
@@ -56,6 +58,7 @@ class FakeKeyValue(object):
 
 class FakeAFValue(object):
     """Fake AFValue to mask away SDK complexity."""
+
     def __init__(self, value, timestamp):
         self.Value = value
         self.Timestamp = FakeAFTime(timestamp)
@@ -66,7 +69,7 @@ class FakePIPoint_(object):
         self.Name = tag
         self.values = [FakeAFValue(value, timestamp)
                        for value, timestamp in zip(values, timestamps)]
-        self.attributes = [FakeKeyValue(*att) for att in attributes.iteritems()]
+        self.attributes = [FakeKeyValue(*att) for att in attributes.items()]
 
 
 @add_operators(
@@ -80,6 +83,7 @@ class FakePIPoint_(object):
 )
 class FakePIPoint(object):
     """Fake PI Point to mask away SDK complexity."""
+
     def __init__(self, pi_point):
         self.pi_point = pi_point
         self.call_stack = ['%s created' % self.__class__.__name__]
