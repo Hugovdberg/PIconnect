@@ -9,7 +9,24 @@ class AF:
             Interpolated = 2
 
     class PI:
+        class PIServer:
+            def __init__(self, name):
+                self.Name = name
 
-        @staticmethod
-        def PIServers():
-            return [{'Name': 'Testing'}]
+        class PIServers:
+            def __init__(self):
+                self.DefaultPIServer = AF.PI.PIServer('Testing')
+
+            def __iter__(self):
+                return (x for x in [self.DefaultPIServer])
+
+    class PISystem:
+        def __init__(self, name):
+            self.Name = name
+
+    class PISystems:
+        def __init__(self):
+            self.DefaultPISystem = AF.PISystem('TestingAF')
+
+        def __iter__(self):
+            return (x for x in [self.DefaultPISystem])
