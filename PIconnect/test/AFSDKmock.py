@@ -7,4 +7,9 @@ class AF:
             Inside = 0
             Outside = 1
             Interpolated = 2
-    pass
+
+    class PI:
+
+        @staticmethod
+        def PIServers():
+            return [{'Name': 'Testing'}]
