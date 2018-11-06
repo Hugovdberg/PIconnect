@@ -1,5 +1,8 @@
-from enum import IntFlag, IntEnum
-from PIconnect.AFSDK import AF
+from enum import IntEnum
+try:
+    from enum import IntFlag
+except ImportError:
+    from enum import IntEnum as IntFlag
 
 
 class SummaryType(IntFlag):

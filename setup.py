@@ -32,12 +32,10 @@ if os.name == 'nt':
 
 SETUP_REQUIREMENTS = [
     'pytest-runner',
-    # TODO(Hugovdberg): put setup requirements (distutils extensions, etc.) here
 ]
 
 TEST_REQUIREMENTS = [
     'pytest',
-    # TODO: put package test requirements here
 ]
 
 setup(
