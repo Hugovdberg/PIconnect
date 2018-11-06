@@ -5,6 +5,7 @@ https://github.com/pypa/sampleproject
 """
 
 # To use a consistent encoding
+import os
 from codecs import open
 from os import path
 # Always prefer setuptools over distutils
@@ -21,11 +22,14 @@ with open(path.join(HERE, 'HISTORY.rst'), encoding='utf-8') as history_file:
 
 
 REQUIREMENTS = [
-    'pythonnet',
-    'future'
-    # 'Click>=6.0',
-    # TODO: put package requirements here
+    'future',
+    'pandas',
+    'wrapt'
 ]
+if os.name == 'nt':
+    REQUIREMENTS += [
+        'pythonnet'
+    ]
 
 SETUP_REQUIREMENTS = [
     'pytest-runner',
