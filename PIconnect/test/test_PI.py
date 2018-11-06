@@ -46,13 +46,13 @@ class TestServer(VirtualTestCase):
 
     def test_server_name(self):
         """Test that the server reports the same name as which was connected to."""
-        server = PI.PIServer('PI_server')
-        self.assertEqual(server.server_name, 'PI_server')
+        server = PI.PIServer('Testing')
+        self.assertEqual(server.server_name, 'Testing')
 
     def test_repr(self):
         """Test that the server representation matches the connected server."""
-        server = PI.PIServer('PI_server')
-        self.assertEqual(repr(server), 'PIServer(\\\\PI_server)')
+        server = PI.PIServer('Testing')
+        self.assertEqual(repr(server), 'PIServer(\\\\Testing)')
 
 
 class TestSearchPIPoints(VirtualTestCase):

@@ -15,14 +15,19 @@ implemented as context managers, to allow opening a connection using a with stat
 
 .. image:: https://img.shields.io/travis/Hugovdberg/PIconnect.svg
         :target: https://travis-ci.org/Hugovdberg/PIconnect
+        :alt: Continuous Integration status
 
-.. image:: https://readthedocs.org/projects/pithon/badge/?version=latest
-        :target: https://pithon.readthedocs.io/en/latest/?badge=latest
+.. image:: https://readthedocs.org/projects/piconnect/badge/?version=latest
+        :target: https://piconnect.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
 .. image:: https://pyup.io/repos/github/Hugovdberg/PIconnect/shield.svg
      :target: https://pyup.io/repos/github/Hugovdberg/PIconnect/
-     :alt: Updates
+     :alt: Security Updates
+
+.. image:: https://api.codacy.com/project/badge/Grade/568734c85e07467c99e0e791d8eb17b6
+    :target: https://www.codacy.com/app/Hugovdberg/PIconnect?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Hugovdberg/PIconnect&amp;utm_campaign=Badge_Grade
+    :alt: Automated code review
 
 
 Python connector to OSIsoft PI SDK
