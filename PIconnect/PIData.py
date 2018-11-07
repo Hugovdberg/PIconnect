@@ -70,22 +70,22 @@ class PISeriesContainer(object):
         different and should therefore be implemented by the respective data
         containers.
         """
-        return NotImplementedError('_recorded_values must be implemented by a concrete subclass')
+        pass
 
     def _interpolated_values(self, time_range, interval, filter_expression):
-        return NotImplementedError('_interpolated_values must be implemented by a concrete subclass')
+        pass
 
     def _summary(self, time_range, summary_types, calculation_basis, time_type):
-        return NotImplementedError('_summary must be implemented by a concrete subclass')
+        pass
 
     def _summaries(self, time_range, interval, summary_types, calculation_basis,
                    time_type):
-        return NotImplementedError('_summaries must be implemented by a concrete subclass')
+        pass
 
     def _filtered_summaries(self, time_range, interval, filter_expression,
                             summary_types, calculation_basis, filter_evaluation,
                             filter_interval, time_type):
-        return NotImplementedError('_filtered_summaries must be implemented by a concrete subclass')
+        pass
 
     def _current_value(self):
         pass
