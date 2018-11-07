@@ -110,11 +110,6 @@ class PIPoint(PISeriesContainer):
                                                       self.units_of_measurement)
 
     @property
-    def current_value(self):
-        """Return the last recorded value for this PI Point."""
-        return self._current_value()
-
-    @property
     def last_update(self):
         """Return the time at which the last value for this PI Point was recorded."""
         return PISeries.timestamp_to_index(self.pi_point.CurrentValue().Timestamp.UtcTime)

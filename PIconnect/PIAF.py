@@ -165,11 +165,6 @@ class PIAFAttribute(PISeriesContainer):
         return self.attribute.Description
 
     @property
-    def current_value(self):
-        """Return the current value of the attribute."""
-        return self._current_value()
-
-    @property
     def last_update(self):
         """Return the time at which the current_value was last updated."""
         return PISeries.timestamp_to_index(self.attribute.GetValue().Timestamp.UtcTime)

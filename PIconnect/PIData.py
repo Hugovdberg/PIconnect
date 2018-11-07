@@ -89,6 +89,14 @@ class PISeriesContainer(object):
                             filter_interval, time_type):
         return NotImplementedError('_filtered_summaries must be implemented by a concrete subclass')
 
+    def _current_value(self):
+        pass
+
+    @property
+    def current_value(self):
+        """Return the current value of the attribute."""
+        return self._current_value()
+
     def recorded_values(self,
                         start_time,
                         end_time,
