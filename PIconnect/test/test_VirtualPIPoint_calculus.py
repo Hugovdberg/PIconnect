@@ -30,6 +30,7 @@ from builtins import (bytes, dict, int, list, object, range, str,
 import PIconnect as PI
 from PIconnect.test.fakes import VirtualTestCase
 
+
 class TestVirtualAddition(VirtualTestCase):
     """Test VirtualPIPoint addition."""
 
@@ -46,7 +47,8 @@ class TestVirtualAddition(VirtualTestCase):
     def test_add_pipoints_current_value(self):
         """Test adding two PIPoints via the current value."""
         total = self.point + self.point
-        self.assertAlmostEqual(total.current_value, self.values[-1] + self.values[-1])
+        self.assertAlmostEqual(total.current_value,
+                               self.values[-1] + self.values[-1])
 
 
 class TestVirtualMultiplication(VirtualTestCase):
@@ -65,7 +67,8 @@ class TestVirtualMultiplication(VirtualTestCase):
     def test_multiply_pipoints_current_value(self):
         """Test adding two PIPoints via the current value."""
         total = self.point * self.point
-        self.assertAlmostEqual(total.current_value, self.values[-1] * self.values[-1])
+        self.assertAlmostEqual(total.current_value,
+                               self.values[-1] * self.values[-1])
 
     def test_multiply_integer_two_current_value(self):
         """Test adding an integer to a PIPoint via the current value."""
