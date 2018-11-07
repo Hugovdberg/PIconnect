@@ -1,4 +1,5 @@
 """helpers to define numeric operators in batch on classes"""
+# pragma pylint: disable=unused-import
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 from builtins import (bytes, dict, int, list, object, range, str,
@@ -6,9 +7,10 @@ from builtins import (bytes, dict, int, list, object, range, str,
                       pow, round, super,
                       filter, map, zip)
 try:
-    from __builtin__ import str as builtin_str
+    from __builtin__ import str as BuiltinStr
 except ImportError:
-    from builtins import str as builtin_str
+    BuiltinStr = str
+# pragma pylint: enable=unused-import
 
 from collections import namedtuple
 
@@ -78,9 +80,9 @@ def add_operators(operators, members, newclassname, attributes):
                                            base=getattr(self, member),
                                            operator=operator,
                                            operand=other) for member in members}
-            newclass = type(builtin_str(newclassname), (cls,), newmembers)
+            newclass = type(BuiltinStr(newclassname), (cls,), newmembers)
             return newclass(*[getattr(self, attr) for attr in attributes])
-        patch_members.__name__ = builtin_str(method)
+        patch_members.__name__ = BuiltinStr(method)
         patch_members.__doc__ = docstring
         return patch_members
 

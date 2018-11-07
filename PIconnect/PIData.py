@@ -1,11 +1,14 @@
 """Storage containers for PI data."""
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+# pragma pylint: disable=unused-import
+from __future__ import (absolute_import, division,
+                        print_function, unicode_literals)
+from builtins import (bytes, dict, int, list, object, range, str,
+                      ascii, chr, hex, input, next, oct, open,
+                      pow, round, super,
+                      filter, map, zip)
+# pragma pylint: enable=unused-import
 
 import datetime
-from builtins import (ascii, bytes, chr, dict, filter, hex, input, int, list,
-                      map, next, object, oct, open, pow, range, round, str,
-                      super, zip)
 
 import pytz
 from pandas import DataFrame, Series

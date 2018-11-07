@@ -19,12 +19,14 @@
 # HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 # THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# pragma pylint: disable=unused-import
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 from builtins import (bytes, dict, int, list, object, range, str,
                       ascii, chr, hex, input, next, oct, open,
                       pow, round, super,
                       filter, map, zip)
+# pragma pylint: enable=unused-import
 
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer

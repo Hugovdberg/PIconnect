@@ -19,6 +19,7 @@
 # HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 # THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# pragma pylint: disable=unused-import
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 from builtins import (bytes, dict, int, list, object, range, str,
@@ -26,9 +27,10 @@ from builtins import (bytes, dict, int, list, object, range, str,
                       pow, round, super,
                       filter, map, zip)
 try:
-    from __builtin__ import str as builtin_str
+    from __builtin__ import str as BuiltinStr
 except ImportError:
-    from builtins import str as builtin_str
+    BuiltinStr = str
+# pragma pylint: enable=unused-import
 
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer
@@ -74,7 +76,7 @@ class PIServer(object):
         #     raise TypeError('Argument query must be either a string or a list of strings,' +
         #                     'got type ' + str(type(query)))
         return [PIPoint(pi_point) for pi_point in
-                AF.PI.PIPoint.FindPIPoints(self.connection, builtin_str(query), source, None)]
+                AF.PI.PIPoint.FindPIPoints(self.connection, BuiltinStr(query), source, None)]
 
 
 @add_operators(
