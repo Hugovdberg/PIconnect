@@ -62,7 +62,7 @@ class PISeriesContainer(object):
         self.units_of_measurement = None
         self.__recorded_values = None
 
-    def _recorded_values(self, *args, **kwargs):
+    def _recorded_values(self, time_range, boundary_type, filter_expression):
         """Abstract implementation for recorded values
 
         The internals for retrieving recorded values from PI and PI-AF are
@@ -71,16 +71,19 @@ class PISeriesContainer(object):
         """
         return NotImplementedError('_recorded_values must be implemented by a concrete subclass')
 
-    def _interpolated_values(self, *args, **kwargs):
+    def _interpolated_values(self, time_range, interval, filter_expression):
         return NotImplementedError('_interpolated_values must be implemented by a concrete subclass')
 
-    def _summary(self, *args, **kwargs):
+    def _summary(self, time_range, summary_types, calculation_basis, time_type):
         return NotImplementedError('_summary must be implemented by a concrete subclass')
 
-    def _summaries(self, *args, **kwargs):
+    def _summaries(self, time_range, interval, summary_types, calculation_basis,
+                   time_type):
         return NotImplementedError('_summaries must be implemented by a concrete subclass')
 
-    def _filtered_summaries(self, *args, **kwargs):
+    def _filtered_summaries(self, time_range, interval, filter_expression,
+                            summary_types, calculation_basis, filter_evaluation,
+                            filter_interval, time_type):
         return NotImplementedError('_filtered_summaries must be implemented by a concrete subclass')
 
     def recorded_values(self,
