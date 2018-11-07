@@ -97,6 +97,7 @@ class PIPoint(PISeriesContainer):
     version = '0.3.0'
 
     def __init__(self, pi_point):
+        super().__init__()
         self.pi_point = pi_point
         self.tag = pi_point.Name
         self.__attributes_loaded = False

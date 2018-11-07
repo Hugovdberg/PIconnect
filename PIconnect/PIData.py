@@ -61,9 +61,7 @@ class PISeriesContainer(object):
     }
 
     def __init__(self):
-        self.name = None
-        self.units_of_measurement = None
-        self.__recorded_values = None
+        pass
 
     def _recorded_values(self, time_range, boundary_type, filter_expression):
         """Abstract implementation for recorded values

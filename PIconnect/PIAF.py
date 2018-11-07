@@ -132,6 +132,7 @@ class PIAFAttribute(PISeriesContainer):
     version = '0.1.0'
 
     def __init__(self, element, attribute):
+        super().__init__()
         self.element = element
         self.attribute = attribute
 
