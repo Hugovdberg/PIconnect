@@ -34,7 +34,7 @@ Python connector to OSIsoft PI SDK
 
 
 * Free software: MIT license
-* Documentation: https://pithon.readthedocs.io.
+* Documentation: https://piconnect.readthedocs.io.
 
 
 Features
