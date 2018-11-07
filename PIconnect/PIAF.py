@@ -30,7 +30,7 @@ from builtins import (bytes, dict, int, list, object, range, str,
 
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer
-from PIconnect._operators import add_operators, operators
+from PIconnect._operators import add_operators, OPERATORS
 
 
 class PIAFDatabase(object):
@@ -118,7 +118,7 @@ class PIAFElement(object):
 
 
 @add_operators(
-    operators=operators,
+    operators=OPERATORS,
     members=[
         '_current_value',
         'interpolated_values'

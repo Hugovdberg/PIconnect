@@ -34,7 +34,7 @@ except ImportError:
 
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer
-from PIconnect._operators import add_operators, operators
+from PIconnect._operators import add_operators, OPERATORS
 
 
 class PIServer(object):
@@ -80,7 +80,7 @@ class PIServer(object):
 
 
 @add_operators(
-    operators=operators,
+    operators=OPERATORS,
     members=[
         '_current_value',
         'interpolated_values'

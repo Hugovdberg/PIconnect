@@ -33,7 +33,7 @@ import unittest
 import pytz
 
 import PIconnect as PI
-from PIconnect._operators import add_operators, operators
+from PIconnect._operators import add_operators, OPERATORS
 
 
 class FakeAFTime(object):
@@ -75,7 +75,7 @@ class FakePIPoint_(object):
 
 
 @add_operators(
-    operators=operators,
+    operators=OPERATORS,
     members=[
         '_current_value',
         'sampled_data'

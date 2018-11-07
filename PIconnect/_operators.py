@@ -98,7 +98,7 @@ def add_operators(operators, members, newclassname, attributes):
 
 
 Operator = namedtuple('Operator', ['method', 'operator', 'docstring'])
-operators = [
+OPERATORS = [
     Operator('__add__',
              lambda x, y: x + y,
              """Add value(s) to PIPoint"""),
