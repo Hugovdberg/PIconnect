@@ -20,6 +20,7 @@ pytest-runner = "*"
 Sphinx = "*"
 PyYAML = "*"
 nose = "*"
+"doc8" = "*"
 
 [requires]
 python_version = "3.7"
