@@ -2,7 +2,7 @@ from enum import IntEnum
 try:
     from enum import IntFlag
 except ImportError:
-    from enum import IntEnum as IntFlag
+    IntFlag = IntEnum
 
 
 class SummaryType(IntFlag):
