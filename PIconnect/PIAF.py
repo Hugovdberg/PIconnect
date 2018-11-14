@@ -20,14 +20,19 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-# pragma pylint: disable=unused-import
-from __future__ import (absolute_import, division,
-                        print_function, unicode_literals)
-from builtins import (bytes, dict, int, list, object, range, str,
-                      ascii, chr, hex, input, next, oct, open,
-                      pow, round, super,
-                      filter, map, zip)
-# pragma pylint: enable=unused-import
+
+# pragma pylint: disable=unused-import, redefined-builtin
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import (ascii, bytes, chr, dict, filter, hex, input, int, list,
+                      map, next, object, oct, open, pow, range, round, str,
+                      super, zip)
+try:
+    from __builtin__ import str as BuiltinStr
+except ImportError:
+    BuiltinStr = str
+# pragma pylint: enable=unused-import, redefined-builtin
+from warnings import warn
 
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer
@@ -42,12 +47,33 @@ class PIAFDatabase(object):
     default_server = servers[AF.PISystems().DefaultPISystem.Name]
 
     def __init__(self, server=None, database=None):
+        self.server = None
+        self.database = None
+        self._initialise_server(server)
+        self._initialise_database(database)
+
+    def _initialise_server(self, server):
+        if server and server not in self.servers:
+            message = 'Server "{server}" not found, using the default server.'
+            warn(
+                message=message.format(server=server),
+                category=UserWarning
+            )
         server = self.servers.get(server, self.default_server)
         self.server = server['server']
+
+    def _initialise_database(self, database):
+        server = self.servers.get(self.server.Name)
         if not server['databases']:
             server['databases'] = {x.Name: x for x in self.server.Databases}
-        self.database = server['databases'].get(database,
-                                                self.server.Databases.DefaultDatabase)
+        if database and database not in server['databases']:
+            message = 'Database "{database}" not found, using the default database.'
+            warn(
+                message=message.format(database=database),
+                category=UserWarning
+            )
+        default_db = self.server.Databases.DefaultDatabase
+        self.database = server['databases'].get(database, default_db)
 
     def __enter__(self):
         self.server.Connect()

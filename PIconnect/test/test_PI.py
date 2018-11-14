@@ -52,6 +52,13 @@ class TestServer(VirtualTestCase):
         server = PI.PIServer('Testing')
         self.assertEqual(server.server_name, 'Testing')
 
+    def test_warn_unkown_server(self):
+        """Test that the server reports a warning when an unknown host is specified."""
+        server_names = [name for name in PI.PIServer.servers]
+        server_name = '__'.join(server_names+['UnknownHostName'])
+        with self.assertWarns(UserWarning):
+            PI.PIServer(server_name)
+
     def test_repr(self):
         """Test that the server representation matches the connected server."""
         server = PI.PIServer('Testing')

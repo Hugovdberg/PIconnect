@@ -20,25 +20,26 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-# pragma pylint: disable=unused-import
-from __future__ import (absolute_import, division,
-                        print_function, unicode_literals)
-from builtins import (bytes, dict, int, list, object, range, str,
-                      ascii, chr, hex, input, next, oct, open,
-                      pow, round, super,
-                      filter, map, zip)
+
+# pragma pylint: disable=unused-import, redefined-builtin
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import (ascii, bytes, chr, dict, filter, hex, input, int, list,
+                      map, next, object, oct, open, pow, range, round, str,
+                      super, zip)
 try:
     from __builtin__ import str as BuiltinStr
 except ImportError:
     BuiltinStr = str
-# pragma pylint: enable=unused-import
+# pragma pylint: enable=unused-import, redefined-builtin
+from warnings import warn
 
+from PIconnect._operators import OPERATORS, add_operators
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer
-from PIconnect._operators import add_operators, OPERATORS
 
 
-class PIServer(object):
+class PIServer(object):  # pylint: disable=useless-object-inheritance
     """Context manager for connections to a PI server."""
     version = '0.2.1'
 
@@ -46,6 +47,12 @@ class PIServer(object):
     default_server = AF.PI.PIServers().DefaultPIServer
 
     def __init__(self, server=None):
+        if server and server not in self.servers:
+            message = 'Server "{server}" not found, using the default server.'
+            warn(
+                message=message.format(server=server),
+                category=UserWarning
+            )
         self.connection = self.servers.get(server, self.default_server)
 
     def __enter__(self):
