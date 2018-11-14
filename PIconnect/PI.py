@@ -3,39 +3,43 @@
 """
 # Copyright 2017 Hugo van den Berg, Stijn de Jong
 
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this
-# software and associated documentation files (the "Software"), to deal in the Software
-# without restriction, including without limitation the rights to use, copy, modify,
-# merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so, subject to the following
-# conditions:
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
 
-# The above copyright notice and this permission notice shall be included in all copies
-# or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
-# CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
-# THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from __future__ import (absolute_import, division,
-                        print_function, unicode_literals)
-from builtins import (bytes, dict, int, list, object, range, str,
-                      ascii, chr, hex, input, next, oct, open,
-                      pow, round, super,
-                      filter, map, zip)
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+# pragma pylint: disable=unused-import, redefined-builtin
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import (ascii, bytes, chr, dict, filter, hex, input, int, list,
+                      map, next, object, oct, open, pow, range, round, str,
+                      super, zip)
 try:
-    from __builtin__ import str as builtin_str
+    from __builtin__ import str as BuiltinStr
 except ImportError:
-    from builtins import str as builtin_str
+    BuiltinStr = str
+# pragma pylint: enable=unused-import, redefined-builtin
+from warnings import warn
 
+from PIconnect._operators import OPERATORS, add_operators
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer
-from PIconnect._operators import add_operators, operators
 
 
-class PIServer(object):
+class PIServer(object):  # pylint: disable=useless-object-inheritance
     """Context manager for connections to a PI server."""
     version = '0.2.1'
 
@@ -43,6 +47,12 @@ class PIServer(object):
     default_server = AF.PI.PIServers().DefaultPIServer
 
     def __init__(self, server=None):
+        if server and server not in self.servers:
+            message = 'Server "{server}" not found, using the default server.'
+            warn(
+                message=message.format(server=server),
+                category=UserWarning
+            )
         self.connection = self.servers.get(server, self.default_server)
 
     def __enter__(self):
@@ -74,11 +84,11 @@ class PIServer(object):
         #     raise TypeError('Argument query must be either a string or a list of strings,' +
         #                     'got type ' + str(type(query)))
         return [PIPoint(pi_point) for pi_point in
-                AF.PI.PIPoint.FindPIPoints(self.connection, builtin_str(query), source, None)]
+                AF.PI.PIPoint.FindPIPoints(self.connection, BuiltinStr(query), source, None)]
 
 
 @add_operators(
-    operators=operators,
+    operators=OPERATORS,
     members=[
         '_current_value',
         'interpolated_values'
@@ -94,6 +104,7 @@ class PIPoint(PISeriesContainer):
     version = '0.3.0'
 
     def __init__(self, pi_point):
+        super().__init__()
         self.pi_point = pi_point
         self.tag = pi_point.Name
         self.__attributes_loaded = False
@@ -105,11 +116,6 @@ class PIPoint(PISeriesContainer):
                                                       self.description,
                                                       self.current_value,
                                                       self.units_of_measurement)
-
-    @property
-    def current_value(self):
-        """Return the last recorded value for this PI Point."""
-        return self._current_value()
 
     @property
     def last_update(self):
@@ -167,6 +173,31 @@ class PIPoint(PISeriesContainer):
                                                 interval,
                                                 filter_expression,
                                                 include_filtered_values)
+
+    def _summary(self, time_range, summary_types, calculation_basis, time_type):
+        return self.pi_point.Summary(time_range,
+                                     summary_types,
+                                     calculation_basis,
+                                     time_type)
+
+    def _summaries(self, time_range, interval, summary_types, calculation_basis, time_type):
+        return self.pi_point.Summaries(time_range,
+                                       interval,
+                                       summary_types,
+                                       calculation_basis,
+                                       time_type)
+
+    def _filtered_summaries(self, time_range, interval, filter_expression,
+                            summary_types, calculation_basis, filter_evaluation,
+                            filter_interval, time_type):
+        return self.pi_point.FilteredSummaries(time_range,
+                                               interval,
+                                               filter_expression,
+                                               summary_types,
+                                               calculation_basis,
+                                               filter_evaluation,
+                                               filter_interval,
+                                               time_type)
 
     def _normalize_filter_expression(self, filter_expression):
         return filter_expression.replace('%tag%', self.tag)

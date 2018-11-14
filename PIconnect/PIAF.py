@@ -3,32 +3,40 @@
 """
 # Copyright 2017 Hugo van den Berg, Stijn de Jong
 
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this
-# software and associated documentation files (the "Software"), to deal in the Software
-# without restriction, including without limitation the rights to use, copy, modify,
-# merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so, subject to the following
-# conditions:
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
 
-# The above copyright notice and this permission notice shall be included in all copies
-# or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
-# CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
-# THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from __future__ import (absolute_import, division,
-                        print_function, unicode_literals)
-from builtins import (bytes, dict, int, list, object, range, str,
-                      ascii, chr, hex, input, next, oct, open,
-                      pow, round, super,
-                      filter, map, zip)
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+# pragma pylint: disable=unused-import, redefined-builtin
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import (ascii, bytes, chr, dict, filter, hex, input, int, list,
+                      map, next, object, oct, open, pow, range, round, str,
+                      super, zip)
+try:
+    from __builtin__ import str as BuiltinStr
+except ImportError:
+    BuiltinStr = str
+# pragma pylint: enable=unused-import, redefined-builtin
+from warnings import warn
 
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer
-from PIconnect._operators import add_operators, operators
+from PIconnect._operators import add_operators, OPERATORS
 
 
 class PIAFDatabase(object):
@@ -39,12 +47,33 @@ class PIAFDatabase(object):
     default_server = servers[AF.PISystems().DefaultPISystem.Name]
 
     def __init__(self, server=None, database=None):
+        self.server = None
+        self.database = None
+        self._initialise_server(server)
+        self._initialise_database(database)
+
+    def _initialise_server(self, server):
+        if server and server not in self.servers:
+            message = 'Server "{server}" not found, using the default server.'
+            warn(
+                message=message.format(server=server),
+                category=UserWarning
+            )
         server = self.servers.get(server, self.default_server)
         self.server = server['server']
+
+    def _initialise_database(self, database):
+        server = self.servers.get(self.server.Name)
         if not server['databases']:
             server['databases'] = {x.Name: x for x in self.server.Databases}
-        self.database = server['databases'].get(database,
-                                                self.server.Databases.DefaultDatabase)
+        if database and database not in server['databases']:
+            message = 'Database "{database}" not found, using the default database.'
+            warn(
+                message=message.format(database=database),
+                category=UserWarning
+            )
+        default_db = self.server.Databases.DefaultDatabase
+        self.database = server['databases'].get(database, default_db)
 
     def __enter__(self):
         self.server.Connect()
@@ -116,7 +145,7 @@ class PIAFElement(object):
 
 
 @add_operators(
-    operators=operators,
+    operators=OPERATORS,
     members=[
         '_current_value',
         'interpolated_values'
@@ -129,6 +158,7 @@ class PIAFAttribute(PISeriesContainer):
     version = '0.1.0'
 
     def __init__(self, element, attribute):
+        super().__init__()
         self.element = element
         self.attribute = attribute
 
@@ -162,11 +192,6 @@ class PIAFAttribute(PISeriesContainer):
         return self.attribute.Description
 
     @property
-    def current_value(self):
-        """Return the current value of the attribute."""
-        return self._current_value()
-
-    @property
     def last_update(self):
         """Return the time at which the current_value was last updated."""
         return PISeries.timestamp_to_index(self.attribute.GetValue().Timestamp.UtcTime)
@@ -195,3 +220,28 @@ class PIAFAttribute(PISeriesContainer):
                                                       self.attribute.DefaultUOM,
                                                       filter_expression,
                                                       include_filtered_values)
+
+    def _summary(self, time_range, summary_types, calculation_basis, time_type):
+        return self.attribute.Data.Summary(time_range,
+                                           summary_types,
+                                           calculation_basis,
+                                           time_type)
+
+    def _summaries(self, time_range, interval, summary_types, calculation_basis, time_type):
+        return self.attribute.Data.Summaries(time_range,
+                                             interval,
+                                             summary_types,
+                                             calculation_basis,
+                                             time_type)
+
+    def _filtered_summaries(self, time_range, interval, filter_expression,
+                            summary_types, calculation_basis, filter_evaluation,
+                            filter_interval, time_type):
+        return self.attribute.Data.FilteredSummaries(time_range,
+                                                     interval,
+                                                     filter_expression,
+                                                     summary_types,
+                                                     calculation_basis,
+                                                     filter_evaluation,
+                                                     filter_interval,
+                                                     time_type)

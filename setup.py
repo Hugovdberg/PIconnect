@@ -5,6 +5,7 @@ https://github.com/pypa/sampleproject
 """
 
 # To use a consistent encoding
+import os
 from codecs import open
 from os import path
 # Always prefer setuptools over distutils
@@ -19,27 +20,27 @@ with open(path.join(HERE, 'README.rst'), encoding='utf-8') as readme_file:
 with open(path.join(HERE, 'HISTORY.rst'), encoding='utf-8') as history_file:
     HISTORY = history_file.read()
 
-
 REQUIREMENTS = [
-    'pythonnet',
-    'future'
-    # 'Click>=6.0',
-    # TODO: put package requirements here
+    'future',
+    'pandas',
+    'wrapt'
 ]
+if os.name == 'nt':
+    REQUIREMENTS += [
+        'pythonnet'
+    ]
 
 SETUP_REQUIREMENTS = [
     'pytest-runner',
-    # TODO(Hugovdberg): put setup requirements (distutils extensions, etc.) here
 ]
 
 TEST_REQUIREMENTS = [
     'pytest',
-    # TODO: put package test requirements here
 ]
 
 setup(
     name='PIconnect',
-    version='0.6.0',
+    version='0.7.0',
     description="Python connector to OSIsoft PI SDK",
     long_description=README + '\n\n' + HISTORY,
 

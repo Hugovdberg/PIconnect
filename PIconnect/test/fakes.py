@@ -3,39 +3,43 @@
 """
 # Copyright 2017 Hugo van den Berg, Stijn de Jong
 
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this
-# software and associated documentation files (the "Software"), to deal in the Software
-# without restriction, including without limitation the rights to use, copy, modify,
-# merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so, subject to the following
-# conditions:
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
 
-# The above copyright notice and this permission notice shall be included in all copies
-# or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
-# CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
-# THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+# pragma pylint: disable=unused-import
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 from builtins import (bytes, dict, int, list, object, range, str,
                       ascii, chr, hex, input, next, oct, open,
                       pow, round, super,
                       filter, map, zip)
+# pragma pylint: enable=unused-import
 import datetime
-import unittest
+import unittest2
 
 import pytz
 
 import PIconnect as PI
-from PIconnect._operators import add_operators, operators
+from PIconnect._operators import add_operators, OPERATORS
 
 
 class FakeAFTime(object):
     """Fake AFTime to mask away SDK complexity."""
+
     def __init__(self, timestamp):
         self.UtcTime = lambda x: None
         self.UtcTime.Year = timestamp.year
@@ -49,6 +53,7 @@ class FakeAFTime(object):
 
 class FakeKeyValue(object):
     """Container for fake Key:Value pairs"""
+
     def __init__(self, key, value):
         self.Key = key
         self.Value = value
@@ -56,6 +61,7 @@ class FakeKeyValue(object):
 
 class FakeAFValue(object):
     """Fake AFValue to mask away SDK complexity."""
+
     def __init__(self, value, timestamp):
         self.Value = value
         self.Timestamp = FakeAFTime(timestamp)
@@ -66,11 +72,11 @@ class FakePIPoint_(object):
         self.Name = tag
         self.values = [FakeAFValue(value, timestamp)
                        for value, timestamp in zip(values, timestamps)]
-        self.attributes = [FakeKeyValue(*att) for att in attributes.iteritems()]
+        self.attributes = [FakeKeyValue(*att) for att in attributes.items()]
 
 
 @add_operators(
-    operators=operators,
+    operators=OPERATORS,
     members=[
         '_current_value',
         'sampled_data'
@@ -80,6 +86,7 @@ class FakePIPoint_(object):
 )
 class FakePIPoint(object):
     """Fake PI Point to mask away SDK complexity."""
+
     def __init__(self, pi_point):
         self.pi_point = pi_point
         self.call_stack = ['%s created' % self.__class__.__name__]
@@ -105,7 +112,7 @@ class FakePIPoint(object):
         return self.pi_point.values
 
 
-class VirtualTestCase(unittest.TestCase):
+class VirtualTestCase(unittest2.TestCase):
     """Test VirtualPIPoint addition."""
 
     def setUp(self):
