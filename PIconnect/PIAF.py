@@ -20,14 +20,18 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-# pragma pylint: disable=unused-import
-from __future__ import (absolute_import, division,
-                        print_function, unicode_literals)
-from builtins import (bytes, dict, int, list, object, range, str,
-                      ascii, chr, hex, input, next, oct, open,
-                      pow, round, super,
-                      filter, map, zip)
-# pragma pylint: enable=unused-import
+
+# pragma pylint: disable=unused-import, redefined-builtin
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import (ascii, bytes, chr, dict, filter, hex, input, int, list,
+                      map, next, object, oct, open, pow, range, round, str,
+                      super, zip)
+try:
+    from __builtin__ import str as BuiltinStr
+except ImportError:
+    BuiltinStr = str
+# pragma pylint: enable=unused-import, redefined-builtin
 from warnings import warn
 
 from PIconnect.AFSDK import AF

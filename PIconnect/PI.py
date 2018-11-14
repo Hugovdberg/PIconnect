@@ -21,27 +21,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# pragma pylint: disable=unused-import
+# pragma pylint: disable=unused-import, redefined-builtin
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
-
 from builtins import (ascii, bytes, chr, dict, filter, hex, input, int, list,
                       map, next, object, oct, open, pow, range, round, str,
                       super, zip)
+try:
+    from __builtin__ import str as BuiltinStr
+except ImportError:
+    BuiltinStr = str
+# pragma pylint: enable=unused-import, redefined-builtin
 from warnings import warn
 
 from PIconnect._operators import OPERATORS, add_operators
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer
 
-try:
-    from __builtin__ import str as BuiltinStr
-except ImportError:
-    BuiltinStr = str
-# pragma pylint: enable=unused-import
 
-
-class PIServer(object):
+class PIServer(object):  # pylint: disable=useless-object-inheritance
     """Context manager for connections to a PI server."""
     version = '0.2.1'
 
