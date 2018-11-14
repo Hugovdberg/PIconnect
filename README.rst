@@ -17,8 +17,8 @@ implemented as context managers, to allow opening a connection using a with stat
         :target: https://travis-ci.org/Hugovdberg/PIconnect
         :alt: Continuous Integration status
 
-.. image:: https://readthedocs.org/projects/piconnect/badge/?version=latest
-        :target: https://piconnect.readthedocs.io/en/latest/?badge=latest
+.. image:: https://readthedocs.org/projects/piconnect/badge/?version=develop
+        :target: https://piconnect.readthedocs.io/en/latest/?badge=develop
         :alt: Documentation Status
 
 .. image:: https://pyup.io/repos/github/Hugovdberg/PIconnect/shield.svg
@@ -34,7 +34,7 @@ Python connector to OSIsoft PI SDK
 
 
 * Free software: MIT license
-* Documentation: https://pithon.readthedocs.io.
+* Documentation: https://piconnect.readthedocs.io.
 
 
 Features

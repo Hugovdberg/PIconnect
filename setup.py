@@ -20,7 +20,6 @@ with open(path.join(HERE, 'README.rst'), encoding='utf-8') as readme_file:
 with open(path.join(HERE, 'HISTORY.rst'), encoding='utf-8') as history_file:
     HISTORY = history_file.read()
 
-
 REQUIREMENTS = [
     'future',
     'pandas',
@@ -33,12 +32,10 @@ if os.name == 'nt':
 
 SETUP_REQUIREMENTS = [
     'pytest-runner',
-    # TODO(Hugovdberg): put setup requirements (distutils extensions, etc.) here
 ]
 
 TEST_REQUIREMENTS = [
     'pytest',
-    # TODO: put package test requirements here
 ]
 
 setup(

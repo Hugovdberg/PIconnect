@@ -1,4 +1,5 @@
 """helpers to define numeric operators in batch on classes"""
+# pragma pylint: disable=unused-import
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 from builtins import (bytes, dict, int, list, object, range, str,
@@ -6,9 +7,10 @@ from builtins import (bytes, dict, int, list, object, range, str,
                       pow, round, super,
                       filter, map, zip)
 try:
-    from __builtin__ import str as builtin_str
+    from __builtin__ import str as BuiltinStr
 except ImportError:
-    from builtins import str as builtin_str
+    BuiltinStr = str
+# pragma pylint: enable=unused-import
 
 from collections import namedtuple
 
@@ -23,13 +25,12 @@ def operate(operator, operand):
        function of two arguments.
     """
     @wrapt.decorator
-    def operate_(func, instance, args, kwargs):
+    def operate_(func, instance, args, kwargs):  # pylint: disable=unused-argument
         """Decorate function to apply an operator to the function and a given operand."""
         if hasattr(operand, func.__name__):
             func2 = getattr(operand, func.__name__)
             return operator(func(*args, **kwargs), func2(*args, **kwargs))
-        else:
-            return operator(func(*args, **kwargs), operand)
+        return operator(func(*args, **kwargs), operand)
     return operate_
 
 
@@ -78,25 +79,27 @@ def add_operators(operators, members, newclassname, attributes):
                                            base=getattr(self, member),
                                            operator=operator,
                                            operand=other) for member in members}
-            newclass = type(builtin_str(newclassname), (cls,), newmembers)
+            newclass = type(BuiltinStr(newclassname), (cls,), newmembers)
             return newclass(*[getattr(self, attr) for attr in attributes])
-        patch_members.__name__ = builtin_str(method)
+        patch_members.__name__ = BuiltinStr(method)
         patch_members.__doc__ = docstring
         return patch_members
 
     def add_numops_(cls):
         """Decorate a class to add a function for each operator in a list of operators."""
-        for op in operators:
-            setattr(cls, op.method, build_operator_method(method=op.method,
-                                                          operator=op.operator,
-                                                          docstring=op.docstring,
-                                                          cls=cls))
+        for operator in operators:
+            setattr(cls,
+                    operator.method,
+                    build_operator_method(method=operator.method,
+                                          operator=operator.operator,
+                                          docstring=operator.docstring,
+                                          cls=cls))
         return cls
     return add_numops_
 
 
 Operator = namedtuple('Operator', ['method', 'operator', 'docstring'])
-operators = [
+OPERATORS = [
     Operator('__add__',
              lambda x, y: x + y,
              """Add value(s) to PIPoint"""),
@@ -148,7 +151,7 @@ operators = [
              lambda x, y: y % x,
              """Modulo value(s) by PIPoint (reverse order)"""),
     Operator('__divmod__',
-             lambda x, y: divmod(x, y),
+             divmod,  # This is already a function of x and y
              """Return divmod of PIPoint by value(s).
 
              divmod(a, b) returns a tuple of the floordivision of a and b, a // b, and the

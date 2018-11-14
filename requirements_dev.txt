@@ -23,6 +23,7 @@ more-itertools==4.3.0
 nose==1.3.7
 packaging==18.0
 pathtools==0.1.2
+pbr==5.1.1
 pluggy==0.8.0
 py==1.7.0
 pycodestyle==2.4.0
