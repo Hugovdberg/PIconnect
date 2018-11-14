@@ -29,7 +29,7 @@ from builtins import (bytes, dict, int, list, object, range, str,
                       filter, map, zip)
 # pragma pylint: enable=unused-import
 import datetime
-import unittest
+import unittest2
 
 import pytz
 
@@ -112,7 +112,7 @@ class FakePIPoint(object):
         return self.pi_point.values
 
 
-class VirtualTestCase(unittest.TestCase):
+class VirtualTestCase(unittest2.TestCase):
     """Test VirtualPIPoint addition."""
 
     def setUp(self):

@@ -21,6 +21,7 @@ Sphinx = "*"
 PyYAML = "*"
 nose = "*"
 "doc8" = "*"
+"unittest2" = "*"
 
 [requires]
 python_version = "3.7"
