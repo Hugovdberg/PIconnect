@@ -50,8 +50,9 @@ class PIAFDatabase(object):
 
     def _initialise_server(self, server):
         if server and server not in self.servers:
+            message = 'Server "{server}" not found, using the default server.'
             warn(
-                message=f'Server "{server}" not found, using the default server.',
+                message=message.format(server=server),
                 category=UserWarning
             )
         server = self.servers.get(server, self.default_server)
@@ -62,8 +63,9 @@ class PIAFDatabase(object):
         if not server['databases']:
             server['databases'] = {x.Name: x for x in self.server.Databases}
         if database and database not in server['databases']:
+            message = 'Database "{database}" not found, using the default database.'
             warn(
-                message=f'Database "{database}" not found, using the default database.',
+                message=message.format(database=database),
                 category=UserWarning
             )
         default_db = self.server.Databases.DefaultDatabase

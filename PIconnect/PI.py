@@ -50,8 +50,9 @@ class PIServer(object):
 
     def __init__(self, server=None):
         if server and server not in self.servers:
+            message = 'Server "{server}" not found, using the default server.'
             warn(
-                message=f'Server "{server}" not found, using the default server.',
+                message=message.format(server=server),
                 category=UserWarning
             )
         self.connection = self.servers.get(server, self.default_server)
