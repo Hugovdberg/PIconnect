@@ -454,11 +454,11 @@
         },
         "pytest": {
             "hashes": [
-                "sha256:3f193df1cfe1d1609d4c583838bea3d532b18d6160fd3f55c9447fdca30848ec",
-                "sha256:e246cf173c01169b9617fc07264b7b1316e78d7a650055235d6d897bc80d9660"
+                "sha256:488c842647bbeb350029da10325cb40af0a9c7a2fdda45aeb1dda75b60048ffb",
+                "sha256:c055690dfefa744992f563e8c3a654089a6aa5b8092dded9b6fafbd70b2e45a7"
             ],
             "index": "pypi",
-            "version": "==3.10.1"
+            "version": "==4.0.0"
         },
         "pytest-runner": {
             "hashes": [
@@ -501,9 +501,9 @@
         },
         "restructuredtext-lint": {
             "hashes": [
-                "sha256:c48ca9a84c312b262809f041fe47dcfaedc9ee4879b3e1f9532f745c182b4037"
+                "sha256:8712f9066d2c748002ec24f6f7ddca13e0c37654ae4f1ba0dcf0e78ba453c387"
             ],
-            "version": "==1.1.3"
+            "version": "==1.2.1"
         },
         "six": {
             "hashes": [
