@@ -54,6 +54,23 @@ class TestAFDatabase(VirtualTestCase):
         self.assertEqual(repr(server),
                          'PIAFDatabase(\\\\{s}\\{d})'.format(s=AFserver, d=database))
 
+    def test_unknown_server_name(self):
+        """Test that the server reports a warning for an unknown server."""
+        AFserver_name = '__'.join(
+            [name for name in PI.PIAFDatabase.servers] +
+            ['UnkownServerName']
+        )
+        with self.assertWarns(UserWarning):
+            PI.PIAFDatabase(server=AFserver_name)
+
+    def test_unknown_database_name(self):
+        """Test that the server reports a warning for an unknown database."""
+        server = PI.PIAFDatabase.default_server['server']
+        databases = [db.Name for db in server.Databases]
+        AFdatabase_name = '__'.join(databases + ['UnkownDatabaseName'])
+        with self.assertWarns(UserWarning):
+            PI.PIAFDatabase(database=AFdatabase_name)
+
 
 class TestDatabaseDescendants(VirtualTestCase):
     """Test retrieving child elements"""

@@ -28,6 +28,7 @@ from builtins import (bytes, dict, int, list, object, range, str,
                       pow, round, super,
                       filter, map, zip)
 # pragma pylint: enable=unused-import
+from warnings import warn
 
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer
@@ -42,12 +43,31 @@ class PIAFDatabase(object):
     default_server = servers[AF.PISystems().DefaultPISystem.Name]
 
     def __init__(self, server=None, database=None):
+        self.server = None
+        self.database = None
+        self._initialise_server(server)
+        self._initialise_database(database)
+
+    def _initialise_server(self, server):
+        if server and server not in self.servers:
+            warn(
+                message=f'Server "{server}" not found, using the default server.',
+                category=UserWarning
+            )
         server = self.servers.get(server, self.default_server)
         self.server = server['server']
+
+    def _initialise_database(self, database):
+        server = self.servers.get(self.server.Name)
         if not server['databases']:
             server['databases'] = {x.Name: x for x in self.server.Databases}
-        self.database = server['databases'].get(database,
-                                                self.server.Databases.DefaultDatabase)
+        if database and database not in server['databases']:
+            warn(
+                message=f'Database "{database}" not found, using the default database.',
+                category=UserWarning
+            )
+        default_db = self.server.Databases.DefaultDatabase
+        self.database = server['databases'].get(database, default_db)
 
     def __enter__(self):
         self.server.Connect()
