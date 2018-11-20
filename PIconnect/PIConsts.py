@@ -73,3 +73,9 @@ class TimestampCalculation(IntEnum):
 class ExpressionSampleType(IntEnum):
     EXPRESSION_RECORDED_VALUES = 0
     INTERVAL = 1
+
+
+def get_enumerated_value(enumeration, value, default):
+    if not value:
+        return default
+    return enumeration(value)
