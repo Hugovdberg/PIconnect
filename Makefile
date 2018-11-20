@@ -65,8 +65,13 @@ coverage: ## check code coverage quickly with the default Python
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/PIconnect.rst
+	rm -f docs/PIconnect.AFSDK.rst
+	rm -f docs/PIconnect.PI.rst
+	rm -f docs/PIconnect.PIAF.rst
+	rm -f docs/PIconnect.PIConsts.rst
+	rm -f docs/PIconnect.PIData.rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ PIconnect
+	sphinx-apidoc -M -e -o docs/ PIconnect PIconnect?test
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	$(BROWSER) docs/_build/html/index.html
