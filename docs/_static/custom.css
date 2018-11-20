@@ -1,0 +1,12 @@
+code {
+    color: unset;
+}
+code.descclassname {
+    padding-right: 0;
+}
+code.descname {
+    padding-left: 0;
+}
+dd {
+    margin-left: 30px;
+}
