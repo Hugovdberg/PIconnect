@@ -9,7 +9,7 @@ class SummaryType(IntFlag):
     """SummaryType indicates which types of summary should be calculated.
 
     Based on :class:`enum.IntEnum` in Python 3.5 or earlier. `SummaryType`'s can
-    be or'ed together. Python 3.6 or higher returns a new `IntFlag`, while in 
+    be or'ed together. Python 3.6 or higher returns a new `IntFlag`, while in
     previous versions it will be casted down to `int`.
 
     >>> SummaryType.MINIMUM | SummaryType.MAXIMUM  # Returns minimum and maximum

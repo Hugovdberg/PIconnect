@@ -85,7 +85,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         return self.connection.Name
 
     def search(self, query, source=None):
-        """search 
+        """search
 
         Search PIPoints on the PIServer
 
