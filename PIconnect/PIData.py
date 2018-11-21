@@ -95,6 +95,18 @@ class PISeriesContainer(object):
         """Return the current value of the attribute."""
         return self._current_value()
 
+    def _recorded_values(self, *args, **kwargs):
+        """Abstract implementation for recorded values
+
+        The internals for retrieving recorded values from PI and PI-AF are
+        different and should therefore be implemented by the respective data
+        containers.
+        """
+        pass
+
+    def _interpolated_values(self, *args, **kwargs):
+        pass
+
     def recorded_values(self,
                         start_time,
                         end_time,
