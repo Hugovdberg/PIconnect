@@ -5,6 +5,39 @@ except ImportError:
     IntFlag = IntEnum
 
 
+class CalculationBasis(IntEnum):
+    """CalculationBasis indicates how values should be weighted over a time range
+
+    Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_Data_AFCalculationBasis.htm
+    """
+
+    #: Each event is weighted according to the time over which it applies.
+    TIME_WEIGHTED = 0
+    #: Each event is weighted equally.
+    EVENT_WEIGHTED = 1
+    #: Each event is time weighted, but interpolation is always done as if it is continous data.
+    TIME_WEIGHTED_CONTINUOUS = 2
+    #: Each event is time weighted, but interpolation is always done as if it is discrete, stepped, data.
+    TIME_WEIGHTED_DISCRETE = 3
+    #: Each event is weighted equally, except data at the end of the interval is excluded.
+    EVENT_WEIGHTED_EXCLUDE_MOST_RECENT = 4
+    #: Each event is weighted equally, except data at the beginning of the interval is excluded.
+    EVENT_WEIGHTED_EXCLUDE_EARLIEST = 5
+    #: Each event is weighted equally, data at both boundaries of the interval are explicitly included.
+    EVENT_WEIGHTED_INCLUDE_BOTH_ENDS = 6
+
+
+class ExpressionSampleType(IntEnum):
+    """ExpressionSampleType indicates how expressions are evaluated over a time range.
+
+    Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_Data_AFSampleType.htm
+    """
+    #: The expression is evaluated at each archive event.
+    EXPRESSION_RECORDED_VALUES = 0
+    #: The expression is evaluated at a sampling interval, passed as a separate argument.
+    INTERVAL = 1
+
+
 class SummaryType(IntFlag):
     """SummaryType indicates which types of summary should be calculated.
 
@@ -47,32 +80,18 @@ class SummaryType(IntFlag):
     ALL_FOR_NON_NUMERIC = 8320
 
 
-class CalculationBasis(IntEnum):
-    """CalculationBasis indicates how values should be weighted over a time range
-
-    Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_Data_AFCalculationBasis.htm
-    """
-
-    #: Each event is weighted according to the time over which it applies.
-    TIME_WEIGHTED = 0
-    #: Each event is weighted equally
-    EVENT_WEIGHTED = 1
-    TIME_WEIGHTED_CONTINUOUS = 2
-    TIME_WEIGHTED_DISCRETE = 3
-    EVENT_WEIGHTED_EXCLUDE_MOST_RECENT = 4
-    EVENT_WEIGHTED_EXCLUDE_EARLIEST = 5
-    EVENT_WEIGHTED_INCLUDE_BOTH_ENDS = 6
-
-
 class TimestampCalculation(IntEnum):
+    """
+    TimestampCalculation defines the timestamp returned for a given summary calculation
+
+    Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_Data_AFTimestampCalculation.htm
+    """
+    #: The timestamp is the event time of the minimum or maximum for those summaries or the beginning of the interval otherwise.
     AUTO = 0
+    #: The timestamp is always the beginning of the interval.
     EARLIEST_TIME = 1
+    #: The timestamp is always the end of the interval.
     MOST_RECENT_TIME = 2
-
-
-class ExpressionSampleType(IntEnum):
-    EXPRESSION_RECORDED_VALUES = 0
-    INTERVAL = 1
 
 
 def get_enumerated_value(enumeration, value, default):
