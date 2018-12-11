@@ -38,7 +38,7 @@ pytest-runner==4.2
 pytest==4.0.1
 pytz==2018.7
 pyyaml==3.13
-requests==2.20.1
+requests==2.21.0
 restructuredtext-lint==1.2.1
 six==1.11.0
 snowballstemmer==1.2.1
