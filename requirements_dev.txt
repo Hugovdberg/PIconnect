@@ -16,7 +16,7 @@ doc8==0.8.0
 docutils==0.14
 filelock==3.0.10
 flake8==3.6.0
-idna==2.7
+idna==2.8
 imagesize==1.1.0
 jinja2==2.10
 linecache2==1.0.0
