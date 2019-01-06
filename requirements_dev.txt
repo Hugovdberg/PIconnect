@@ -39,7 +39,7 @@ pytest==4.0.2
 pytz==2018.7
 pyyaml==3.13
 requests==2.21.0
-restructuredtext-lint==1.2.1
+restructuredtext-lint==1.2.2
 six==1.12.0
 snowballstemmer==1.2.1
 sphinx==1.8.3
