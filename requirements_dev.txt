@@ -35,7 +35,7 @@ pyflakes==2.1.0
 pygments==2.3.1
 pyparsing==2.3.1
 pytest-runner==4.2
-pytest==4.0.2
+pytest==4.1.1
 pytz==2018.7
 pyyaml==3.13
 requests==2.21.0
