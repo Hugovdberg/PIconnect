@@ -10,7 +10,7 @@ bumpversion==0.5.3
 certifi==2019.6.16
 cffi==1.12.3
 chardet==3.0.4
-coverage==4.5.2
+coverage==4.5.4
 cryptography==2.5
 doc8==0.8.0
 docutils==0.14
