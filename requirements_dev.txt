@@ -15,7 +15,7 @@ cryptography==2.7
 doc8==0.8.0
 docutils==0.15.2
 filelock==3.0.12
-flake8==3.7.5
+flake8==3.7.8
 idna==2.8
 imagesize==1.1.0
 jinja2==2.10
