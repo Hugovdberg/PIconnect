@@ -14,7 +14,7 @@ coverage==4.5.4
 cryptography==2.7
 doc8==0.8.0
 docutils==0.15.2
-filelock==3.0.10
+filelock==3.0.12
 flake8==3.7.5
 idna==2.8
 imagesize==1.1.0
