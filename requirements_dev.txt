@@ -18,7 +18,7 @@ filelock==3.0.12
 flake8==3.7.8
 idna==2.8
 imagesize==1.1.0
-jinja2==2.10
+jinja2==2.10.1
 linecache2==1.0.0
 markupsafe==1.1.0
 mccabe==0.6.1
