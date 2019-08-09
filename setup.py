@@ -6,6 +6,7 @@ https://github.com/pypa/sampleproject
 
 # To use a consistent encoding
 import os
+import sys
 from codecs import open
 from os import path
 
@@ -21,7 +22,12 @@ with open(path.join(HERE, "README.rst"), encoding="utf-8") as readme_file:
 with open(path.join(HERE, "HISTORY.rst"), encoding="utf-8") as history_file:
     HISTORY = history_file.read()
 
-REQUIREMENTS = ["future", "pandas", "wrapt"]
+if sys.version_info[:2] < (3, 4):
+    REQUIREMENTS = ["enum34"]
+else:
+    REQUIREMENTS = []
+
+REQUIREMENTS += ["future", "pandas", "wrapt"]
 if os.name == "nt":
     REQUIREMENTS += ["pythonnet"]
 
