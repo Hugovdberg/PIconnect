@@ -71,3 +71,6 @@ target/
 
 # Pipenv virtual environment
 .venv/
+
+# MyPy cache
+.mypy_cache/

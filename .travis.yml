@@ -12,7 +12,11 @@ script: tox
 matrix:
   include:
     - python: 3.6
-      env: TOXENV=flake8
+      env: TOXENV=black
+    - python: 3.6
+      env: TOXENV=pylint
+    - python: 3.6
+      env: TOXENV=mypy
 
     - python: 2.7
       env: TOXENV=py27
@@ -25,6 +29,10 @@ matrix:
 
     - python: 3.7
       env: TOXENV=py37
+
+  allow_failures:
+    - env: TOXENV=py27
+    - env: TOXENV=mypy
 
 # After you create the Github repo and add it to Travis, run the
 # travis_pypi_setup.py script to finish PyPI deployment setup
