@@ -33,6 +33,8 @@ matrix:
   allow_failures:
     - env: TOXENV=py27
     - env: TOXENV=mypy
+    - env: TOXENV=black
+    - env: TOXENV=pylint
 
 # After you create the Github repo and add it to Travis, run the
 # travis_pypi_setup.py script to finish PyPI deployment setup
