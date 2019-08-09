@@ -22,11 +22,30 @@
 # SOFTWARE.
 
 # pragma pylint: disable=unused-import, redefined-builtin
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-from builtins import (ascii, bytes, chr, dict, filter, hex, input, int, list,
-                      map, next, object, oct, open, pow, range, round, str,
-                      super, zip)
+from __future__ import absolute_import, division, print_function, unicode_literals
+from builtins import (
+    ascii,
+    bytes,
+    chr,
+    dict,
+    filter,
+    hex,
+    input,
+    int,
+    list,
+    map,
+    next,
+    object,
+    oct,
+    open,
+    pow,
+    range,
+    round,
+    str,
+    super,
+    zip,
+)
+
 try:
     from __builtin__ import str as BuiltinStr
 except ImportError:
@@ -41,7 +60,8 @@ from PIconnect.PIData import PISeries, PISeriesContainer
 
 class PIServer(object):  # pylint: disable=useless-object-inheritance
     """Context manager for connections to a PI server."""
-    version = '0.2.1'
+
+    version = "0.2.1"
 
     servers = {server.Name: server for server in AF.PI.PIServers()}
     default_server = AF.PI.PIServers().DefaultPIServer
@@ -49,14 +69,13 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
     def __init__(self, server=None):
         if server and server not in self.servers:
             message = 'Server "{server}" not found, using the default server.'
-            warn(
-                message=message.format(server=server),
-                category=UserWarning
-            )
+            warn(message=message.format(server=server), category=UserWarning)
         self.connection = self.servers.get(server, self.default_server)
 
     def __enter__(self):
-        force_connection = False  # Don't force to retry connecting if previous attempt failed
+        force_connection = (
+            False
+        )  # Don't force to retry connecting if previous attempt failed
         self.connection.Connect(force_connection)
         return self
 
@@ -64,7 +83,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         self.connection.Disconnect()
 
     def __repr__(self):
-        return u'%s(\\\\%s)' % (self.__class__.__name__, self.server_name)
+        return "%s(\\\\%s)" % (self.__class__.__name__, self.server_name)
 
     @property
     def server_name(self):
@@ -83,25 +102,27 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         # elif not isinstance(query, str):
         #     raise TypeError('Argument query must be either a string or a list of strings,' +
         #                     'got type ' + str(type(query)))
-        return [PIPoint(pi_point) for pi_point in
-                AF.PI.PIPoint.FindPIPoints(self.connection, BuiltinStr(query), source, None)]
+        return [
+            PIPoint(pi_point)
+            for pi_point in AF.PI.PIPoint.FindPIPoints(
+                self.connection, BuiltinStr(query), source, None
+            )
+        ]
 
 
 @add_operators(
     operators=OPERATORS,
-    members=[
-        '_current_value',
-        'interpolated_values'
-    ],
-    newclassname='VirtualPIPoint',
-    attributes=['pi_point']
+    members=["_current_value", "interpolated_values"],
+    newclassname="VirtualPIPoint",
+    attributes=["pi_point"],
 )
 class PIPoint(PISeriesContainer):
     """Reference to a PI Point to get data and corresponding metadata from the server.
 
         TODO: Build a PI datacontainer from which PIPoint and PIAFAttribute subclass.
     """
-    version = '0.3.0'
+
+    version = "0.3.0"
 
     def __init__(self, pi_point):
         super().__init__()
@@ -111,16 +132,20 @@ class PIPoint(PISeriesContainer):
         self.__raw_attributes = {}
 
     def __repr__(self):
-        return u'%s(%s, %s; Current Value: %s %s)' % (self.__class__.__name__,
-                                                      self.tag,
-                                                      self.description,
-                                                      self.current_value,
-                                                      self.units_of_measurement)
+        return "%s(%s, %s; Current Value: %s %s)" % (
+            self.__class__.__name__,
+            self.tag,
+            self.description,
+            self.current_value,
+            self.units_of_measurement,
+        )
 
     @property
     def last_update(self):
         """Return the time at which the last value for this PI Point was recorded."""
-        return PISeries.timestamp_to_index(self.pi_point.CurrentValue().Timestamp.UtcTime)
+        return PISeries.timestamp_to_index(
+            self.pi_point.CurrentValue().Timestamp.UtcTime
+        )
 
     @property
     def raw_attributes(self):
@@ -132,7 +157,7 @@ class PIPoint(PISeriesContainer):
     def units_of_measurement(self):
         """Return the units of measument in which values for this PI Point are reported."""
         self.__load_attributes()
-        return self.__raw_attributes['engunits']
+        return self.__raw_attributes["engunits"]
 
     @property
     def description(self):
@@ -141,7 +166,7 @@ class PIPoint(PISeriesContainer):
         TODO: Add setter to alter displayed description
         """
         self.__load_attributes()
-        return self.__raw_attributes['descriptor']
+        return self.__raw_attributes["descriptor"]
 
     def __load_attributes(self):
         """Load the raw attributes of the PI Point from the server"""
@@ -149,7 +174,8 @@ class PIPoint(PISeriesContainer):
             self.pi_point.LoadAttributes([])
             self.__attributes_loaded = True
         self.__raw_attributes = {
-            att.Key: att.Value for att in self.pi_point.GetAttributes([])}
+            att.Key: att.Value for att in self.pi_point.GetAttributes([])
+        }
 
     @property
     def name(self):
@@ -161,43 +187,50 @@ class PIPoint(PISeriesContainer):
 
     def _recorded_values(self, time_range, boundary_type, filter_expression):
         include_filtered_values = False
-        return self.pi_point.RecordedValues(time_range,
-                                            boundary_type,
-                                            filter_expression,
-                                            include_filtered_values)
+        return self.pi_point.RecordedValues(
+            time_range, boundary_type, filter_expression, include_filtered_values
+        )
 
     def _interpolated_values(self, time_range, interval, filter_expression):
         """Internal function to actually query the pi point"""
         include_filtered_values = False
-        return self.pi_point.InterpolatedValues(time_range,
-                                                interval,
-                                                filter_expression,
-                                                include_filtered_values)
+        return self.pi_point.InterpolatedValues(
+            time_range, interval, filter_expression, include_filtered_values
+        )
 
     def _summary(self, time_range, summary_types, calculation_basis, time_type):
-        return self.pi_point.Summary(time_range,
-                                     summary_types,
-                                     calculation_basis,
-                                     time_type)
+        return self.pi_point.Summary(
+            time_range, summary_types, calculation_basis, time_type
+        )
 
-    def _summaries(self, time_range, interval, summary_types, calculation_basis, time_type):
-        return self.pi_point.Summaries(time_range,
-                                       interval,
-                                       summary_types,
-                                       calculation_basis,
-                                       time_type)
+    def _summaries(
+        self, time_range, interval, summary_types, calculation_basis, time_type
+    ):
+        return self.pi_point.Summaries(
+            time_range, interval, summary_types, calculation_basis, time_type
+        )
 
-    def _filtered_summaries(self, time_range, interval, filter_expression,
-                            summary_types, calculation_basis, filter_evaluation,
-                            filter_interval, time_type):
-        return self.pi_point.FilteredSummaries(time_range,
-                                               interval,
-                                               filter_expression,
-                                               summary_types,
-                                               calculation_basis,
-                                               filter_evaluation,
-                                               filter_interval,
-                                               time_type)
+    def _filtered_summaries(
+        self,
+        time_range,
+        interval,
+        filter_expression,
+        summary_types,
+        calculation_basis,
+        filter_evaluation,
+        filter_interval,
+        time_type,
+    ):
+        return self.pi_point.FilteredSummaries(
+            time_range,
+            interval,
+            filter_expression,
+            summary_types,
+            calculation_basis,
+            filter_evaluation,
+            filter_interval,
+            time_type,
+        )
 
     def _normalize_filter_expression(self, filter_expression):
-        return filter_expression.replace('%tag%', self.tag)
+        return filter_expression.replace("%tag%", self.tag)
