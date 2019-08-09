@@ -1,4 +1,5 @@
 from enum import IntEnum
+
 try:
     from enum import IntFlag
 except ImportError:
