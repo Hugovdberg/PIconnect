@@ -11,6 +11,7 @@ future = "*"
 [dev-packages]
 bumpversion = "*"
 watchdog = "*"
+black = "*"
 "flake8" = "*"
 tox = "*"
 coverage = "*"
@@ -19,9 +20,10 @@ pytest = "*"
 pytest-runner = "*"
 Sphinx = "*"
 PyYAML = "*"
-nose = "*"
 "doc8" = "*"
-"unittest2" = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true

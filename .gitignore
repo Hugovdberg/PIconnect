@@ -68,3 +68,6 @@ target/
 
 # Visual studio configuration
 .vscode/
+
+# Pipenv virtual environment
+.venv/
