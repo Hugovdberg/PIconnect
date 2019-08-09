@@ -53,7 +53,7 @@ from builtins import (
 import PIconnect as PI
 import pytest
 import pytz
-from PIconnect.test.fakes import pi_point  # pylint: disable=unused-import
+from .fakes import pi_point  # pylint: disable=unused-import
 
 
 class TestServer:

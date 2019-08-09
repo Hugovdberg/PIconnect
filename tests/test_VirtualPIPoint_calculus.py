@@ -46,8 +46,7 @@ from builtins import (
 
 # pragma pylint: enable=unused-import
 
-import PIconnect as PI
-from PIconnect.test.fakes import pi_point  # pylint: disable=unused-import
+from .fakes import pi_point  # pylint: disable=unused-import
 
 
 class TestVirtualAddition:
