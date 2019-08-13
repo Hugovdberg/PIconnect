@@ -31,7 +31,7 @@ matrix:
       env: TOXENV=py37
 
   allow_failures:
-    - env: TOXENV=py27
+    # - env: TOXENV=py27
     - env: TOXENV=mypy
     - env: TOXENV=pylint
 

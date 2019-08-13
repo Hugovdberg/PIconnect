@@ -28,6 +28,14 @@ from builtins import (
 
 import datetime
 
+try:
+    from abc import ABC, abstractmethod
+except ImportError:
+    from __builtin__ import str as BuiltinStr
+    from abc import ABCMeta, abstractmethod
+
+    ABC = ABCMeta(BuiltinStr("ABC"), (object,), {"__slots__": ()})
+
 import pytz
 from pandas import DataFrame, Series
 
@@ -72,7 +80,7 @@ class PISeries(Series):
         )
 
 
-class PISeriesContainer(object):
+class PISeriesContainer(ABC):
     """Generic class for objects that return recorded or interpolated data"""
 
     version = "0.1.0"
@@ -86,6 +94,7 @@ class PISeriesContainer(object):
     def __init__(self):
         pass
 
+    @abstractmethod
     def _recorded_values(self, time_range, boundary_type, filter_expression):
         """Abstract implementation for recorded values
 
@@ -95,17 +104,21 @@ class PISeriesContainer(object):
         """
         pass
 
+    @abstractmethod
     def _interpolated_values(self, time_range, interval, filter_expression):
         pass
 
+    @abstractmethod
     def _summary(self, time_range, summary_types, calculation_basis, time_type):
         pass
 
+    @abstractmethod
     def _summaries(
         self, time_range, interval, summary_types, calculation_basis, time_type
     ):
         pass
 
+    @abstractmethod
     def _filtered_summaries(
         self,
         time_range,
@@ -119,6 +132,7 @@ class PISeriesContainer(object):
     ):
         pass
 
+    @abstractmethod
     def _current_value(self):
         pass
 
@@ -126,18 +140,6 @@ class PISeriesContainer(object):
     def current_value(self):
         """Return the current value of the attribute."""
         return self._current_value()
-
-    def _recorded_values(self, *args, **kwargs):
-        """Abstract implementation for recorded values
-
-        The internals for retrieving recorded values from PI and PI-AF are
-        different and should therefore be implemented by the respective data
-        containers.
-        """
-        pass
-
-    def _interpolated_values(self, *args, **kwargs):
-        pass
 
     def recorded_values(
         self, start_time, end_time, boundary_type="inside", filter_expression=""
