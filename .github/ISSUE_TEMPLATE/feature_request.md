@@ -4,11 +4,13 @@ about: Suggest an idea for this project
 
 ---
 
-# Abstract
+# Feature request
+
+## Abstract
 
 Short description of the problem and suggested solution.
 
-# Motivation and summary
+## Motivation and summary
 
 A clear and concise description of what the problem is.
 Is your feature request related to a problem?

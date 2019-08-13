@@ -4,7 +4,9 @@ about: Create a report to notify us something isn't working as it should
 
 ---
 
-# Describe the bug
+# Bug report
+
+## Description
 
 A clear and concise description of what the bug is.
 
