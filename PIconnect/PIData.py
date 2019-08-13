@@ -27,7 +27,13 @@ from builtins import (
 # pragma pylint: enable=unused-import
 
 import datetime
-from abc import ABC, abstractmethod
+
+try:
+    from abc import ABC, abstractmethod
+except ImportError:
+    from abc import ABCMeta, abstractmethod
+
+    ABC = ABCMeta("ABC", (object,), {"__slots__": ()})
 
 import pytz
 from pandas import DataFrame, Series
