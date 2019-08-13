@@ -33,7 +33,7 @@ try:
 except ImportError:
     from abc import ABCMeta, abstractmethod
 
-    ABC = ABCMeta("ABC", (object,), {"__slots__": ()})
+    ABC = ABCMeta(str("ABC"), (object,), {"__slots__": ()})
 
 import pytz
 from pandas import DataFrame, Series
