@@ -33,6 +33,7 @@ class ExpressionSampleType(IntEnum):
 
     Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_Data_AFSampleType.htm
     """
+
     #: The expression is evaluated at each archive event.
     EXPRESSION_RECORDED_VALUES = 0
     #: The expression is evaluated at a sampling interval, passed as a separate argument.
@@ -87,6 +88,7 @@ class TimestampCalculation(IntEnum):
 
     Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_Data_AFTimestampCalculation.htm
     """
+
     #: The timestamp is the event time of the minimum or maximum for those summaries or the beginning of the interval otherwise.
     AUTO = 0
     #: The timestamp is always the beginning of the interval.
