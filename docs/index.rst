@@ -1,5 +1,5 @@
 Welcome to PIconnect's documentation!
-==================================
+=====================================
 
 Contents:
 
