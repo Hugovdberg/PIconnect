@@ -242,19 +242,34 @@ class PISeriesContainer(ABC):
         )
 
     def interpolated_values(self, start_time, end_time, interval, filter_expression=""):
-        """Return a PISeries of interpolated data.
+        """interpolated_values
 
-           Data is returned between *start_time* and *end_time* at a fixed
-           *interval*. All three values are parsed by AF.Time and the first two
-           allow for time specification relative to "now" by use of the
-           asterisk.
+        Return a PISeries of interpolated data.
 
-           *filter_expression* is an optional string to filter the returned
-           values, see OSIsoft PI documentation for more information.
+        Data is returned between *start_time* and *end_time* at a fixed
+        *interval*. All three values are parsed by AF.Time and the first two
+        allow for time specification relative to "now" by use of the
+        asterisk.
 
-           The AF SDK allows for inclusion of filtered data, with filtered
-           values marked as such. At this point PIconnect does not support this
-           and filtered values are always left out entirely.
+        *filter_expression* is an optional string to filter the returned
+        values, see OSIsoft PI documentation for more information.
+
+        The AF SDK allows for inclusion of filtered data, with filtered
+        values marked as such. At this point PIconnect does not support this
+        and filtered values are always left out entirely.
+
+        Args:
+            start_time (str): String containing the date, and possibly time,
+                from which to retrieve the values.
+            end_time (str): String containing the date, and possibly time,
+                until which to retrieve values.
+            interval (str): String containing the interval at which to extract
+                data.
+            filter_expression (str, optional): Defaults to ''. Query on which
+                data to include in the results.
+
+        Returns:
+            PISeries: Timeseries of the values returned by the SDK
         """
         time_range = AF.Time.AFTimeRange(start_time, end_time)
         interval = AF.Time.AFTimeSpan.Parse(interval)
