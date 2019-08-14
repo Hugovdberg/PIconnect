@@ -7,6 +7,7 @@ name = "pypi"
 pandas = "*"
 wrapt = "*"
 future = "*"
+piconnect = {editable = true,path = "."}
 
 [dev-packages]
 bumpversion = "*"
