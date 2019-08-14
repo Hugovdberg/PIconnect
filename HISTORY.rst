@@ -2,10 +2,17 @@
 History
 =======
 
+0.7.1 (?)
+---------
+
+* Improved documentation
+* Changed `PIData.PISeriesContainer` to an Abstract Base Class
+
 0.7.0 (2018-11-14)
 ------------------
 
-* Add `summary`, `summaries`, and `filtered_summaries` methods to `PIPoint` and `PIAFAttribute`
+* Add `summary`, `summaries`, and `filtered_summaries` methods to `PIPoint`
+    and `PIAFAttribute`
 
 0.6.0 (2018-07-05)
 ------------------
