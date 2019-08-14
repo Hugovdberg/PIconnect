@@ -14,10 +14,10 @@ A clear and concise description of what the bug is.
 
 Steps to reproduce the behavior:
 
-1.  Open '...'
-2.  Create '....'
-3.  Call '....'
-4.  See error
+ 1. Open '...'
+ 2. Create '....'
+ 3. Call '....'
+ 4. See error
 
 ## Expected behavior
 
@@ -34,9 +34,9 @@ If applicable, add screenshots to help explain your problem.
 
 ## System
 
--   OS: \[e.g. Windows, Linux]
--   Python version: \[Python 2.7/ Python 3.6]
--   PIconnect version: \[e.g. 0.5.2]
+ -  OS: \[e.g. Windows, Linux]
+ -  Python version: \[Python 2.7/ Python 3.6]
+ -  PIconnect version: \[e.g. 0.5.2]
 
 ## Additional context
 
