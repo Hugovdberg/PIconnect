@@ -233,6 +233,7 @@ class PISeriesContainer(ABC):
 
         time_range = AF.Time.AFTimeRange(start_time, end_time)
         boundary_type = self.__boundary_types.get(boundary_type.lower())
+        filter_expression = self._normalize_filter_expression(filter_expression)
         if boundary_type is None:
             raise ValueError(
                 "Argument boundary_type must be one of "
