@@ -8,6 +8,7 @@ Contents:
 
    readme
    installation
+   tutorials
    usage
    modules
    contributing
