@@ -115,6 +115,10 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
 
         Returns:
             list: A list of :class:`PIPoint` objects as a result of the query
+
+        .. todo::
+
+            Reject searches while not connected
         """
         if isinstance(query, list):
             return [y for x in query for y in self.search(x, source)]
@@ -185,7 +189,9 @@ class PIPoint(PISeriesContainer):
     def description(self):
         """Return the description of the PI Point.
 
-        TODO: Add setter to alter displayed description
+        .. todo::
+
+            Add setter to alter displayed description
         """
         self.__load_attributes()
         return self.__raw_attributes["descriptor"]

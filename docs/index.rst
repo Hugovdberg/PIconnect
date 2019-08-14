@@ -13,6 +13,7 @@ Contents:
    contributing
    authors
    history
+   todo
 
 
 Indices and tables

@@ -67,8 +67,10 @@ class PISeries(Series):
         uom (str, optional): Defaults to None. Unit of measurement for the
             series
 
-    TODO: Remove, return to either plain :class:`pandas.Series` or a
-    composition where the Series is just an attribute
+    .. todo::
+
+        Remove class, return to either plain :class:`pandas.Series` or a
+        composition where the Series is just an attribute
     """
 
     version = "0.1.0"
@@ -82,8 +84,13 @@ class PISeries(Series):
     def timestamp_to_index(timestamp):
         """Convert AFTime object to datetime.datetime in local timezone.
 
-           TODO: Allow to define timezone, default to UTC?
-           TODO: Move outside as separate function?
+        .. todo::
+
+            Allow to define timezone, default to UTC?
+
+        .. todo::
+
+            Move outside as separate function?
         """
         local_tz = pytz.timezone("Europe/Amsterdam")
         return (
@@ -106,7 +113,9 @@ class PISeriesContainer(ABC):
 
     General class for objects that return :class:`PISeries` objects
 
-    TODO: Move `__boundary_types` to PIConsts as a new enumeration
+    .. todo::
+
+        Move `__boundary_types` to PIConsts as a new enumeration
     """
 
     version = "0.1.0"
