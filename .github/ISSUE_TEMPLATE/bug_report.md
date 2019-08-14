@@ -3,13 +3,16 @@ name: Bug report
 about: Create a report to notify us something isn't working as it should
 ---
 
-# Bug report
+Bug report
+==========
 
-## Description
+Description
+-----------
 
 A clear and concise description of what the bug is.
 
-## To Reproduce
+To Reproduce
+------------
 
 Steps to reproduce the behavior:
 
@@ -18,25 +21,30 @@ Steps to reproduce the behavior:
 3.  Call '....'
 4.  See error
 
-## Expected behavior
+Expected behavior
+-----------------
 
 A clear and concise description of what you expected to happen.
 
-## Possible solutions
+Possible solutions
+------------------
 
 Have you thought about the root cause of the issue, but don't you
 know how to fix it, then please point us in the right direction.
 
-## Screenshots
+Screenshots
+-----------
 
 If applicable, add screenshots to help explain your problem.
 
-## System
+System
+------
 
 -   OS: \[e.g. Windows, Linux]
 -   Python version: \[Python 2.7/ Python 3.6]
 -   PIconnect version: \[e.g. 0.5.2]
 
-## Additional context
+Additional context
+------------------
 
 Add any other context about the problem here.
