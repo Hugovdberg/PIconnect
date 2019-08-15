@@ -23,3 +23,9 @@ by specifying the `start_time`, `end_time`, and `interval` arguments to
         points = server.search('*')[0]
         data = points.interpolated_values('*-1h', '*', '5m')
         print(data)
+
+Filtering values
+----------------
+
+To filter the interpolated values the same `filter_expression` syntax as for
+:ref:`filtering_values` can be used.

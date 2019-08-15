@@ -44,6 +44,8 @@ boundaries such that a value is returned exactly at the requested timestamp::
         print(data)
 
 
+.. _filtering_values:
+
 Filtering values
 ----------------
 

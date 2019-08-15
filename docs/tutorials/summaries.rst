@@ -37,7 +37,39 @@ the summary value occurs is of no value.
 
 There are two possibilities for the time stamp, the beginning of the requested
 time interval, or the end of the interval. Which to return is specified using
-the `time_type` argument
+the `time_type` argument. To always return the beginning of the interval, you
+should use the :any:`TimestampCalculation.EARLIEST_TIME` constant from
+:any:`PIConsts`::
+
+    import PIconnect as PI
+    from PIconnect.PIConsts import SummaryType, TimestampCalculation
+
+    with PI.PIServer() as server:
+        points = server.search('*')[0]
+        data = points.summary(
+            '*-14d',
+            '*',
+            SummaryType.MAXIMUM|SummaryType.MINIMUM,
+            time_type=TimestampCalculation.EARLIEST_TIME
+        )
+        print(data)
+
+Similarly, the :any:`TimestampCalculation.MOST_RECENT_TIME` constant always
+returns the time at the end of the interval::
+
+    import PIconnect as PI
+    from PIconnect.PIConsts import SummaryType, TimestampCalculation
+
+    with PI.PIServer() as server:
+        points = server.search('*')[0]
+        data = points.summary(
+            '*-14d',
+            '*',
+            SummaryType.MAXIMUM|SummaryType.MINIMUM,
+            time_type=TimestampCalculation.MOST_RECENT_TIME
+        )
+        print(data)
+
 
 Extracting summaries at regular time intervals
 ----------------------------------------------
