@@ -1,6 +1,6 @@
-==========================
+##########################
 Extracting recorded values
-==========================
+##########################
 
 The data in the PI archives are typically compressed. To get the exact values
 as they are stored in the archive, the `recorded_values` method should be
@@ -13,12 +13,17 @@ For simplicity this tutorial only uses :any:`PIPoint` objects, see the
 tutorial on :doc:`PI AF</tutorials/piaf>` to find how to access
 :any:`PIAFAttribute` objects.
 
+**************
 Boundary types
---------------
+**************
 
 The basic example takes the first :any:`PIPoint` that is returned by the
 server and gets the data for the last 48 hours, by specifying the `start_time`
-and `end_time` arguments to `recorded_values`::
+and `end_time` arguments to `recorded_values`:
+
+.. code-block:: python
+
+    import PIconnect as PI
 
     with PI.PIServer() as server:
         points = server.search('*')[0]
@@ -28,7 +33,11 @@ and `end_time` arguments to `recorded_values`::
 By default only the data between the `start_time` and `end_time` is returned.
 It is also possible to instead return the data from the last value before
 `start_time` up to and including the first value after `end_time`, by setting
-the `boundary_type` to `outside`::
+the `boundary_type` to `outside`:
+
+.. code-block:: python
+
+    import PIconnect as PI
 
     with PI.PIServer() as server:
         points = server.search('*')[0]
@@ -41,7 +50,11 @@ the `boundary_type` to `outside`::
              :any:`PIConsts`.
 
 Finally, it is also possible to interpolate the values surrounding both
-boundaries such that a value is returned exactly at the requested timestamp::
+boundaries such that a value is returned exactly at the requested timestamp:
+
+.. code-block:: python
+
+    import PIconnect as PI
 
     with PI.PIServer() as server:
         points = server.search('*')[0]
@@ -51,8 +64,9 @@ boundaries such that a value is returned exactly at the requested timestamp::
 
 .. _filtering_values:
 
+****************
 Filtering values
-----------------
+****************
 
 Sometimes it is desirable to exclude certain values from the returned data.
 This is possible using the `filter_expression` argument of the
@@ -63,9 +77,12 @@ The simplest test is to only return values below a given value. To test if the
 values of a tag called `Plant1_Flow_out` are below the value 100, you need the
 `filter_expression="'Plant1_Flow_out' < 100"`. :any:`PIPoint.recorded_values`
 provides a shortcut to include the tag name, by replacing `%tag%` with the
-current tag name::
+current tag name:
+
+.. code-block:: python
 
     import PIconnect as PI
+
     with PI.PIServer() as server:
         points = server.search('*')[0]
         print(points.recorded_values(
@@ -74,9 +91,12 @@ current tag name::
              filter_expression="'%tag%' < 115"
         ))
 
-Multiple tests can be combined with the keywords `and` and `or`::
+Multiple tests can be combined with the keywords `and` and `or`:
+
+.. code-block:: python
 
     import PIconnect as PI
+
     with PI.PIServer() as server:
         points = server.search('*')[0]
         print(points.recorded_values(
