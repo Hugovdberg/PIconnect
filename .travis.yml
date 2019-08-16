@@ -2,16 +2,38 @@
 # This file will be regenerated if you run travis_pypi_setup.py
 
 language: python
-python:
-  - 3.6
-  - 3.5
-  - 2.7
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: pip install -U tox-travis
+install: pip install -U tox
 
 # command to run tests, e.g. python setup.py test
 script: tox
+
+matrix:
+  include:
+    - python: 3.6
+      env: TOXENV=black
+    - python: 3.6
+      env: TOXENV=pylint
+    - python: 3.6
+      env: TOXENV=mypy
+
+    - python: 2.7
+      env: TOXENV=py27
+
+    - python: 3.5
+      env: TOXENV=py35
+
+    - python: 3.6
+      env: TOXENV=py36
+
+    - python: 3.7
+      env: TOXENV=py37
+
+  allow_failures:
+    # - env: TOXENV=py27
+    - env: TOXENV=mypy
+    - env: TOXENV=pylint
 
 # After you create the Github repo and add it to Travis, run the
 # travis_pypi_setup.py script to finish PyPI deployment setup

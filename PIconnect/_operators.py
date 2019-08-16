@@ -1,11 +1,29 @@
 """helpers to define numeric operators in batch on classes"""
 # pragma pylint: disable=unused-import
-from __future__ import (absolute_import, division,
-                        print_function, unicode_literals)
-from builtins import (bytes, dict, int, list, object, range, str,
-                      ascii, chr, hex, input, next, oct, open,
-                      pow, round, super,
-                      filter, map, zip)
+from __future__ import absolute_import, division, print_function, unicode_literals
+from builtins import (
+    bytes,
+    dict,
+    int,
+    list,
+    object,
+    range,
+    str,
+    ascii,
+    chr,
+    hex,
+    input,
+    next,
+    oct,
+    open,
+    pow,
+    round,
+    super,
+    filter,
+    map,
+    zip,
+)
+
 try:
     from __builtin__ import str as BuiltinStr
 except ImportError:
@@ -24,6 +42,7 @@ def operate(operator, operand):
        as the base function to which the decorator is applied. Operator must be a
        function of two arguments.
     """
+
     @wrapt.decorator
     def operate_(func, instance, args, kwargs):  # pylint: disable=unused-argument
         """Decorate function to apply an operator to the function and a given operand."""
@@ -31,6 +50,7 @@ def operate(operator, operand):
             func2 = getattr(operand, func.__name__)
             return operator(func(*args, **kwargs), func2(*args, **kwargs))
         return operator(func(*args, **kwargs), operand)
+
     return operate_
 
 
@@ -75,12 +95,18 @@ def add_operators(operators, members, newclassname, attributes):
                Creates a new virtual class with the members in *members* patched to apply
                the given *operator* to the original function definition.
             """
-            newmembers = {member: decorate(decorator=operate,
-                                           base=getattr(self, member),
-                                           operator=operator,
-                                           operand=other) for member in members}
+            newmembers = {
+                member: decorate(
+                    decorator=operate,
+                    base=getattr(self, member),
+                    operator=operator,
+                    operand=other,
+                )
+                for member in members
+            }
             newclass = type(BuiltinStr(newclassname), (cls,), newmembers)
             return newclass(*[getattr(self, attr) for attr in attributes])
+
         patch_members.__name__ = BuiltinStr(method)
         patch_members.__doc__ = docstring
         return patch_members
@@ -88,36 +114,39 @@ def add_operators(operators, members, newclassname, attributes):
     def add_numops_(cls):
         """Decorate a class to add a function for each operator in a list of operators."""
         for operator in operators:
-            setattr(cls,
-                    operator.method,
-                    build_operator_method(method=operator.method,
-                                          operator=operator.operator,
-                                          docstring=operator.docstring,
-                                          cls=cls))
+            setattr(
+                cls,
+                operator.method,
+                build_operator_method(
+                    method=operator.method,
+                    operator=operator.operator,
+                    docstring=operator.docstring,
+                    cls=cls,
+                ),
+            )
         return cls
+
     return add_numops_
 
 
-Operator = namedtuple('Operator', ['method', 'operator', 'docstring'])
+Operator = namedtuple("Operator", ["method", "operator", "docstring"])
 OPERATORS = [
-    Operator('__add__',
-             lambda x, y: x + y,
-             """Add value(s) to PIPoint"""),
-    Operator('__radd__',
-             lambda x, y: y + x,
-             """Add PIPoint to value(s) (reverse order)"""),
-    Operator('__sub__',
-             lambda x, y: x - y,
-             """Subtract value(s) from PIPoint"""),
-    Operator('__rsub__',
-             lambda x, y: y - x,
-             """Subtract PIPoint from value(s) (reverse order)"""),
-    Operator('__mul__',
-             lambda x, y: x * y,
-             """Multiply PIPoint by value(s)"""),
-    Operator('__rmul__',
-             lambda x, y: y * x,
-             """Multiply value(s) by PIPoint (reverse order)"""),
+    Operator("__add__", lambda x, y: x + y, """Add value(s) to PIPoint"""),
+    Operator(
+        "__radd__", lambda x, y: y + x, """Add PIPoint to value(s) (reverse order)"""
+    ),
+    Operator("__sub__", lambda x, y: x - y, """Subtract value(s) from PIPoint"""),
+    Operator(
+        "__rsub__",
+        lambda x, y: y - x,
+        """Subtract PIPoint from value(s) (reverse order)""",
+    ),
+    Operator("__mul__", lambda x, y: x * y, """Multiply PIPoint by value(s)"""),
+    Operator(
+        "__rmul__",
+        lambda x, y: y * x,
+        """Multiply value(s) by PIPoint (reverse order)""",
+    ),
     # # Removed for now, Python 3 only
     # Operator('__matmul__',
     #          lambda x, y: x @ y,
@@ -126,44 +155,46 @@ OPERATORS = [
     # Operator('__rmatmul__',
     #          lambda x, y: y @ x,
     #          """Matrix multiply (reverse order)"""),
-    Operator('__div__',
-             lambda x, y: x / y,
-             """Divide PIPoint by value(s)"""),
-    Operator('__rdiv__',
-             lambda x, y: y / x,
-             """Divide value(s) by PIPoint (reverse order)"""),
-    Operator('__truediv__',
-             lambda x, y: x / y,
-             """Divide PIPoint by value(s)"""),
-    Operator('__rtruediv__',
-             lambda x, y: y / x,
-             """Divide value(s) by PIPoint (reverse order)"""),
-    Operator('__floordiv__',
-             lambda x, y: x // y,
-             """Floordivide PIPoint by value(s)"""),
-    Operator('__rfloordiv__',
-             lambda x, y: y // x,
-             """Floordivide value(s) by PIPoint (reverse order)"""),
-    Operator('__mod__',
-             lambda x, y: x % y,
-             """Modulo PIPoint by value(s)"""),
-    Operator('__rmod__',
-             lambda x, y: y % x,
-             """Modulo value(s) by PIPoint (reverse order)"""),
-    Operator('__divmod__',
-             divmod,  # This is already a function of x and y
-             """Return divmod of PIPoint by value(s).
+    Operator("__div__", lambda x, y: x / y, """Divide PIPoint by value(s)"""),
+    Operator(
+        "__rdiv__", lambda x, y: y / x, """Divide value(s) by PIPoint (reverse order)"""
+    ),
+    Operator("__truediv__", lambda x, y: x / y, """Divide PIPoint by value(s)"""),
+    Operator(
+        "__rtruediv__",
+        lambda x, y: y / x,
+        """Divide value(s) by PIPoint (reverse order)""",
+    ),
+    Operator(
+        "__floordiv__", lambda x, y: x // y, """Floordivide PIPoint by value(s)"""
+    ),
+    Operator(
+        "__rfloordiv__",
+        lambda x, y: y // x,
+        """Floordivide value(s) by PIPoint (reverse order)""",
+    ),
+    Operator("__mod__", lambda x, y: x % y, """Modulo PIPoint by value(s)"""),
+    Operator(
+        "__rmod__", lambda x, y: y % x, """Modulo value(s) by PIPoint (reverse order)"""
+    ),
+    Operator(
+        "__divmod__",
+        divmod,  # This is already a function of x and y
+        """Return divmod of PIPoint by value(s).
 
              divmod(a, b) returns a tuple of the floordivision of a and b, a // b, and the
              modulo of a and b, a % b. For integers this is faster than when the operations
              are performed separately.
-             """),
-    Operator('__rdivmod__',
-             lambda x, y: divmod(y, x),
-             """Return divmod of value(s) by PIPoint (reverse order).
+             """,
+    ),
+    Operator(
+        "__rdivmod__",
+        lambda x, y: divmod(y, x),
+        """Return divmod of value(s) by PIPoint (reverse order).
 
              divmod(a, b) returns a tuple of the floordivision of a and b, a // b, and the
              modulo of a and b, a % b. For integers this is faster than when the operations
              are performed separately.
-             """)
+             """,
+    ),
 ]
