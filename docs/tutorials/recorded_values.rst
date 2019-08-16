@@ -35,6 +35,11 @@ the `boundary_type` to `outside`::
         data = points.recorded_values('*-48h', '*', boundary_type='outside')
         print(data)
 
+.. warning:: The :py:data:`boundary_type` argument currently takes a string as
+             the key to the internal :py:data:`__boundary_types` dictionary.
+             This will change in a future version to an enumeration in
+             :any:`PIConsts`.
+
 Finally, it is also possible to interpolate the values surrounding both
 boundaries such that a value is returned exactly at the requested timestamp::
 
