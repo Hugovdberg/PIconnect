@@ -78,6 +78,6 @@ the latter element could be accessed directly as follows:
     with PI.PIAFDatabase() as database:
         element = database.descendant(r'Plant1\Outlet')
 
-.. note:: Elements in the hierarchy are separated by a single backslash `\`,
+.. note:: Elements in the hierarchy are separated by a single backslash `\\`,
           use either raw strings (using the `r` prefix, as in the example
-          above) or escape each backslash as `\\`.
+          above) or escape each backslash as `\\\\\\\\`.
