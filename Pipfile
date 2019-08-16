@@ -10,8 +10,6 @@ future = "*"
 piconnect = {editable = true,path = "."}
 
 [dev-packages]
-bumpversion = "*"
-watchdog = "*"
 black = "*"
 tox = "*"
 coverage = "*"
