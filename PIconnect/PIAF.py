@@ -22,11 +22,30 @@
 # SOFTWARE.
 
 # pragma pylint: disable=unused-import, redefined-builtin
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-from builtins import (ascii, bytes, chr, dict, filter, hex, input, int, list,
-                      map, next, object, oct, open, pow, range, round, str,
-                      super, zip)
+from __future__ import absolute_import, division, print_function, unicode_literals
+from builtins import (
+    ascii,
+    bytes,
+    chr,
+    dict,
+    filter,
+    hex,
+    input,
+    int,
+    list,
+    map,
+    next,
+    object,
+    oct,
+    open,
+    pow,
+    range,
+    round,
+    str,
+    super,
+    zip,
+)
+
 try:
     from __builtin__ import str as BuiltinStr
 except ImportError:
@@ -41,9 +60,10 @@ from PIconnect._operators import add_operators, OPERATORS
 
 class PIAFDatabase(object):
     """Context manager for connections to the PI Asset Framework database."""
-    version = '0.1.0'
 
-    servers = {x.Name: {'server': x, 'databases': {}} for x in AF.PISystems()}
+    version = "0.1.0"
+
+    servers = {x.Name: {"server": x, "databases": {}} for x in AF.PISystems()}
     default_server = servers[AF.PISystems().DefaultPISystem.Name]
 
     def __init__(self, server=None, database=None):
@@ -55,25 +75,19 @@ class PIAFDatabase(object):
     def _initialise_server(self, server):
         if server and server not in self.servers:
             message = 'Server "{server}" not found, using the default server.'
-            warn(
-                message=message.format(server=server),
-                category=UserWarning
-            )
+            warn(message=message.format(server=server), category=UserWarning)
         server = self.servers.get(server, self.default_server)
-        self.server = server['server']
+        self.server = server["server"]
 
     def _initialise_database(self, database):
         server = self.servers.get(self.server.Name)
-        if not server['databases']:
-            server['databases'] = {x.Name: x for x in self.server.Databases}
-        if database and database not in server['databases']:
+        if not server["databases"]:
+            server["databases"] = {x.Name: x for x in self.server.Databases}
+        if database and database not in server["databases"]:
             message = 'Database "{database}" not found, using the default database.'
-            warn(
-                message=message.format(database=database),
-                category=UserWarning
-            )
+            warn(message=message.format(database=database), category=UserWarning)
         default_db = self.server.Databases.DefaultDatabase
-        self.database = server['databases'].get(database, default_db)
+        self.database = server["databases"].get(database, default_db)
 
     def __enter__(self):
         self.server.Connect()
@@ -83,9 +97,11 @@ class PIAFDatabase(object):
         self.server.Disconnect()
 
     def __repr__(self):
-        return u'%s(\\\\%s\\%s)' % (self.__class__.__name__,
-                                    self.server_name,
-                                    self.database_name)
+        return "%s(\\\\%s\\%s)" % (
+            self.__class__.__name__,
+            self.server_name,
+            self.database_name,
+        )
 
     @property
     def server_name(self):
@@ -109,13 +125,14 @@ class PIAFDatabase(object):
 
 class PIAFElement(object):
     """Container for PI AF elements in the database."""
-    version = '0.1.0'
+
+    version = "0.1.0"
 
     def __init__(self, element):
         self.element = element
 
     def __repr__(self):
-        return u'%s(%s)' % (self.__class__.__name__, self.name)
+        return "%s(%s)" % (self.__class__.__name__, self.name)
 
     @property
     def name(self):
@@ -146,16 +163,14 @@ class PIAFElement(object):
 
 @add_operators(
     operators=OPERATORS,
-    members=[
-        '_current_value',
-        'interpolated_values'
-    ],
-    newclassname='VirtualPIAFAttribute',
-    attributes=['element', 'attribute']
+    members=["_current_value", "interpolated_values"],
+    newclassname="VirtualPIAFAttribute",
+    attributes=["element", "attribute"],
 )
 class PIAFAttribute(PISeriesContainer):
     """Container for attributes of PI AF elements in the database."""
-    version = '0.1.0'
+
+    version = "0.1.0"
 
     def __init__(self, element, attribute):
         super().__init__()
@@ -163,11 +178,13 @@ class PIAFAttribute(PISeriesContainer):
         self.attribute = attribute
 
     def __repr__(self):
-        return u'%s(%s, %s; Current Value: %s %s)' % (self.__class__.__name__,
-                                                      self.name,
-                                                      self.description,
-                                                      self.current_value,
-                                                      self.units_of_measurement)
+        return "%s(%s, %s; Current Value: %s %s)" % (
+            self.__class__.__name__,
+            self.name,
+            self.description,
+            self.current_value,
+            self.units_of_measurement,
+        )
 
     @property
     def name(self):
@@ -184,7 +201,9 @@ class PIAFAttribute(PISeriesContainer):
     @property
     def children(self):
         """Return a dictionary of the direct child attributes of the current attribute."""
-        return {a.Name: self.__class__(self.element, a) for a in self.attribute.Attributes}
+        return {
+            a.Name: self.__class__(self.element, a) for a in self.attribute.Attributes
+        }
 
     @property
     def description(self):
@@ -206,42 +225,55 @@ class PIAFAttribute(PISeriesContainer):
 
     def _recorded_values(self, time_range, boundary_type, filter_expression):
         include_filtered_values = False
-        return self.attribute.Data.RecordedValues(time_range,
-                                                  boundary_type,
-                                                  self.attribute.DefaultUOM,
-                                                  filter_expression,
-                                                  include_filtered_values)
+        return self.attribute.Data.RecordedValues(
+            time_range,
+            boundary_type,
+            self.attribute.DefaultUOM,
+            filter_expression,
+            include_filtered_values,
+        )
 
     def _interpolated_values(self, time_range, interval, filter_expression):
         """Internal function to actually query the pi point"""
         include_filtered_values = False
-        return self.attribute.Data.InterpolatedValues(time_range,
-                                                      interval,
-                                                      self.attribute.DefaultUOM,
-                                                      filter_expression,
-                                                      include_filtered_values)
+        return self.attribute.Data.InterpolatedValues(
+            time_range,
+            interval,
+            self.attribute.DefaultUOM,
+            filter_expression,
+            include_filtered_values,
+        )
 
     def _summary(self, time_range, summary_types, calculation_basis, time_type):
-        return self.attribute.Data.Summary(time_range,
-                                           summary_types,
-                                           calculation_basis,
-                                           time_type)
+        return self.attribute.Data.Summary(
+            time_range, summary_types, calculation_basis, time_type
+        )
 
-    def _summaries(self, time_range, interval, summary_types, calculation_basis, time_type):
-        return self.attribute.Data.Summaries(time_range,
-                                             interval,
-                                             summary_types,
-                                             calculation_basis,
-                                             time_type)
+    def _summaries(
+        self, time_range, interval, summary_types, calculation_basis, time_type
+    ):
+        return self.attribute.Data.Summaries(
+            time_range, interval, summary_types, calculation_basis, time_type
+        )
 
-    def _filtered_summaries(self, time_range, interval, filter_expression,
-                            summary_types, calculation_basis, filter_evaluation,
-                            filter_interval, time_type):
-        return self.attribute.Data.FilteredSummaries(time_range,
-                                                     interval,
-                                                     filter_expression,
-                                                     summary_types,
-                                                     calculation_basis,
-                                                     filter_evaluation,
-                                                     filter_interval,
-                                                     time_type)
+    def _filtered_summaries(
+        self,
+        time_range,
+        interval,
+        filter_expression,
+        summary_types,
+        calculation_basis,
+        filter_evaluation,
+        filter_interval,
+        time_type,
+    ):
+        return self.attribute.Data.FilteredSummaries(
+            time_range,
+            interval,
+            filter_expression,
+            summary_types,
+            calculation_basis,
+            filter_evaluation,
+            filter_interval,
+            time_type,
+        )

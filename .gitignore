@@ -68,3 +68,9 @@ target/
 
 # Visual studio configuration
 .vscode/
+
+# Pipenv virtual environment
+.venv/
+
+# MyPy cache
+.mypy_cache/

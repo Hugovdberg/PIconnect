@@ -20,69 +20,85 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 # pragma pylint: disable=unused-import
-from __future__ import (absolute_import, division,
-                        print_function, unicode_literals)
-from builtins import (bytes, dict, int, list, object, range, str,
-                      ascii, chr, hex, input, next, oct, open,
-                      pow, round, super,
-                      filter, map, zip)
-# pragma pylint: enable=unused-import
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import datetime
-import pytz
+from builtins import (
+    ascii,
+    bytes,
+    chr,
+    dict,
+    filter,
+    hex,
+    input,
+    int,
+    list,
+    map,
+    next,
+    object,
+    oct,
+    open,
+    pow,
+    range,
+    round,
+    str,
+    super,
+    zip,
+)
+
+# pragma pylint: enable=unused-import
 
 import PIconnect as PI
-from PIconnect.test.fakes import VirtualTestCase
+import pytest
+import pytz
+from .fakes import pi_point  # pylint: disable=unused-import
 
 
-class TestServer(VirtualTestCase):
+class TestServer:
     """Test connecting to the server"""
 
     def test_connection(self):
         """Test that creating a PI.PIServer object without arguments raises no exception"""
-        try:
-            PI.PIServer()
-        except Exception as e:
-            self.fail("PI.PIServer() raised %s unexpectedly." %
-                      e.__class__.__name__)
+        PI.PIServer()
 
     def test_server_name(self):
         """Test that the server reports the same name as which was connected to."""
-        server = PI.PIServer('Testing')
-        self.assertEqual(server.server_name, 'Testing')
+        server = PI.PIServer("Testing")
+        assert server.server_name == "Testing"
 
     def test_warn_unkown_server(self):
         """Test that the server reports a warning when an unknown host is specified."""
         server_names = [name for name in PI.PIServer.servers]
-        server_name = '__'.join(server_names+['UnknownHostName'])
-        with self.assertWarns(UserWarning):
+        server_name = "__".join(server_names + ["UnknownHostName"])
+        with pytest.warns(UserWarning):
             PI.PIServer(server_name)
 
     def test_repr(self):
         """Test that the server representation matches the connected server."""
-        server = PI.PIServer('Testing')
-        self.assertEqual(repr(server), 'PIServer(\\\\Testing)')
+        server = PI.PIServer("Testing")
+        assert repr(server) == "PIServer(\\\\Testing)"
 
 
-class TestSearchPIPoints(VirtualTestCase):
+class TestSearchPIPoints:
     """Test searching for PI Points on the default server."""
 
     def test_search_single_string(self):
         """Test searching for PI points using a single string."""
         with PI.PIServer() as server:
-            points = server.search('L_140_053*')
-            self.assertIsInstance(points, list)
+            points = server.search("L_140_053*")
+            assert isinstance(points, list)
             for point in points:
-                self.assertIsInstance(point, PI.PI.PIPoint)
+                assert isinstance(point, PI.PI.PIPoint)
 
     def test_search_multiple_strings(self):
         """Tests searching for PI points using a list of strings."""
         with PI.PIServer() as server:
-            points = server.search(['L_140_053*', 'M_127*'])
-            self.assertIsInstance(points, list)
+            points = server.search(["L_140_053*", "M_127*"])
+            assert isinstance(points, list)
             for point in points:
-                self.assertIsInstance(point, PI.PI.PIPoint)
+                assert isinstance(point, PI.PI.PIPoint)
 
     # def test_search_integer_raises_error(self):
     #     """Tests searching for PI points using an integer raises a TypeError."""
@@ -90,63 +106,67 @@ class TestSearchPIPoints(VirtualTestCase):
     #         server.search(1)
 
 
-class TestPIPoint(VirtualTestCase):
+class TestPIPoint:
     """Test valid interface of PIPoint."""
 
-    def test_repr(self):
+    def test_repr(self, pi_point):
         """Test representation of the PI Point."""
-        self.assertEqual(repr(self.point),
-                         '%s(%s, %s; Current Value: %s %s)' % (
-            'PIPoint',
-            self.tag,
-            self.attributes['descriptor'],
-            self.values[-1],
-            self.attributes['engunits']
-        ))
+        assert repr(pi_point.point) == "%s(%s, %s; Current Value: %s %s)" % (
+            "PIPoint",
+            pi_point.tag,
+            pi_point.attributes["descriptor"],
+            pi_point.values[-1],
+            pi_point.attributes["engunits"],
+        )
 
-    def test_name(self):
+    def test_name(self, pi_point):
         """Test retrieving the name of the PI Point."""
-        self.assertEqual(self.point.tag, self.tag)
+        assert pi_point.point.tag == pi_point.tag
 
-    def test_current_value(self):
+    def test_current_value(self, pi_point):
         """Test retrieving the current value from a PI point."""
-        self.assertEqual(self.point.current_value, self.values[-1])
+        assert pi_point.point.current_value == pi_point.values[-1]
 
-    def test_last_update(self):
+    def test_last_update(self, pi_point):
         """Test retrieving the last update timestamp."""
         origin = datetime.datetime(1970, 1, 1).replace(tzinfo=pytz.utc)
-        self.assertAlmostEqual((self.point.last_update - origin).total_seconds(),
-                               self.timestamp_numbers[-1])
+        assert (
+            round(
+                (pi_point.point.last_update - origin).total_seconds()
+                - pi_point.timestamp_numbers[-1],
+                ndigits=7,
+            )
+            == 0
+        )
 
-    def test_units_of_measurement(self):
+    def test_units_of_measurement(self, pi_point):
         """Test retrieving the units of measurement of the returned PI point."""
-        self.assertEqual(self.point.units_of_measurement,
-                         self.attributes['engunits'])
+        assert pi_point.point.units_of_measurement == pi_point.attributes["engunits"]
 
-    def test_description(self):
+    def test_description(self, pi_point):
         """Test retrieving the description of the PI point."""
-        self.assertEqual(self.point.description, self.attributes['descriptor'])
+        assert pi_point.point.description == pi_point.attributes["descriptor"]
 
-    def test_raw_attributes(self):
+    def test_raw_attributes(self, pi_point):
         """Test retrieving the attributes of the PI point as a dict."""
-        self.assertEqual(self.point.raw_attributes, self.attributes)
+        assert pi_point.point.raw_attributes == pi_point.attributes
 
-    def test_recorded_values_values(self):
+    def test_recorded_values_values(self, pi_point):
         """Test retrieving some recorded data from the server."""
-        data = self.point.recorded_values('01-07-2017', '02-07-2017')
-        self.assertEqual(list(data.values), self.values)
+        data = pi_point.point.recorded_values("01-07-2017", "02-07-2017")
+        assert list(data.values) == pi_point.values
 
-    def test_recorded_values_timestamps(self):
+    def test_recorded_values_timestamps(self, pi_point):
         """Test retrieving some recorded data from the server."""
-        data = self.point.recorded_values('01-07-2017', '02-07-2017')
-        self.assertEqual(list(data.index), self.timestamps)
+        data = pi_point.point.recorded_values("01-07-2017", "02-07-2017")
+        assert list(data.index) == pi_point.timestamps
 
-    def test_interpolated_values_values(self):
+    def test_interpolated_values_values(self, pi_point):
         """Test retrieving some interpolated data from the server."""
-        data = self.point.interpolated_values('01-07-2017', '02-07-2017', '1h')
-        self.assertEqual(list(data.values), self.values)
+        data = pi_point.point.interpolated_values("01-07-2017", "02-07-2017", "1h")
+        assert list(data.values) == pi_point.values
 
-    def test_interpolated_values_timestamps(self):
+    def test_interpolated_values_timestamps(self, pi_point):
         """Test retrieving some interpolated data from the server."""
-        data = self.point.interpolated_values('01-07-2017', '02-07-2017', '1h')
-        self.assertEqual(list(data.index), self.timestamps)
+        data = pi_point.point.interpolated_values("01-07-2017", "02-07-2017", "1h")
+        assert list(data.index) == pi_point.timestamps

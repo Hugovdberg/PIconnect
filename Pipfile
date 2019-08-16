@@ -7,21 +7,23 @@ name = "pypi"
 pandas = "*"
 wrapt = "*"
 future = "*"
+piconnect = {editable = true,path = "."}
 
 [dev-packages]
-bumpversion = "*"
-watchdog = "*"
-"flake8" = "*"
+black = "*"
 tox = "*"
 coverage = "*"
 cryptography = "*"
+mypy = "*"
+pylint = "*"
 pytest = "*"
 pytest-runner = "*"
 Sphinx = "*"
 PyYAML = "*"
-nose = "*"
 "doc8" = "*"
-"unittest2" = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true

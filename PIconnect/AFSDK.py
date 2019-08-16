@@ -1,6 +1,6 @@
-''' AFSDK
+""" AFSDK
     Loads the .NET libraries from the OSIsoft AF SDK
-'''
+"""
 # Copyright 2017 Hugo van den Berg, Stijn de Jong
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,13 +20,32 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 # pragma pylint: disable=unused-import
-from __future__ import (absolute_import, division,
-                        print_function, unicode_literals)
-from builtins import (bytes, dict, int, list, object, range, str,
-                      ascii, chr, hex, input, next, oct, open,
-                      pow, round, super,
-                      filter, map, zip)
+from __future__ import absolute_import, division, print_function, unicode_literals
+from builtins import (
+    bytes,
+    dict,
+    int,
+    list,
+    object,
+    range,
+    str,
+    ascii,
+    chr,
+    hex,
+    input,
+    next,
+    oct,
+    open,
+    pow,
+    round,
+    super,
+    filter,
+    map,
+    zip,
+)
+
 # pragma pylint: enable=unused-import
 import sys
 import os
@@ -36,32 +55,34 @@ try:
 
     # Get the installation directory from the environment variable or fall back
     # to the Windows default installation path
-    PIAF_SDK = os.getenv('PIHOME', 'C:\\Program Files\\PIPC')
-    PIAF_SDK += '\\AF\\PublicAssemblies\\4.0\\'
+    PIAF_SDK = os.getenv("PIHOME", "C:\\Program Files\\PIPC")
+    PIAF_SDK += "\\AF\\PublicAssemblies\\4.0\\"
     if not os.path.isdir(PIAF_SDK):
-        raise ImportError(
-            'PIAF SDK not found in %s, check installation' % PIAF_SDK)
+        raise ImportError("PIAF SDK not found in %s, check installation" % PIAF_SDK)
 
     sys.path.append(PIAF_SDK)
-    clr.AddReference('OSIsoft.AFSDK')  # pylint: disable=no-member
+    clr.AddReference("OSIsoft.AFSDK")  # pylint: disable=no-member
 
     from OSIsoft import AF  # pylint: wrong-import-position
 except ImportError:
     import enum
     import warnings
-    warnings.warn("Can't import the PI AF SDK, running in test mode",
-                  ImportWarning)
+
+    warnings.warn("Can't import the PI AF SDK, running in test mode", ImportWarning)
 
     # pragma pylint: disable=invalid-name, unused-argument, too-few-public-methods
     class AF:
         """Mock class of the AF namespace
         """
+
         class Data:
             """Mock class of the AF.Data namespace
             """
+
             class AFBoundaryType(enum.IntEnum):
                 """Mock class of the AF.Data.AFBoundaryType enumeration
                 """
+
                 Inside = 0
                 Outside = 1
                 Interpolated = 2
@@ -69,9 +90,11 @@ except ImportError:
         class PI:
             """Mock class of the AF.PI namespace
             """
+
             class PIPoint:
                 """Mock class of the AF.PI.PIPoint class
                 """
+
                 @staticmethod
                 def FindPIPoints(connection, query, source, attribute_names):
                     """Stub to mock querying PIPoints
@@ -98,6 +121,7 @@ except ImportError:
             class PIServers:
                 """Mock class of the AF.PI.PIServers class
                 """
+
                 DefaultPIServer = None
 
                 def __init__(self):
@@ -105,7 +129,7 @@ except ImportError:
 
                 def _init(self):
                     if not self.DefaultPIServer:
-                        self.DefaultPIServer = AF.PI.PIServer('Testing')
+                        self.DefaultPIServer = AF.PI.PIServer("Testing")
 
                 def __iter__(self):
                     self._init()
@@ -124,17 +148,18 @@ except ImportError:
 
             def __init__(self, name):
                 self.Name = name
-                self.Elements = [AF.AFElement('TestElement')]
+                self.Elements = [AF.AFElement("TestElement")]
 
         class PISystem:
             """Mock class of the AF.PISystem class
             """
+
             class InternalDatabases:
                 """Mock class for the AF.PISystem.Databases property
                 """
 
                 def __init__(self):
-                    self.DefaultDatabase = AF.AFDatabase('TestDatabase')
+                    self.DefaultDatabase = AF.AFDatabase("TestDatabase")
 
                 def __iter__(self):
                     return (x for x in [self.DefaultDatabase])
@@ -157,6 +182,7 @@ except ImportError:
         class PISystems:
             """Mock class of the AF.PISystems class
             """
+
             DefaultPISystem = None
 
             def __init__(self):
@@ -164,7 +190,7 @@ except ImportError:
 
             def _init(self):
                 if not self.DefaultPISystem:
-                    self.DefaultPISystem = AF.PISystem('TestingAF')
+                    self.DefaultPISystem = AF.PISystem("TestingAF")
 
             def __iter__(self):
                 self._init()
@@ -173,6 +199,7 @@ except ImportError:
         class Time:
             """Mock class of the AF.Time namespace
             """
+
             class AFTimeRange:
                 """Mock class of the AF.Time.AFTimeRange class
                 """
@@ -192,4 +219,5 @@ except ImportError:
                     """Stub for parsing strings that should return a AFTimeSpan
                     """
                     return AF.Time.AFTimeSpan()
+
     # pragma pylint: enable=invalid-name, unused-argument, too-few-public-methods
