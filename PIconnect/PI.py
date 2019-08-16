@@ -59,11 +59,22 @@ from PIconnect.PIData import PISeries, PISeriesContainer
 
 
 class PIServer(object):  # pylint: disable=useless-object-inheritance
-    """Context manager for connections to a PI server."""
+    """PIServer is a connection to a OSIsoft PI Server
+
+    Args:
+        server (str, optional): Name of the server to connect to, defaults to None
+
+    .. note::
+        If the specified `server` is unknown a warning is thrown and the connection
+        is redirected to the default server, as if no server was passed. The list
+        of known servers is available in the `PIServer.servers` dictionary.
+    """
 
     version = "0.2.1"
 
+    #: Dictionary of known servers, as reported by the SDK
     servers = {server.Name: server for server in AF.PI.PIServers()}
+    #: Default server, as reported by the SDK
     default_server = AF.PI.PIServers().DefaultPIServer
 
     def __init__(self, server=None):
@@ -87,15 +98,27 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
 
     @property
     def server_name(self):
-        """Return the name of the connected PI server as a string."""
+        """server_name
+
+        Name of the connected server
+        """
         return self.connection.Name
 
     def search(self, query, source=None):
-        """Search for tags on the connected PI server
+        """search
 
-           PI Points are matched to *query*, which can be provided as a string or
-           a list of strings. In either case a single, unnested, list of
-           PIconnect.PI.PIPoints is returned.
+        Search PIPoints on the PIServer
+
+        Args:
+            query (str or [str]): String or list of strings with queries
+            source (str, optional): Defaults to None. Point source to limit the results
+
+        Returns:
+            list: A list of :class:`PIPoint` objects as a result of the query
+
+        .. todo::
+
+            Reject searches while not connected
         """
         if isinstance(query, list):
             return [y for x in query for y in self.search(x, source)]
@@ -117,9 +140,12 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
     attributes=["pi_point"],
 )
 class PIPoint(PISeriesContainer):
-    """Reference to a PI Point to get data and corresponding metadata from the server.
+    """PIPoint
 
-        TODO: Build a PI datacontainer from which PIPoint and PIAFAttribute subclass.
+    Reference to a PI Point to get data and corresponding metadata from the server.
+
+    Args:
+        pi_point (AF.PI.PIPoint): Reference to a PIPoint as returned by the SDK
     """
 
     version = "0.3.0"
@@ -163,7 +189,9 @@ class PIPoint(PISeriesContainer):
     def description(self):
         """Return the description of the PI Point.
 
-        TODO: Add setter to alter displayed description
+        .. todo::
+
+            Add setter to alter displayed description
         """
         self.__load_attributes()
         return self.__raw_attributes["descriptor"]

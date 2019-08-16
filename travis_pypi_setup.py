@@ -59,7 +59,9 @@ def fetch_public_key(repo):
     Travis API docs: http://docs.travis-ci.com/api/#repository-keys
     """
     keyurl = "https://api.travis-ci.org/repos/{0}/key".format(repo)
-    data = json.loads(urlopen(keyurl).read().decode())
+    # Added nosec comment to ignore urlopen security issuem since we use a
+    # hardcoded URL.
+    data = json.loads(urlopen(keyurl).read().decode())  # nosec
     if "key" not in data:
         errmsg = "Could not find public key for repo: {}.\n".format(repo)
         errmsg += "Have you already added your GitHub repo to Travis?"
@@ -81,7 +83,7 @@ def prepend_line(filepath, line):
 def load_yaml_config(filepath):
     """Load yaml config file at the given path."""
     with open(filepath) as f:
-        return yaml.load(f)
+        return yaml.safe_load(f)
 
 
 def save_yaml_config(filepath, config):
