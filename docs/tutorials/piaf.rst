@@ -1,6 +1,6 @@
-==============================
+##############################
 Connecting to a PI AF Database
-==============================
+##############################
 
 To retrieve data from the PI Asset Framework, the :any:`PIAFDatabase` object
 should be used. The following code connects to the default database on the
@@ -38,3 +38,26 @@ To get the data for the last 48 hours from a given attribute you need the
         attribute = next(iter(element.attributes.values()))
         data = attribute.recorded_values('*-48h', '*')
         print(data)
+
+.. note:: Attributes on root elements within the database might not have
+          meaningful summaries. To get a better result take a look at
+          :ref:`finding_descendants` below.
+
+.. _finding_descendants:
+
+************************************
+Finding descendants in the hierarchy
+************************************
+
+Whilst it is possible to traverse the hierarchy one at a time, by using the
+:any:`PIAFElement.children` dictionaries, it is also possible to get a
+further descendant using the :any:`PIAFElement.descendant` method. Assuming
+the database has a root element called `Plant1` with a child element `Outlet`,
+the latter element could be accessed directly as follows::
+
+    with PI.PIAFDatabase() as database:
+        element = database.descendant(r'Plant1\Outlet')
+
+.. note:: Elements in the hierarchy are separated by a single backslash `\`,
+          use either raw strings (using the `r` prefix, as in the example
+          above) or escape each backslash as `\\`.
