@@ -2,6 +2,7 @@
 Extracting summaries
 ####################
 
+
 ***********************************************
 Extracting a summary for a single time interval
 ***********************************************
@@ -9,7 +10,9 @@ Extracting a summary for a single time interval
 The PI system allows multiple types of summaries to be calculated from data.
 To get the maximum value of a :any:`PIPoint` in the last 14 days, you would
 use the :any:`PIPoint.summary` method. This takes at least three arguments,
-`start_time`, `end_time` and `summary_types`, as shown in the following code::
+`start_time`, `end_time` and `summary_types`, as shown in the following code:
+
+.. code-block:: python
 
     import PIconnect as PI
     from PIconnect.PIConsts import SummaryType
@@ -22,7 +25,9 @@ use the :any:`PIPoint.summary` method. This takes at least three arguments,
 The returned `data` is a :class:`pandas.DataFrame` with the timestamps as
 index and a column for each requested summary. The timestamp in this case
 is the datetime at which the maximum occurred. This is more obvious when
-requesting multiple summaries over the same time span::
+requesting multiple summaries over the same time span:
+
+.. code-block:: python
 
     import PIconnect as PI
     from PIconnect.PIConsts import SummaryType
@@ -33,7 +38,9 @@ requesting multiple summaries over the same time span::
         print(data)
 
 Similarly, a :any:`PIAFAttribute` also has a :any:`PIAFAttribute.summary`
-method, that works in the same way::
+method, that works in the same way:
+
+.. code-block:: python
 
     import PIconnect as PI
     from PIconnect.PIConsts import SummaryType
@@ -61,7 +68,9 @@ There are two possibilities for the timestamp, the beginning of the requested
 time interval, or the end of the interval. Which to return is specified using
 the `time_type` argument. To always return the beginning of the interval, you
 should use the :any:`TimestampCalculation.EARLIEST_TIME` constant from
-:any:`PIConsts`::
+:any:`PIConsts`:
+
+.. code-block:: python
 
     import PIconnect as PI
     from PIconnect.PIConsts import SummaryType, TimestampCalculation
@@ -77,7 +86,9 @@ should use the :any:`TimestampCalculation.EARLIEST_TIME` constant from
         print(data)
 
 Similarly, the :any:`TimestampCalculation.MOST_RECENT_TIME` constant always
-returns the time at the end of the interval::
+returns the time at the end of the interval:
+
+.. code-block:: python
 
     import PIconnect as PI
     from PIconnect.PIConsts import SummaryType, TimestampCalculation
@@ -102,7 +113,9 @@ it is stepped or continuous data.
 
 To get an unweighted summary, in which every event has equal weight, the
 :any:`CalculationBasis.EVENT_WEIGHTED` constant from the :any:`PIConsts`
-module should be used::
+module should be used:
+
+.. code-block:: python
 
     import PIconnect as PI
     from PIconnect.PIConsts import CalculationBasis, SummaryType
@@ -117,6 +130,7 @@ module should be used::
         )
         print(data)
 
+
 **********************************************
 Extracting summaries at regular time intervals
 **********************************************
@@ -126,7 +140,9 @@ possible to extract summaries at fixed intervals within a period of time. This
 is done using the :any:`PIPoint.summaries` or :any:`PIAFAttribute.summaries`
 methods. In addition to the singular :py:meth:`summary` method, this takes an
 `interval` as an argument. The following code extracts the maximum value for
-each hour within the last 14 days::
+each hour within the last 14 days:
+
+.. code-block:: python
 
     import PIconnect as PI
     from PIconnect.PIConsts import SummaryType
