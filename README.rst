@@ -1,6 +1,6 @@
-=========
+#########
 PIconnect
-=========
+#########
 
 A python connector to the OSISoft PI and PI-AF databases
 ========================================================
@@ -63,7 +63,8 @@ RtReports are all trademarks of OSIsoft, LLC.
 Credits
 ---------
 
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+This package was created with Cookiecutter_ and the
+`audreyr/cookiecutter-pypackage`_ project template.
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage

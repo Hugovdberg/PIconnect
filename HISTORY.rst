@@ -1,9 +1,8 @@
-=======
 History
 =======
 
-0.7.1 (?)
----------
+0.7.1 (2019-08-16)
+------------------
 
 * Improved documentation
 * Changed `PIData.PISeriesContainer` to an Abstract Base Class

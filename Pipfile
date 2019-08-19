@@ -21,6 +21,8 @@ pytest-runner = "*"
 Sphinx = "*"
 PyYAML = "*"
 "doc8" = "*"
+twine = "*"
+readme-renderer = "*"
 
 [requires]
 python_version = "3.7"
