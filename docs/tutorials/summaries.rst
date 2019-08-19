@@ -56,6 +56,8 @@ method, that works in the same way:
           meaningful summaries. To get a better result take a look at
           :ref:`finding_descendants`.
 
+.. _summary_timestamps:
+
 Summary timestamps
 ==================
 
@@ -102,6 +104,9 @@ returns the time at the end of the interval:
             time_type=TimestampCalculation.MOST_RECENT_TIME
         )
         print(data)
+
+
+.. _event_weighting:
 
 Event weighting
 ===============
