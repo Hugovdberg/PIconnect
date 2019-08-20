@@ -100,7 +100,10 @@ class PIAFDatabase(object):
         return self
 
     def __exit__(self, *args):
-        self.server.Disconnect()
+        pass
+        # Disabled disconnecting because garbage collection sometimes impedes
+        # connecting to another server later
+        # self.server.Disconnect()
 
     def __repr__(self):
         return "%s(\\\\%s\\%s)" % (
