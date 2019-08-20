@@ -62,7 +62,7 @@ the server to the :any:`PIServer` constructor.
     import PIconnect as PI
 
     with PI.PIServer(server='ServerName') as server:
-        print(server.name)
+        print(server.server_name)
 
 .. note:: When the server name is not found in the dictionary, a warning is
     raised and a connection to the default server is returned instead.
