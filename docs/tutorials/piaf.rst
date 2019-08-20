@@ -115,5 +115,14 @@ following code.
     import PIconnect as PI
     print(list(PI.PIAFDatabase.servers.keys()))
 
-.. note:: The database names are currently not loaded until a connection to
-    the server is made, this will change in a future release.
+A list of the databases on a given server can be retrieved from the same
+:any:`PIAFDatabase.servers` attribute. Each item in the dictionary of servers
+is a dictionary with two items, :data:`server` and :data:`databases`. The
+first contains the raw server object from the SDK, while the :data:`databases`
+item is a dictionary of {name: object} pairs. So to get the databases for a
+given server you can use the following code:
+
+.. code-block:: python
+
+    import PIconnect as PI
+    print(list(PI.PIAFDatabase.servers["ServerName"]["databases"].keys()))

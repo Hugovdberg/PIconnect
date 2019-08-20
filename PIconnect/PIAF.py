@@ -64,7 +64,7 @@ class PIAFDatabase(object):
     Context manager for connections to the PI Asset Framework database.
     """
 
-    version = "0.2.0"
+    version = "0.1.1"
 
     servers = {
         s.Name: {"server": s, "databases": {d.Name: d for d in s.Databases}}
