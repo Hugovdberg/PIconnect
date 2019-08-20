@@ -59,7 +59,15 @@ from PIconnect._operators import add_operators, OPERATORS
 
 
 class PIAFDatabase(object):
-    """Context manager for connections to the PI Asset Framework database."""
+    """PIAFDatabase
+
+    Context manager for connections to the PI Asset Framework database.
+
+    .. todo::
+
+        List databases at class loading and remove note in
+        :ref:`connect_piaf_database`.
+    """
 
     version = "0.1.0"
 
