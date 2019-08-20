@@ -23,7 +23,7 @@ as follows:
 
     with PI.PIAFDatabase() as database:
         for root in database.children.values():
-            print('Root element: {r}'.format(r=root))
+            print("Root element: {r}".format(r=root))
 
 The keys of the dictionary are the names of the elements inside. The following
 snippet first gets the first key in the dictionary, and the uses that to get
@@ -51,7 +51,7 @@ To get the data for the last 48 hours from a given attribute you need the
         key = next(iter(database.children))
         element = database.children[key]
         attribute = next(iter(element.attributes.values()))
-        data = attribute.recorded_values('*-48h', '*')
+        data = attribute.recorded_values("*-48h", "*")
         print(data)
 
 .. note:: Attributes on root elements within the database might not have
@@ -76,7 +76,7 @@ the latter element could be accessed directly as follows:
     import PIconnect as PI
 
     with PI.PIAFDatabase() as database:
-        element = database.descendant(r'Plant1\Outlet')
+        element = database.descendant(r"Plant1\Outlet")
 
 .. note:: Elements in the hierarchy are separated by a single backslash `\\`,
           use either raw strings (using the `r` prefix, as in the example
@@ -97,7 +97,7 @@ server and database as arguments to the :any:`PIAFDatabase` constructor.
 
     import PIconnect as PI
 
-    with PI.PIAFDatabase(server='ServerName', database='DatabaseName') as database:
+    with PI.PIAFDatabase(server="ServerName", database="DatabaseName") as database:
         print(database.server_name)
 
 .. note:: It is also possible to specify only server or database. When only
