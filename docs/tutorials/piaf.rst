@@ -81,3 +81,39 @@ the latter element could be accessed directly as follows:
 .. note:: Elements in the hierarchy are separated by a single backslash `\\`,
           use either raw strings (using the `r` prefix, as in the example
           above) or escape each backslash as `\\\\\\\\`.
+
+.. _connect_piaf_database:
+
+****************************************
+Connecting to other servers or databases
+****************************************
+
+When no arguments are passed to the :any:`PIAFDatabase` constructor, a
+connection is returned to the default database on the default server. It is
+possible to connect to other servers or databases, by passing the name of the
+server and database as arguments to the :any:`PIAFDatabase` constructor.
+
+.. code-block:: python
+
+    import PIconnect as PI
+
+    with PI.PIAFDatabase(server='ServerName', database='DatabaseName') as database:
+        print(database.server_name)
+
+.. note:: It is also possible to specify only server or database. When only
+    server is specified, a connection to the default database on that server
+    is returned. Similarly, when only a database is specified, the connection
+    is made to that database on the default server.
+
+A list of the available servers can be found in the
+:any:`PIAFDatabase.servers` attribute. This is a dictionary, where the keys
+are the server names. To get the list of server names you can use the
+following code.
+
+.. code-block:: python
+
+    import PIconnect as PI
+    print(list(PI.PIAFDatabase.servers.keys()))
+
+.. note:: The database names are currently not loaded until a connection to
+    the server is made, this will change in a future release.
