@@ -62,16 +62,14 @@ class PIAFDatabase(object):
     """PIAFDatabase
 
     Context manager for connections to the PI Asset Framework database.
-
-    .. todo::
-
-        List databases at class loading and remove note in
-        :ref:`connect_piaf_database`.
     """
 
-    version = "0.1.0"
+    version = "0.1.1"
 
-    servers = {x.Name: {"server": x, "databases": {}} for x in AF.PISystems()}
+    servers = {
+        s.Name: {"server": s, "databases": {d.Name: d for d in s.Databases}}
+        for s in AF.PISystems()
+    }
     default_server = servers[AF.PISystems().DefaultPISystem.Name]
 
     def __init__(self, server=None, database=None):
@@ -102,7 +100,10 @@ class PIAFDatabase(object):
         return self
 
     def __exit__(self, *args):
-        self.server.Disconnect()
+        pass
+        # Disabled disconnecting because garbage collection sometimes impedes
+        # connecting to another server later
+        # self.server.Disconnect()
 
     def __repr__(self):
         return "%s(\\\\%s\\%s)" % (
