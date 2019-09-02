@@ -63,7 +63,7 @@ twine==1.13.0
 typed-ast==1.4.0 ; implementation_name == 'cpython'
 typing-extensions==3.7.4
 urllib3==1.25.3
-virtualenv==16.7.3
+virtualenv==16.7.4
 wcwidth==0.1.7
 webencodings==0.5.1
 wrapt==1.11.2
