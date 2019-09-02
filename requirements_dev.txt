@@ -20,7 +20,7 @@ docutils==0.15.2
 filelock==3.0.12
 idna==2.8
 imagesize==1.1.0
-importlib-metadata==0.19 ; python_version < '3.8'
+importlib-metadata==0.20; python_version < '3.8'
 isort==4.3.21
 jinja2==2.10.1
 lazy-object-proxy==1.4.1
