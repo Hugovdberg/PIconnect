@@ -45,6 +45,9 @@ try:
     clr.AddReference("OSIsoft.AFSDK")  # pylint: disable=no-member
 
     from OSIsoft import AF  # pylint: wrong-import-position
+
+    AF_SDK_VERSION = AF.PISystems().Version
+    print("OSIsoft(r) AF SDK Version: {}".format(AF_SDK_VERSION))
 except ImportError:
     import enum
     import warnings
