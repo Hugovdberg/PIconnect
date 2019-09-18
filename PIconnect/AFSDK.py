@@ -53,7 +53,7 @@ except ImportError:
     import warnings
 
     warnings.warn("Can't import the PI AF SDK, running in test mode", ImportWarning)
-
+    AF_SDK_VERSION = "2.7_compatible"
     # pragma pylint: disable=invalid-name, unused-argument, too-few-public-methods
     class AF:
         """Mock class of the AF namespace"""
