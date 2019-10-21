@@ -14,7 +14,7 @@ chardet==3.0.4
 click==7.0
 colorama==0.4.1 ; sys_platform == 'win32'
 coverage==5.0a8
-cryptography==2.7
+cryptography==2.8
 doc8==0.8.0
 docutils==0.15.2
 filelock==3.0.12
