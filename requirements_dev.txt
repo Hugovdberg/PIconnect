@@ -13,7 +13,7 @@ cffi==1.13.2
 chardet==3.0.4
 click==7.0
 colorama==0.4.1 ; sys_platform == 'win32'
-coverage==5.0a6
+coverage==5.0a8
 cryptography==2.7
 doc8==0.8.0
 docutils==0.15.2
