@@ -13,8 +13,8 @@ Submodules
 .. toctree::
 
    PIconnect.AFSDK
+   PIconnect.config
    PIconnect.PI
    PIconnect.PIAF
    PIconnect.PIConsts
    PIconnect.PIData
-

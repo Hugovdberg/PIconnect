@@ -59,7 +59,7 @@ from PIconnect.PIData import PISeries, PISeriesContainer
 
 
 class PIServer(object):  # pylint: disable=useless-object-inheritance
-    """PIServer is a connection to a OSIsoft PI Server
+    """PIServer is a connection to an OSIsoft PI Server
 
     Args:
         server (str, optional): Name of the server to connect to, defaults to None
@@ -84,9 +84,8 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         self.connection = self.servers.get(server, self.default_server)
 
     def __enter__(self):
-        force_connection = (
-            False
-        )  # Don't force to retry connecting if previous attempt failed
+        # Don't force to retry connecting if previous attempt failed
+        force_connection = False
         self.connection.Connect(force_connection)
         return self
 
