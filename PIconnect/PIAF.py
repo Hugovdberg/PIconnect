@@ -70,7 +70,12 @@ class PIAFDatabase(object):
         s.Name: {"server": s, "databases": {d.Name: d for d in s.Databases}}
         for s in AF.PISystems()
     }
-    default_server = servers[AF.PISystems().DefaultPISystem.Name]
+    if AF.PISystems().DefaultPISystem:
+        default_server = servers[AF.PISystems().DefaultPISystem.Name]
+    elif len(servers) > 0:
+        default_server = servers[list(servers)[0]]
+    else:
+        default_server = None
 
     def __init__(self, server=None, database=None):
         self.server = None
