@@ -22,6 +22,7 @@
 # SOFTWARE.
 
 from PIconnect.AFSDK import AF
+from PIconnect.config import PIConfig
 from PIconnect.PI import PIServer
 from PIconnect.PIAF import PIAFDatabase
 
