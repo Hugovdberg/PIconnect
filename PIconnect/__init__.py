@@ -21,9 +21,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# pragma pylint: disable=unused-import
 from PIconnect.AFSDK import AF
 from PIconnect.config import PIConfig
 from PIconnect.PI import PIServer
 from PIconnect.PIAF import PIAFDatabase
+
+# pragma pylint: enable=unused-import
 
 __version__ = "0.7.1"
