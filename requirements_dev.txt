@@ -63,7 +63,7 @@ toml==0.10.0
 tox==3.14.3
 tqdm==4.42.0
 twine==3.1.1
-typed-ast==1.4.0 ; implementation_name == 'cpython' and python_version < '3.8'
+typed-ast==1.4.1; implementation_name == 'cpython' and python_version < '3.8'
 typing-extensions==3.7.4.1
 urllib3==1.25.7
 virtualenv==16.7.9
