@@ -15,7 +15,7 @@ colorama==0.4.3 ; platform_system == 'Windows'
 coverage==5.0.3
 cryptography==2.8
 doc8==0.8.0
-docutils==0.16rc1
+docutils==0.16
 filelock==3.0.12
 idna==2.8
 imagesize==1.2.0
