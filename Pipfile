@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 pandas = "*"
+pytz = "*"
 wrapt = "*"
 future = "*"
 piconnect = {editable = true,path = "."}
@@ -13,7 +14,6 @@ piconnect = {editable = true,path = "."}
 black = "*"
 tox = "*"
 coverage = "*"
-cryptography = "*"
 mypy = "*"
 pylint = "*"
 pytest = "*"
@@ -22,7 +22,6 @@ Sphinx = "*"
 PyYAML = "*"
 "doc8" = "*"
 twine = "*"
-readme-renderer = "*"
 
 [requires]
 python_version = "3.7"

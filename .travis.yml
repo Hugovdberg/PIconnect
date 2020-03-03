@@ -30,20 +30,10 @@ matrix:
     - python: 3.7
       env: TOXENV=py37
 
+    - python: 3.8
+      env: TOXENV=py38
+
   allow_failures:
     # - env: TOXENV=py27
     - env: TOXENV=mypy
     - env: TOXENV=pylint
-
-# After you create the Github repo and add it to Travis, run the
-# travis_pypi_setup.py script to finish PyPI deployment setup
-# deploy:
-#   provider: pypi
-#   distributions: sdist bdist_wheel
-#   user: Hugovdberg
-#   password:
-#     secure: PLEASE_REPLACE_ME
-#   on:
-#     tags: true
-#     repo: Hugovdberg/PIconnect
-#     python: 2.7
