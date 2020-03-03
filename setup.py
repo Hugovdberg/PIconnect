@@ -22,7 +22,7 @@ with open(path.join(HERE, "README.rst"), encoding="utf-8") as readme_file:
 with open(path.join(HERE, "HISTORY.rst"), encoding="utf-8") as history_file:
     HISTORY = history_file.read()
 
-LONG_DESCRIPTION = README + "\n\n" + HISTORY
+LONG_DESCRIPTION = (README + "\n\n" + HISTORY).replace("\r\n", "\n")
 
 if sys.version_info[:2] < (3, 4):
     REQUIREMENTS = ["enum34"]
@@ -41,7 +41,7 @@ TEST_REQUIREMENTS = ["pytest"]
 
 setup(
     name="PIconnect",
-    version="0.7.1",
+    version="0.8.0",
     description="Python connector to OSIsoft PI SDK",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/x-rst",

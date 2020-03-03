@@ -1,6 +1,15 @@
 History
 =======
 
+0.8.0 (2020-03-03)
+------------------
+
+* Added option to configure the timezone for the returned index. Changed default from Europe/Amsterdam to UTC! Adds `pytz` as new dependency(#499)
+* More robust detection of the default PI AF server (#496, #501)
+* Removed `pytest-runner` dependency unless explicitly requested (#503)
+* Exiting the context manager for a `PIAFDatabase` no longer explicitly disconnects from the server, but leaves it up to SDK. (#487)
+* Various updates of the package dependencies
+
 0.7.1 (2019-08-16)
 ------------------
 
