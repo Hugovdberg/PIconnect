@@ -22,7 +22,7 @@ with open(path.join(HERE, "README.rst"), encoding="utf-8") as readme_file:
 with open(path.join(HERE, "HISTORY.rst"), encoding="utf-8") as history_file:
     HISTORY = history_file.read()
 
-LONG_DESCRIPTION = README + "\n\n" + HISTORY
+LONG_DESCRIPTION = (README + "\n\n" + HISTORY).replace("\r\n", "\n")
 
 if sys.version_info[:2] < (3, 4):
     REQUIREMENTS = ["enum34"]
