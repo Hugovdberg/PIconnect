@@ -5,7 +5,7 @@ Credits
 Development Lead
 ----------------
 
-* Hugo van den Berg <hugo.van.den.berg@brabantwater.nl>
+* Hugo van den Berg <hugo.lapre@brabantwater.nl>
 
 Contributors
 ------------

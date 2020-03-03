@@ -23,7 +23,7 @@ as follows:
 
     with PI.PIAFDatabase() as database:
         for root in database.children.values():
-            print('Root element: {r}'.format(r=root))
+            print("Root element: {r}".format(r=root))
 
 The keys of the dictionary are the names of the elements inside. The following
 snippet first gets the first key in the dictionary, and the uses that to get
@@ -51,7 +51,7 @@ To get the data for the last 48 hours from a given attribute you need the
         key = next(iter(database.children))
         element = database.children[key]
         attribute = next(iter(element.attributes.values()))
-        data = attribute.recorded_values('*-48h', '*')
+        data = attribute.recorded_values("*-48h", "*")
         print(data)
 
 .. note:: Attributes on root elements within the database might not have
@@ -76,8 +76,53 @@ the latter element could be accessed directly as follows:
     import PIconnect as PI
 
     with PI.PIAFDatabase() as database:
-        element = database.descendant(r'Plant1\Outlet')
+        element = database.descendant(r"Plant1\Outlet")
 
 .. note:: Elements in the hierarchy are separated by a single backslash `\\`,
           use either raw strings (using the `r` prefix, as in the example
           above) or escape each backslash as `\\\\\\\\`.
+
+.. _connect_piaf_database:
+
+****************************************
+Connecting to other servers or databases
+****************************************
+
+When no arguments are passed to the :any:`PIAFDatabase` constructor, a
+connection is returned to the default database on the default server. It is
+possible to connect to other servers or databases, by passing the name of the
+server and database as arguments to the :any:`PIAFDatabase` constructor.
+
+.. code-block:: python
+
+    import PIconnect as PI
+
+    with PI.PIAFDatabase(server="ServerName", database="DatabaseName") as database:
+        print(database.server_name)
+
+.. note:: It is also possible to specify only server or database. When only
+    server is specified, a connection to the default database on that server
+    is returned. Similarly, when only a database is specified, the connection
+    is made to that database on the default server.
+
+A list of the available servers can be found in the
+:any:`PIAFDatabase.servers` attribute. This is a dictionary, where the keys
+are the server names. To get the list of server names you can use the
+following code.
+
+.. code-block:: python
+
+    import PIconnect as PI
+    print(list(PI.PIAFDatabase.servers.keys()))
+
+A list of the databases on a given server can be retrieved from the same
+:any:`PIAFDatabase.servers` attribute. Each item in the dictionary of servers
+is a dictionary with two items, :data:`server` and :data:`databases`. The
+first contains the raw server object from the SDK, while the :data:`databases`
+item is a dictionary of {name: object} pairs. So to get the databases for a
+given server you can use the following code:
+
+.. code-block:: python
+
+    import PIconnect as PI
+    print(list(PI.PIAFDatabase.servers["ServerName"]["databases"].keys()))
