@@ -29,7 +29,7 @@ if sys.version_info[:2] < (3, 4):
 else:
     REQUIREMENTS = []
 
-REQUIREMENTS += ["future", "pandas", "wrapt"]
+REQUIREMENTS += ["future", "pandas", "wrapt", "pytz"]
 if os.name == "nt":
     REQUIREMENTS += ["pythonnet"]
 
