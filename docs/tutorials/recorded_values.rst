@@ -4,22 +4,22 @@ Extracting recorded values
 
 The data in the PI archives are typically compressed. To get the exact values
 as they are stored in the archive, the `recorded_values` method should be
-used. This is available on both :any:`PIPoint`, and :any:`PIAFAttribute`
-objects. More information on the compression algortithm can be found in this
-youtube video:
+used. This is available on both :class:`~PIconnect.PI.PIPoint`, and
+:any:`PIAFAttribute` objects. More information on the compression algortithm
+can be found in this youtube video:
 `OSIsoft: Exception and Compression Full Details <https://youtu.be/89hg2mme7S0>`_.
 
-For simplicity this tutorial only uses :any:`PIPoint` objects, see the
-tutorial on :doc:`PI AF</tutorials/piaf>` to find how to access
+For simplicity this tutorial only uses :class:`~PIconnect.PI.PIPoint` objects,
+see the tutorial on :doc:`PI AF</tutorials/piaf>` to find how to access
 :any:`PIAFAttribute` objects.
 
 **************
 Boundary types
 **************
 
-The basic example takes the first :any:`PIPoint` that is returned by the
-server and gets the data for the last 48 hours, by specifying the `start_time`
-and `end_time` arguments to `recorded_values`:
+The basic example takes the first :class:`~PIconnect.PI.PIPoint` that is
+returned by the server and gets the data for the last 48 hours, by specifying
+the `start_time` and `end_time` arguments to `recorded_values`:
 
 .. code-block:: python
 
