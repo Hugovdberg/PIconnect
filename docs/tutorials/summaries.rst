@@ -8,9 +8,10 @@ Extracting a summary for a single time interval
 ***********************************************
 
 The PI system allows multiple types of summaries to be calculated from data.
-To get the maximum value of a :any:`PIPoint` in the last 14 days, you would
-use the :any:`PIPoint.summary` method. This takes at least three arguments,
-`start_time`, `end_time` and `summary_types`, as shown in the following code:
+To get the maximum value of a :class:`~PIconnect.PI.PIPoint` in the last 14
+days, you would use the :any:`PIPoint.summary` method. This takes at least
+three arguments, `start_time`, `end_time` and `summary_types`, as shown in
+the following code:
 
 .. code-block:: python
 
@@ -22,10 +23,10 @@ use the :any:`PIPoint.summary` method. This takes at least three arguments,
         data = points.summary('*-14d', '*', SummaryType.MAXIMUM)
         print(data)
 
-The returned `data` is a :class:`pandas.DataFrame` with the timestamps as
-index and a column for each requested summary. The timestamp in this case
-is the datetime at which the maximum occurred. This is more obvious when
-requesting multiple summaries over the same time span:
+The returned `data` is a :any:`pandas.DataFrame` with the timestamps as index
+and a column for each requested summary. The timestamp in this case is the
+datetime at which the maximum occurred. This is more obvious when requesting
+multiple summaries over the same time span:
 
 .. code-block:: python
 
