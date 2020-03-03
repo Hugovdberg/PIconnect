@@ -29,4 +29,4 @@ from PIconnect.PIAF import PIAFDatabase
 
 # pragma pylint: enable=unused-import
 
-__version__ = "0.7.1"
+__version__ = "0.8.0"
