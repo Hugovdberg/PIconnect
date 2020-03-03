@@ -33,7 +33,9 @@ REQUIREMENTS += ["future", "pandas", "wrapt"]
 if os.name == "nt":
     REQUIREMENTS += ["pythonnet"]
 
-SETUP_REQUIREMENTS = ["pytest-runner"]
+needs_pytest = {"pytest", "test", "ptr"}.intersection(sys.argv)
+pytest_runner = ["pytest-runner"] if needs_pytest else []
+SETUP_REQUIREMENTS = [] + pytest_runner
 
 TEST_REQUIREMENTS = ["pytest"]
 
@@ -75,6 +77,7 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
     ],
     test_suite="tests",
     tests_require=TEST_REQUIREMENTS,
