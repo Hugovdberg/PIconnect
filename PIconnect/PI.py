@@ -101,7 +101,10 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
             from System.Net import NetworkCredential
             from System.Security import SecureString
 
-            cred = [username, SecureString(password)] + ([domain] if domain else [])
+            secure_pass = SecureString()
+            for c in password:
+                secure_pass.append(c)
+            cred = [username, secure_pass] + ([domain] if domain else [])
             self._credentials = (NetworkCredential(*cred), int(authentication_mode))
         else:
             self._credentials = None
