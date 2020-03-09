@@ -84,7 +84,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         username=None,
         password=None,
         domain=None,
-        authentication_mode: AuthenticationMode = AuthenticationMode.PI_USER_AUTHENTICATION,
+        authentication_mode=AuthenticationMode.PI_USER_AUTHENTICATION,
     ):
         if server and server not in self.servers:
             message = 'Server "{server}" not found, using the default server.'
