@@ -6,6 +6,18 @@ except ImportError:
     IntFlag = IntEnum
 
 
+class AuthenticationMode(IntEnum):
+    """AuthenticationMode indicates how a user authenticates to a PI Server
+
+    Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_PI_PIAuthenticationMode.htm
+    """
+
+    #: Use Windows authentication when making a connection
+    WINDOWS_AUTHENTICATION = 0
+    #: Use the PI User authentication mode when making a connection
+    PI_USER_AUTHENTICATION = 1
+
+
 class CalculationBasis(IntEnum):
     """CalculationBasis indicates how values should be weighted over a time range
 
