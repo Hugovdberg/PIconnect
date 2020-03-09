@@ -184,6 +184,7 @@ except ImportError:
             """
 
             DefaultPISystem = None
+            Version = "0.0.0.0"
 
             def __init__(self):
                 self._init()
