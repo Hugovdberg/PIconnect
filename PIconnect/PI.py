@@ -103,7 +103,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
 
             secure_pass = SecureString()
             for c in password:
-                secure_pass.append(c)
+                secure_pass.AppendChar(c)
             cred = [username, secure_pass] + ([domain] if domain else [])
             self._credentials = (NetworkCredential(*cred), int(authentication_mode))
         else:
