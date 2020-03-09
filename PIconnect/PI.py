@@ -80,12 +80,12 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
 
     def __init__(
         self,
-        server: str = None,
-        username: str = None,
-        password: str = None,
-        domain: str = None,
+        server=None,
+        username=None,
+        password=None,
+        domain=None,
         authentication_mode: AuthenticationMode = AuthenticationMode.PI_USER_AUTHENTICATION,
-    ) -> None:
+    ):
         if server and server not in self.servers:
             message = 'Server "{server}" not found, using the default server.'
             warn(message=message.format(server=server), category=UserWarning)
