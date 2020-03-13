@@ -48,6 +48,7 @@ from PIconnect.config import PIConfig
 from PIconnect.PIConsts import (
     CalculationBasis,
     ExpressionSampleType,
+    RetrievalMode,
     SummaryType,
     TimestampCalculation,
     get_enumerated_value,
@@ -209,7 +210,7 @@ class PISeriesContainer(ABC):
             uom=self.units_of_measurement,
         )
 
-    def recorded_value(self, time, retrieval_mode=0):
+    def recorded_value(self, time, retrieval_mode=RetrievalMode.AUTO):
         """recorded_value
 
         Return a PISeries with the recorded value at or close to the given time

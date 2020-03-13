@@ -52,6 +52,26 @@ class ExpressionSampleType(IntEnum):
     INTERVAL = 1
 
 
+class RetrievalMode(IntEnum):
+    """RetrievalMode indicates which recorded value should be returned
+
+    Detailed information is available at :afsdk:`AF.Data.AFRetrievalMode <T_OSIsoft_AF_Data_AFRetrievalMode.htm>`.
+    """
+
+    #: Autmatic detection
+    AUTO = 0
+    #: At the exact time if available, else the first before the requested time
+    AT_OR_BEFORE = 1
+    #: The first before the requested time
+    BEFORE = 6
+    #: At the exact time if available, else the first after the requested time
+    AT_OR_AFTER = 2
+    #: The first after the requested time
+    AFTER = 7
+    #: At the exact time if available, else return an error
+    EXACT = 4
+
+
 class SummaryType(IntFlag):
     """SummaryType indicates which types of summary should be calculated.
 
