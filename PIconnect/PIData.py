@@ -145,6 +145,14 @@ class PISeriesContainer(ABC):
         pass
 
     @abstractmethod
+    def _interpolated_value(self, time):
+        pass
+
+    @abstractmethod
+    def _recorded_value(self, time, retrieval_mode):
+        pass
+
+    @abstractmethod
     def _summary(self, time_range, summary_types, calculation_basis, time_type):
         pass
 
@@ -187,6 +195,34 @@ class PISeriesContainer(ABC):
         Return the current value of the attribute."""
         return self._current_value()
 
+    def interpolated_value(self, time):
+        """interpolated_value
+
+        Return a PISeries with an interpolated value at the given time
+        """
+        time = AF.Time.AFTime(time)
+        pivalue = self._interpolated_value(time)
+        return PISeries(
+            tag=self.name,
+            value=pivalue.Value,
+            timestamp=[PISeries.timestamp_to_index(pivalue.Timestamp.UtcTime)],
+            uom=self.units_of_measurement,
+        )
+
+    def recorded_value(self, time, retrieval_mode=0):
+        """recorded_value
+
+        Return a PISeries with the recorded value at or close to the given time
+        """
+        time = AF.Time.AFTime(time)
+        pivalue = self._recorded_value(time, retrieval_mode)
+        return PISeries(
+            tag=self.name,
+            value=pivalue.Value,
+            timestamp=[PISeries.timestamp_to_index(pivalue.Timestamp.UtcTime)],
+            uom=self.units_of_measurement,
+        )
+
     def recorded_values(
         self, start_time, end_time, boundary_type="inside", filter_expression=""
     ):
@@ -203,7 +239,7 @@ class PISeriesContainer(ABC):
         the first value after *start_time* to the last value before *end_time*.
         The other options are 'outside', which returns from the last value
         before *start_time* to the first value before *end_time*, and
-        'interpolate', which interpolates the  first value to the given
+        'interpolate', which interpolates the first value to the given
         *start_time* and the last value to the given *end_time*.
 
         *filter_expression* is an optional string to filter the returned

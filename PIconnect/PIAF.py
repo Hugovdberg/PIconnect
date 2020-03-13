@@ -237,6 +237,14 @@ class PIAFAttribute(PISeriesContainer):
     def _current_value(self):
         return self.attribute.GetValue().Value
 
+    def _interpolated_value(self, time):
+        return self.attribute.Data.InterpolatedValue(time, self.attribute.DefaultUOM)
+
+    def _recorded_value(self, time, retrieval_mode):
+        return self.attribute.Data.RecordedValue(
+            time, int(retrieval_mode), self.attribute.DefaultUOM
+        )
+
     def _recorded_values(self, time_range, boundary_type, filter_expression):
         include_filtered_values = False
         return self.attribute.Data.RecordedValues(
