@@ -200,6 +200,15 @@ class PISeriesContainer(ABC):
         """interpolated_value
 
         Return a PISeries with an interpolated value at the given time
+
+        Args:
+            time (str): String containing the date, and possibly time,
+                for which to retrieve the value. This is parsed, using
+                :afsdk:`AF.Time.AFTime <M_OSIsoft_AF_Time_AFTime__ctor_7.htm>`.
+
+        Returns:
+            PISeries: A PISeries with a single row, with the corresponding time as
+                the index
         """
         time = AF.Time.AFTime(time)
         pivalue = self._interpolated_value(time)
@@ -214,6 +223,18 @@ class PISeriesContainer(ABC):
         """recorded_value
 
         Return a PISeries with the recorded value at or close to the given time
+
+        Args:
+            time (str): String containing the date, and possibly time,
+                for which to retrieve the value. This is parsed, using
+                :afsdk:`AF.Time.AFTime <M_OSIsoft_AF_Time_AFTime__ctor_7.htm>`.
+            retrieval_mode (int or :any:`PIConsts.RetrievalMode`): Flag determining
+                which value to return if no value available at the exact requested
+                time.
+
+        Returns:
+            PISeries: A PISeries with a single row, with the corresponding time as
+                the index
         """
         time = AF.Time.AFTime(time)
         pivalue = self._recorded_value(time, retrieval_mode)
