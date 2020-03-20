@@ -9,7 +9,7 @@ except ImportError:
 class AuthenticationMode(IntEnum):
     """AuthenticationMode indicates how a user authenticates to a PI Server
 
-    Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_PI_PIAuthenticationMode.htm
+    Detailed information is available at :afsdk:`AF.PI.PIAuthenticationMode <T_OSIsoft_AF_PI_PIAuthenticationMode.htm>`.
     """
 
     #: Use Windows authentication when making a connection
@@ -21,7 +21,7 @@ class AuthenticationMode(IntEnum):
 class CalculationBasis(IntEnum):
     """CalculationBasis indicates how values should be weighted over a time range
 
-    Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_Data_AFCalculationBasis.htm
+    Detailed information is available at :afsdk:`AF.Data.AFCalculationBasis <T_OSIsoft_AF_Data_AFCalculationBasis.htm>`.
     """
 
     #: Each event is weighted according to the time over which it applies.
@@ -43,7 +43,7 @@ class CalculationBasis(IntEnum):
 class ExpressionSampleType(IntEnum):
     """ExpressionSampleType indicates how expressions are evaluated over a time range.
 
-    Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_Data_AFSampleType.htm
+    Detailed information is available at :afsdk:`AF.Data.AFSampleType <T_OSIsoft_AF_Data_AFSampleType.htm>`.
     """
 
     #: The expression is evaluated at each archive event.
@@ -83,7 +83,7 @@ class SummaryType(IntFlag):
     <SummaryType.MAXIMUM|MINIMUM: 12>  # On Python 3.6+
     12  # On previous versions
 
-    Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_Data_AFSummaryTypes.htm
+    Detailed information is available at :afsdk:`AF.Data.AFSummaryTypes <T_OSIsoft_AF_Data_AFSummaryTypes.htm>`.
     """
 
     #: No summary data
@@ -118,7 +118,7 @@ class TimestampCalculation(IntEnum):
     """
     TimestampCalculation defines the timestamp returned for a given summary calculation
 
-    Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_Data_AFTimestampCalculation.htm
+    Detailed information is available at :afsdk:`AF.Data.AFTimeStampCalculation <T_OSIsoft_AF_Data_AFTimestampCalculation.htm>`.
     """
 
     #: The timestamp is the event time of the minimum or maximum for those summaries or the beginning of the interval otherwise.
