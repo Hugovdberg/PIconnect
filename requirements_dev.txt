@@ -62,7 +62,7 @@ tox==3.15.2
 tqdm==4.46.1
 twine==3.1.1
 typed-ast==1.4.1 ; implementation_name == 'cpython' and python_version < '3.8'
-typing-extensions==3.7.4.1
+typing-extensions==3.7.4.2
 urllib3==1.25.8
 virtualenv==20.0.13
 wcwidth==0.1.8
