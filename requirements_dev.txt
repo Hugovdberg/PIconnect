@@ -36,7 +36,7 @@ pluggy==0.13.1
 py==1.8.2
 pygments==2.6.1
 pylint==2.5.3
-pyparsing==2.4.6
+pyparsing==2.4.7
 pytest-runner==5.2
 pytest==5.4.1
 pytz==2019.3
