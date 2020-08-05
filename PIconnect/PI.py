@@ -56,11 +56,10 @@ from warnings import warn
 from PIconnect._operators import OPERATORS, add_operators
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer
-from PIconnect.PIConsts import AuthenticationMode
 
 
 class PIServer(object):  # pylint: disable=useless-object-inheritance
-    """PIServer is a connection to an OSIsoft PI Server
+    """PIServer is a connection to a OSIsoft PI Server
 
     Args:
         server (str, optional): Name of the server to connect to, defaults to None
@@ -78,45 +77,17 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
     #: Default server, as reported by the SDK
     default_server = AF.PI.PIServers().DefaultPIServer
 
-    def __init__(
-        self,
-        server=None,
-        username=None,
-        password=None,
-        domain=None,
-        authentication_mode=AuthenticationMode.PI_USER_AUTHENTICATION,
-    ):
+    def __init__(self, server=None):
         if server and server not in self.servers:
             message = 'Server "{server}" not found, using the default server.'
             warn(message=message.format(server=server), category=UserWarning)
-        if bool(username) != bool(password):
-            raise ValueError(
-                "When passing credentials both the username and password must be specified."
-            )
-        if domain and not username:
-            raise ValueError(
-                "A domain can only specified together with a username and password."
-            )
-        if username:
-            from System.Net import NetworkCredential
-            from System.Security import SecureString
-
-            secure_pass = SecureString()
-            for c in password:
-                secure_pass.AppendChar(c)
-            cred = [username, secure_pass] + ([domain] if domain else [])
-            self._credentials = (NetworkCredential(*cred), int(authentication_mode))
-        else:
-            self._credentials = None
         self.connection = self.servers.get(server, self.default_server)
 
     def __enter__(self):
-        if self._credentials:
-            self.connection.Connect(*self._credentials)
-        else:
-            # Don't force to retry connecting if previous attempt failed
-            force_connection = False
-            self.connection.Connect(force_connection)
+        force_connection = (
+            False
+        )  # Don't force to retry connecting if previous attempt failed
+        self.connection.Connect(force_connection)
         return self
 
     def __exit__(self, *args):
@@ -254,6 +225,10 @@ class PIPoint(PISeriesContainer):
         return self.pi_point.InterpolatedValues(
             time_range, interval, filter_expression, include_filtered_values
         )
+
+    def _update_value(self,value,update_option,buffer_option):
+        """ Interanal function to write to pi point"""
+        return self.pi_point.UpdateValue(value,update_option,buffer_option)
 
     def _summary(self, time_range, summary_types, calculation_basis, time_type):
         return self.pi_point.Summary(

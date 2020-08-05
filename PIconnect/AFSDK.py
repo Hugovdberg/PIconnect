@@ -75,6 +75,11 @@ except ImportError:
         """Mock class of the AF namespace
         """
 
+        class Asset:
+            """ Mock class of the AF.Asset namespace"""
+            class AFValue:
+                """" Mock class of the AF.Assets.AFValue """
+
         class Data:
             """Mock class of the AF.Data namespace
             """
@@ -184,7 +189,6 @@ except ImportError:
             """
 
             DefaultPISystem = None
-            Version = "0.0.0.0"
 
             def __init__(self):
                 self._init()

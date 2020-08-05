@@ -6,25 +6,25 @@ among :class:`PIPoint` and :class:`PIAFAttribute` objects.
 # pragma pylint: disable=unused-import
 from __future__ import absolute_import, division, print_function, unicode_literals
 from builtins import (
-    ascii,
     bytes,
-    chr,
     dict,
-    filter,
-    hex,
-    input,
     int,
     list,
-    map,
-    next,
     object,
+    range,
+    str,
+    ascii,
+    chr,
+    hex,
+    input,
+    next,
     oct,
     open,
     pow,
-    range,
     round,
-    str,
     super,
+    filter,
+    map,
     zip,
 )
 
@@ -44,7 +44,6 @@ import pytz
 from pandas import DataFrame, Series
 
 from PIconnect.AFSDK import AF
-from PIconnect.config import PIConfig
 from PIconnect.PIConsts import (
     CalculationBasis,
     ExpressionSampleType,
@@ -93,7 +92,7 @@ class PISeries(Series):
 
             Move outside as separate function?
         """
-        local_tz = pytz.timezone(PIConfig.DEFAULT_TIMEZONE)
+        local_tz = pytz.timezone("Europe/Amsterdam")
         return (
             datetime.datetime(
                 timestamp.Year,
@@ -142,6 +141,11 @@ class PISeriesContainer(ABC):
 
     @abstractmethod
     def _interpolated_values(self, time_range, interval, filter_expression):
+        """Abstract implementation for update value"""
+        pass
+
+    @abstractmethod
+    def _update_value(self, value,update_option,buffer_option):
         pass
 
     @abstractmethod
@@ -215,26 +219,21 @@ class PISeriesContainer(ABC):
 
         Args:
             start_time (str): String containing the date, and possibly time,
-                from which to retrieve the values. This is parsed, together
-                with `end_time`, using
-                :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
+                from which to retrieve the values.
             end_time (str): String containing the date, and possibly time,
-                until which to retrieve values. This is parsed, together
-                with `start_time`, using
-                :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
+                until which to retrieve values.
             boundary_type (str, optional): Defaults to 'inside'. Key from the
                 `__boundary_types` dictionary to describe how to handle the
                 boundaries of the time range.
             filter_expression (str, optional): Defaults to ''. Query on which
-                data to include in the results. See :ref:`filtering_values`
-                for more information on filter queries.
-
-        Returns:
-            PISeries: Timeseries of the values returned by the SDK
+                data to include in the results.
 
         Raises:
             ValueError: If the provided `boundary_type` is not a valid key a
                 `ValueError` is raised.
+
+        Returns:
+            PISeries: Timeseries of the values returned by the SDK
         """
 
         time_range = AF.Time.AFTimeRange(start_time, end_time)
@@ -276,19 +275,13 @@ class PISeriesContainer(ABC):
 
         Args:
             start_time (str): String containing the date, and possibly time,
-                from which to retrieve the values. This is parsed, together
-                with `end_time`, using
-                :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
+                from which to retrieve the values.
             end_time (str): String containing the date, and possibly time,
-                until which to retrieve values. This is parsed, together
-                with `start_time`, using
-                :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
+                until which to retrieve values.
             interval (str): String containing the interval at which to extract
-                data. This is parsed using
-                :afsdk:`AF.Time.AFTimeSpan.Parse <M_OSIsoft_AF_Time_AFTimeSpan_Parse_1.htm>`.
+                data.
             filter_expression (str, optional): Defaults to ''. Query on which
-                data to include in the results. See :ref:`filtering_values`
-                for more information on filter queries.
+                data to include in the results.
 
         Returns:
             PISeries: Timeseries of the values returned by the SDK
@@ -308,6 +301,9 @@ class PISeriesContainer(ABC):
             uom=self.units_of_measurement,
         )
 
+    def update_value(self,value,update_option,buffer_option):
+        self._update_value(value,update_option,buffer_option)
+
     def summary(
         self,
         start_time,
@@ -316,31 +312,7 @@ class PISeriesContainer(ABC):
         calculation_basis=CalculationBasis.TIME_WEIGHTED,
         time_type=TimestampCalculation.AUTO,
     ):
-        """summary
-
-        Return one or more summary values over a single time range.
-
-        Args:
-            start_time (str): String containing the date, and possibly time,
-                from which to retrieve the values. This is parsed, together
-                with `end_time`, using :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
-            end_time (str): String containing the date, and possibly time,
-                until which to retrieve values. This is parsed, together
-                with `start_time`, using :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
-            summary_types (int or PIConsts.SummaryType): Type(s) of summaries
-                of the data within the requested time range.
-            calculation_basis (int or PIConsts.CalculationBasis, optional):
-                Event weighting within an interval. See :ref:`event_weighting`
-                and :any:`CalculationBasis` for more information. Defaults to
-                CalculationBasis.TIME_WEIGHTED.
-            time_type (int or PIConsts.TimestampCalculation, optional):
-                Timestamp to return for each of the requested summaries. See
-                :ref:`summary_timestamps` and :any:`TimestampCalculation` for
-                more information. Defaults to TimestampCalculation.AUTO.
-
-        Returns:
-            pandas.DataFrame: Dataframe with the unique timestamps as row index
-                and the summary name as column name.
+        """Return one or more summary values over a single time range.
         """
         time_range = AF.Time.AFTimeRange(start_time, end_time)
         summary_types = int(summary_types)
@@ -370,33 +342,6 @@ class PISeriesContainer(ABC):
         """summaries
 
         Return one or more summary values for each interval within a time range
-
-        Args:
-            start_time (str): String containing the date, and possibly time,
-                from which to retrieve the values. This is parsed, together
-                with `end_time`, using
-                :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
-            end_time (str): String containing the date, and possibly time,
-                until which to retrieve values. This is parsed, together
-                with `start_time`, using
-                :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
-            interval (str): String containing the interval at which to extract
-                data. This is parsed using
-                :afsdk:`AF.Time.AFTimeSpan.Parse <M_OSIsoft_AF_Time_AFTimeSpan_Parse_1.htm>`.
-            summary_types (int or PIConsts.SummaryType): Type(s) of summaries
-                of the data within the requested time range.
-            calculation_basis (int or PIConsts.CalculationBasis, optional):
-                Event weighting within an interval. See :ref:`event_weighting`
-                and :any:`CalculationBasis` for more information. Defaults to
-                CalculationBasis.TIME_WEIGHTED.
-            time_type (int or PIConsts.TimestampCalculation, optional):
-                Timestamp to return for each of the requested summaries. See
-                :ref:`summary_timestamps` and :any:`TimestampCalculation` for
-                more information. Defaults to TimestampCalculation.AUTO.
-
-        Returns:
-            pandas.DataFrame: Dataframe with the unique timestamps as row index
-                and the summary name as column name.
         """
         time_range = AF.Time.AFTimeRange(start_time, end_time)
         interval = AF.Time.AFTimeSpan.Parse(interval)
@@ -430,47 +375,8 @@ class PISeriesContainer(ABC):
         filter_interval=None,
         time_type=None,
     ):
-        """filtered_summaries
-
+        """
         Return one or more summary values for each interval within a time range
-
-        Args:
-            start_time (str): String containing the date, and possibly time,
-                from which to retrieve the values. This is parsed, together
-                with `end_time`, using
-                :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
-            end_time (str): String containing the date, and possibly time,
-                until which to retrieve values. This is parsed, together
-                with `start_time`, using
-                :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
-            interval (str): String containing the interval at which to extract
-                data. This is parsed using
-                :afsdk:`AF.Time.AFTimeSpan.Parse <M_OSIsoft_AF_Time_AFTimeSpan_Parse_1.htm>`.
-            filter_expression (str, optional): Defaults to ''. Query on which
-                data to include in the results. See :ref:`filtering_values`
-                for more information on filter queries.
-            summary_types (int or PIConsts.SummaryType): Type(s) of summaries
-                of the data within the requested time range.
-            calculation_basis (int or PIConsts.CalculationBasis, optional):
-                Event weighting within an interval. See :ref:`event_weighting`
-                and :any:`CalculationBasis` for more information. Defaults to
-                CalculationBasis.TIME_WEIGHTED.
-            filter_evaluation (int or PIConsts,ExpressionSampleType, optional):
-                Determines whether the filter is applied to the raw events in
-                the database, of if it is applied to an interpolated series
-                with a regular interval. Defaults to
-                ExpressionSampleType.EXPRESSION_RECORDED_VALUES.
-            filter_interval (str, optional): String containing the interval at
-                which to extract apply the filter. This is parsed using
-                :afsdk:`AF.Time.AFTimeSpan.Parse <M_OSIsoft_AF_Time_AFTimeSpan_Parse_1.htm>`.
-            time_type (int or PIConsts.TimestampCalculation, optional):
-                Timestamp to return for each of the requested summaries. See
-                :ref:`summary_timestamps` and :any:`TimestampCalculation` for
-                more information. Defaults to TimestampCalculation.AUTO.
-
-        Returns:
-            pandas.DataFrame: Dataframe with the unique timestamps as row index
-                and the summary name as column name.
         """
         time_range = AF.Time.AFTimeRange(start_time, end_time)
         interval = AF.Time.AFTimeSpan.Parse(interval)

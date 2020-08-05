@@ -6,18 +6,6 @@ except ImportError:
     IntFlag = IntEnum
 
 
-class AuthenticationMode(IntEnum):
-    """AuthenticationMode indicates how a user authenticates to a PI Server
-
-    Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_PI_PIAuthenticationMode.htm
-    """
-
-    #: Use Windows authentication when making a connection
-    WINDOWS_AUTHENTICATION = 0
-    #: Use the PI User authentication mode when making a connection
-    PI_USER_AUTHENTICATION = 1
-
-
 class CalculationBasis(IntEnum):
     """CalculationBasis indicates how values should be weighted over a time range
 
@@ -108,7 +96,40 @@ class TimestampCalculation(IntEnum):
     #: The timestamp is always the end of the interval.
     MOST_RECENT_TIME = 2
 
+class UpdateOption(IntEnum):
+    """ 
+    Indicates how to treat duplicate values in the archive, when supported by the Data Reference 
 
+    Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_Data_AFUpdateOption.htm
+    """
+    # Add the value to the archive. If any values exist at the same time, will overwrite one of them and set its Substituted flag.
+    REPLACE = 0
+    # Add the value to the archive. Any existing values at the same time are not overwritten.
+    INSERT = 1
+    # Add the value to the archive only if no value exists at the same time. If a value already exists for that time, the passed value is ignored.
+    NOREPLACE = 2
+    # Replace an existing value in the archive at the specified time. If no existing value is found, the passed value is ignored.
+    REPLACEONLY = 3
+    # Add the value to the archive without compression. If this value is written to the snapshot, the previous snapshot value will be written to the archive, 
+    # without regard to compression settings. Note that if a subsequent snapshot value is written without the InsertNoCompression option, 
+    # the value added with the InsertNoCompression option is still subject to compression.
+    INSERTNOCOMPRESSION = 5
+    # Remove the value from the archive if a value exists at the passed time.
+    REMOVE = 6
+
+class BufferOption(IntEnum):
+    """
+    Indicates buffering option in updating values, when supported by the Data Reference.
+
+    Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_Data_AFBufferOption.htm
+    """
+    # Updating data reference values without buffer.
+    DONOTBUFFER	= 0
+    # Try updating data reference values with buffer. If fails (e.g. data reference AFDataMethods does not support Buffering, or its Buffering system is not available), then try updating directly without buffer.
+    BUFFERIFPOSSIBLE = 1
+    # Updating data reference values with buffer.
+    BUFFER = 2
+    
 def get_enumerated_value(enumeration, value, default):
     if not value:
         return default
