@@ -24,7 +24,5 @@ buffer_option as AFBufferOption
 
     points = server.search(tag)[0]
     # teste write
-    val = PI.AF.Asset.AFValue()
-    val.Value = 1.0
 
-    points.update_value(val,UpdateOption.REPLACE,BufferOption.BUFFERIFPOSSIBLE)
+    points.update_value(1.0,UpdateOption.REPLACE,BufferOption.BUFFERIFPOSSIBLE)
