@@ -302,7 +302,9 @@ class PISeriesContainer(ABC):
         )
 
     def update_value(self,value,update_option,buffer_option):
-        self._update_value(value,update_option,buffer_option)
+        val = AF.Asset.AFValue()
+        val.Value = value
+        self._update_value(val,update_option,buffer_option)
 
     def summary(
         self,

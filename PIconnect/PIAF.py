@@ -245,6 +245,7 @@ class PIAFAttribute(PISeriesContainer):
         )
     
     def _update_value(self,value,update_option,buffer_option):
+        """ Internal function to write to pi point"""
         return self.attribute.Data.UpdateValue(
             value,
             update_option,

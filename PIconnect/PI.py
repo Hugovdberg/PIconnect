@@ -227,7 +227,7 @@ class PIPoint(PISeriesContainer):
         )
 
     def _update_value(self,value,update_option,buffer_option):
-        """ Interanal function to write to pi point"""
+        """ Internal function to write to pi point"""
         return self.pi_point.UpdateValue(value,update_option,buffer_option)
 
     def _summary(self, time_range, summary_types, calculation_basis, time_type):

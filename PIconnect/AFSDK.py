@@ -78,7 +78,7 @@ except ImportError:
         class Asset:
             """ Mock class of the AF.Asset namespace"""
             class AFValue:
-                """" Mock class of the AF.Assets.AFValue """
+                """" Mock class of the AF.Assets.AFValue class"""
 
         class Data:
             """Mock class of the AF.Data namespace
