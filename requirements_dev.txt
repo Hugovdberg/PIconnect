@@ -35,7 +35,7 @@ pkginfo==1.5.0.1
 pluggy==0.13.1
 py==1.9.0
 pygments==2.7.1
-pylint==2.4.4
+pylint==2.6.0
 pyparsing==2.4.6
 pytest-runner==5.2
 pytest==5.4.1
