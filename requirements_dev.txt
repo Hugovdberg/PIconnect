@@ -30,7 +30,7 @@ mypy-extensions==0.4.3
 mypy==0.790
 packaging==20.4
 pathspec==0.8.0
-pbr==5.4.4
+pbr==5.5.0
 pkginfo==1.5.0.1
 pluggy==0.13.1
 py==1.8.1
