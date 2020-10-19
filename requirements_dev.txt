@@ -59,7 +59,7 @@ sphinxcontrib-serializinghtml==1.1.4
 stevedore==3.2.2
 toml==0.10.1
 tox==3.20.1
-tqdm==4.43.0
+tqdm==4.50.2
 twine==3.1.1
 typed-ast==1.4.1 ; implementation_name == 'cpython' and python_version < '3.8'
 typing-extensions==3.7.4.1
