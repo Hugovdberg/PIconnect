@@ -38,7 +38,7 @@ pygments==2.7.2
 pylint==2.6.0
 pyparsing==2.4.7
 pytest-runner==5.2
-pytest==5.4.1
+pytest==6.1.2
 pytz==2019.3
 pywin32-ctypes==0.2.0 ; sys_platform == 'win32'
 pyyaml==5.3.1
