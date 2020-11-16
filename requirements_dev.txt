@@ -9,7 +9,7 @@ black==20.8b1
 bleach==3.2.1
 certifi==2020.11.8
 chardet==3.0.4
-click==7.1.1
+click==7.1.2
 colorama==0.4.3 ; platform_system == 'Windows'
 coverage==5.0.4
 distlib==0.3.0
