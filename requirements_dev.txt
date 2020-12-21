@@ -49,7 +49,7 @@ requests==2.25.1
 restructuredtext-lint==1.3.2
 six==1.15.0
 snowballstemmer==2.0.0
-sphinx==2.4.4
+sphinx==3.4.0
 sphinxcontrib-applehelp==1.0.2
 sphinxcontrib-devhelp==1.0.2
 sphinxcontrib-htmlhelp==1.0.3
