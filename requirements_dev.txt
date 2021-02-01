@@ -34,7 +34,7 @@ pbr==5.5.1
 pkginfo==1.7.0
 pluggy==0.13.1
 py==1.10.0
-pygments==2.6.1
+pygments==2.7.4
 pylint==2.4.4
 pyparsing==2.4.6
 pytest-runner==5.2
