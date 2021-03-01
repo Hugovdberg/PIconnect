@@ -10,7 +10,7 @@ bleach==3.3.0
 certifi==2020.12.5
 chardet==4.0.0
 click==7.1.2
-colorama==0.4.3 ; platform_system == 'Windows'
+colorama==0.4.4; platform_system == 'Windows'
 coverage==5.0.4
 distlib==0.3.0
 doc8==0.8.0
