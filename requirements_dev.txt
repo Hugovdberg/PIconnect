@@ -22,7 +22,7 @@ importlib-metadata==3.7.3; python_version < '3.8'
 isort==5.7.0
 jinja2==3.0.0a1
 keyring==23.0.0
-lazy-object-proxy==1.4.3
+lazy-object-proxy==1.5.2
 markupsafe==1.1.1
 mccabe==0.6.1
 more-itertools==8.2.0
