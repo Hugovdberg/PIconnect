@@ -1,6 +1,6 @@
 -i https://pypi.org/simple
 alabaster==0.7.12
-appdirs==1.4.3
+appdirs==1.4.4
 astroid==2.3.3
 atomicwrites==1.3.0 ; sys_platform == 'win32'
 attrs==19.3.0
