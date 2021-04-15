@@ -66,10 +66,14 @@ class PIAFDatabase(object):
 
     version = "0.1.1"
 
-    servers = {
-        s.Name: {"server": s, "databases": {d.Name: d for d in s.Databases}}
-        for s in AF.PISystems()
-    }
+    servers = dict()
+
+    for s in AF.PISystems():
+        try:
+            servers[s.Name] = {"server": s, "databases": {d.Name: d for d in s.Databases}}
+        except:
+            print(s.Name, " failed to connect.")
+            
     if AF.PISystems().DefaultPISystem:
         default_server = servers[AF.PISystems().DefaultPISystem.Name]
     elif len(servers) > 0:
