@@ -12,7 +12,7 @@ chardet==4.0.0
 click==7.1.2
 colorama==0.4.4; platform_system == 'Windows'
 coverage==5.5
-distlib==0.3.0
+distlib==0.3.1
 doc8==0.8.0
 docutils==0.16
 filelock==3.0.12
