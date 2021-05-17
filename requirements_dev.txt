@@ -3,7 +3,7 @@ alabaster==0.7.12
 appdirs==1.4.4
 astroid==2.5.6
 atomicwrites==1.4.0; sys_platform == 'win32'
-attrs==19.3.0
+attrs==21.2.0
 babel==2.8.0
 black==19.10b0
 bleach==3.1.3
