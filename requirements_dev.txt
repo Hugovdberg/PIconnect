@@ -31,7 +31,7 @@ mypy==0.812
 packaging==20.9
 pathspec==0.8.1
 pbr==5.6.0
-pkginfo==1.5.0.1
+pkginfo==1.7.0
 pluggy==0.13.1
 py==1.8.1
 pygments==2.6.1
