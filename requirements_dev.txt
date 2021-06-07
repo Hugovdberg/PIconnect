@@ -68,4 +68,4 @@ virtualenv==20.4.7
 wcwidth==0.2.5
 webencodings==0.5.1
 wrapt==1.12.1
-zipp==3.1.0
+zipp==3.4.1
