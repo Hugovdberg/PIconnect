@@ -20,7 +20,7 @@ idna==3.2
 imagesize==1.2.0
 importlib-metadata==4.5.0; python_version < '3.8'
 isort==5.8.0
-jinja2==3.0.0a1
+jinja2==3.0.1
 keyring==21.2.0
 lazy-object-proxy==1.4.3
 markupsafe==1.1.1
