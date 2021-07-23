@@ -45,7 +45,12 @@ Python connector to OSIsoft PI SDK
 Features
 --------
 
-* TODO
+* Get PI tag value(s) from both: PI Server or PIAF Database
+    * recorded values
+    * time interpolated values
+* Update tag value
+* Summarize data before extract in OSIsoft PI SDK
+* Filter data as well
 
 Copyright notice
 ================
