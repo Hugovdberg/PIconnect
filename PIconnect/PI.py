@@ -113,7 +113,6 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
             self._credentials = (NetworkCredential(*cred), int(authentication_mode))
         else:
             self._credentials = None
-
         self.connection = self.servers.get(server, self.default_server)
 
         if timeout:
