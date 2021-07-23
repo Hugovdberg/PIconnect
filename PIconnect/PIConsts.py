@@ -6,6 +6,49 @@ except ImportError:
     IntFlag = IntEnum
 
 
+class UpdateMode(IntEnum):
+    """Indicates how to treat duplicate values in the archive, when supported by the Data Reference.
+
+    Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_Data_AFUpdateOption.htm
+    """
+
+    #: Add the value to the archive.
+    #: If any values exist at the same time, will overwrite one of them and set its Substituted flag.
+    REPLACE = 0
+    #: Add the value to the archive. Any existing values at the same time are not overwritten.
+    INSERT = 1
+    #: Add the value to the archive only if no value exists at the same time.
+    #: If a value already exists for that time, the passed value is ignored.
+    NO_REPLACE = 2
+    #: Replace an existing value in the archive at the specified time.
+    #: If no existing value is found, the passed value is ignored.
+    REPLACE_ONLY = 3
+    #: Add the value to the archive without compression.
+    #: If this value is written to the snapshot, the previous snapshot value will be written to the archive,
+    #: without regard to compression settings.
+    #: Note that if a subsequent snapshot value is written without the InsertNoCompression option,
+    #: the value added with the InsertNoCompression option is still subject to compression.
+    INSERT_NO_COMPRESSION = 5
+    #: Remove the value from the archive if a value exists at the passed time.
+    REMOVE = 6
+
+
+class BufferMode(IntEnum):
+    """Indicates buffering option in updating values, when supported by the Data Reference.
+
+    Detailed information is available at https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/T_OSIsoft_AF_Data_AFBufferOption.htm
+    """
+
+    #: Updating data reference values without buffer.
+    DO_NOT_BUFFER	= 0
+    #: Try updating data reference values with buffer.
+    #: If fails (e.g. data reference AFDataMethods does not support Buffering, or its Buffering system is not available),
+    #: then try updating directly without buffer.
+    BUFFER_IF_POSSIBLE = 1
+    # Updating data reference values with buffer.
+    BUFFER = 2
+
+
 class AuthenticationMode(IntEnum):
     """AuthenticationMode indicates how a user authenticates to a PI Server
 

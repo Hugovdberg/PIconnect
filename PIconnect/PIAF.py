@@ -237,6 +237,13 @@ class PIAFAttribute(PISeriesContainer):
     def _current_value(self):
         return self.attribute.GetValue().Value
 
+    def _update_value(self, value, update_mode, buffer_mode):
+        return self.attribute.Data.UpdateValue(
+            value,
+            update_mode,
+            buffer_mode,
+        )
+
     def _recorded_values(self, time_range, boundary_type, filter_expression):
         include_filtered_values = False
         return self.attribute.Data.RecordedValues(
