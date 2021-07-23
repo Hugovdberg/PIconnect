@@ -253,8 +253,8 @@ class PIPoint(PISeriesContainer):
         """Return the last recorded value for this PI Point (internal use only)."""
         return self.pi_point.CurrentValue().Value
 
-    def _update_value(self, value, update_mode, buffer_mode):
-        return self.pi_point.UpdateValue(value, update_mode, buffer_mode)
+    def _update_value(self, af_value_obj, update_mode, buffer_mode):
+        return self.pi_point.UpdateValue(af_value_obj, update_mode, buffer_mode)
 
     def _recorded_values(self, time_range, boundary_type, filter_expression):
         include_filtered_values = False

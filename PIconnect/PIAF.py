@@ -237,9 +237,9 @@ class PIAFAttribute(PISeriesContainer):
     def _current_value(self):
         return self.attribute.GetValue().Value
 
-    def _update_value(self, value, update_mode, buffer_mode):
+    def _update_value(self, af_value_obj, update_mode, buffer_mode):
         return self.attribute.Data.UpdateValue(
-            value,
+            af_value_obj,
             update_mode,
             buffer_mode,
         )
