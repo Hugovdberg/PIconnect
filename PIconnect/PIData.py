@@ -218,7 +218,7 @@ class PISeriesContainer(ABC):
             ddatetime = AF.Time.AFTime(ddatetime.isoformat())
 
         af_value_obj = AF.Asset.AFValue(value, ddatetime)
-        return self._update_value(af_value_obj, update_mode.value, buffer_mode.value)
+        return self._update_value(af_value_obj, int(update_mode), int(buffer_mode))
 
     def recorded_values(
         self, start_time, end_time, boundary_type="inside", filter_expression=""
