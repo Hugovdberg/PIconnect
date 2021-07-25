@@ -58,8 +58,6 @@ from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer
 from PIconnect.PIConsts import AuthenticationMode
 
-from System import TimeSpan
-
 
 class PIServer(object):  # pylint: disable=useless-object-inheritance
     """PIServer is a connection to an OSIsoft PI Server
@@ -119,6 +117,8 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         self.connection = self.servers.get(server, self.default_server)
 
         if timeout:
+            from System import TimeSpan
+
             self.connection.ConnectionInfo.OperationTimeOut = TimeSpan(0, 0, timeout)  # hour, min, sec
 
     def __enter__(self):
