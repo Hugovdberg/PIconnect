@@ -58,8 +58,6 @@ from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer
 from PIconnect.PIConsts import AuthenticationMode
 
-from System import TimeSpan
-
 
 class PIServer(object):  # pylint: disable=useless-object-inheritance
     """PIServer is a connection to an OSIsoft PI Server
