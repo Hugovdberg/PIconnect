@@ -119,6 +119,8 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         self.connection = self.servers.get(server, self.default_server)
 
         if timeout:
+            from System import TimeSpan
+
             self.connection.ConnectionInfo.OperationTimeOut = TimeSpan(0, 0, timeout)  # hour, min, sec
 
     def __enter__(self):
