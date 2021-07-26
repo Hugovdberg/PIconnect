@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta:__legacy__"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+
+[tool.isort]
+# make it compatible with black
+profile = "black"
+
+[tool.black]
+line-length = 88
+target-version = ['py36', 'py37', 'py38']
+include = '\.pyi?$'
