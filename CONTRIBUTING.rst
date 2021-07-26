@@ -77,9 +77,10 @@ installed, this is how you set up your fork for local development::
 
    Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass pylint and
-the tests, including testing other Python versions with tox::
+5. When you're done making changes, format the code with black, check that your changes
+pass pylint and the tests, including testing other Python versions with tox::
 
+    $ black PIconnect
     $ pylint PIconnect tests
     $ python setup.py test or py.test
     $ tox
@@ -103,9 +104,9 @@ Before you submit a pull request, check that it meets these guidelines:
 2. If the pull request adds functionality, the docs should be updated. Put
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
-3. The pull request should work for Python 2.7, 3.5, 3.6 and 3.7. Check
-   https://travis-ci.com/Hugovdberg/PIconnect/pull_requests
-   and make sure that the tests pass for all supported Python versions.
+3. The pull request should work for Python 3.6, 3.7, 3.8 and 3.9. Testing is automated
+   through GitHub Actions, so you get feedback on your pull request where things are not
+   up to standards.
 
 Tips
 ----
