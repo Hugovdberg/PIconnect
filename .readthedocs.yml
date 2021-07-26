@@ -8,6 +8,7 @@ formats: all
 
 python:
   version: "3.8"
-  setup_py_install: true
-
-requirements_file: requirements_dev.txt
+  install:
+    - requirements: requirements_dev.txt
+    - method: setuptools
+      path: .
