@@ -12,14 +12,15 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import os
+import sys
+from unittest.mock import MagicMock
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import PIconnect
-import os
-import sys
-from unittest.mock import MagicMock
 
 # sys.path.insert(0, os.path.abspath('..'))
 
@@ -75,9 +76,9 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"PIconnect"
-copyright = u"2017, Hugo van den Berg; Stijn de Jong"
-author = u"Hugo van den Berg; Stijn de Jong"
+project = "PIconnect"
+copyright = "2017, Hugo Lapré; Stijn de Jong"
+author = "Hugo Lapré; Stijn de Jong"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -170,8 +171,8 @@ latex_documents = [
     (
         master_doc,
         "PIconnect.tex",
-        u"PIconnect Documentation",
-        u"Hugo van den Berg; Stijn de Jong",
+        "PIconnect Documentation",
+        "Hugo Lapré; Stijn de Jong",
         "manual",
     )
 ]
@@ -181,7 +182,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "piconnect", u"PIconnect Documentation", [author], 1)]
+man_pages = [(master_doc, "piconnect", "PIconnect Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output -------------------------------------------
@@ -193,7 +194,7 @@ texinfo_documents = [
     (
         master_doc,
         "PIconnect",
-        u"PIconnect Documentation",
+        "PIconnect Documentation",
         author,
         "PIconnect",
         "One line description of project.",
