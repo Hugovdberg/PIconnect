@@ -38,9 +38,9 @@ import wrapt
 def operate(operator, operand):
     """Create a decorator to apply an operator to the function and a given operand.
 
-       Operand can be either a constant or a function which accepts the same arguments
-       as the base function to which the decorator is applied. Operator must be a
-       function of two arguments.
+    Operand can be either a constant or a function which accepts the same arguments
+    as the base function to which the decorator is applied. Operator must be a
+    function of two arguments.
     """
 
     @wrapt.decorator
@@ -92,8 +92,8 @@ def add_operators(operators, members, newclassname, attributes):
         def patch_members(self, other):
             """Return new object of class *newclassname* with patched members.
 
-               Creates a new virtual class with the members in *members* patched to apply
-               the given *operator* to the original function definition.
+            Creates a new virtual class with the members in *members* patched to apply
+            the given *operator* to the original function definition.
             """
             newmembers = {
                 member: decorate(
