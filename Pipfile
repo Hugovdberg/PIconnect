@@ -13,14 +13,15 @@ piconnect = {editable = true,path = "."}
 [dev-packages]
 black = "*"
 tox = "*"
-coverage = "*"
-mypy = "*"
+# coverage = "*"
+# mypy = "*"
 pylint = "*"
 pytest = "*"
 pytest-runner = "*"
 Sphinx = "*"
 PyYAML = "*"
 "doc8" = "*"
+"flake8" = "*"
 twine = "*"
 
 [requires]
