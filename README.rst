@@ -15,8 +15,8 @@ allow opening a connection using a with statement.
         :target: https://pypi.python.org/pypi/PIconnect
         :alt: PyPI listing
 
-.. image:: https://img.shields.io/travis/Hugovdberg/PIconnect.svg
-        :target: https://travis-ci.com/Hugovdberg/PIconnect
+.. image:: https://github.com/Hugovdberg/PIconnect/actions/workflows/ci.yml/badge.svg?branch=develop
+        :target: https://github.com/Hugovdberg/PIconnect/actions/workflows/ci.yml
         :alt: Continuous Integration status
 
 .. image:: https://readthedocs.org/projects/piconnect/badge/?version=develop
