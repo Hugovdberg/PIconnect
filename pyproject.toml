@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta:__legacy__"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q"
+addopts = "-ra --durations=0 --cov-report xml:coverage.xml --cov PIconnect"
 
 [tool.isort]
 # make it compatible with black
