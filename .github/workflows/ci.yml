@@ -32,6 +32,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade black flake8 pytest
+          python -m pip install .
 
       - name: Check formatting with black
         run: |
