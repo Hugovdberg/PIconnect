@@ -35,9 +35,12 @@ except ImportError:
 from warnings import warn
 
 from PIconnect._operators import OPERATORS, add_operators
+from PIconnect._utils import classproperty
 from PIconnect.AFSDK import AF
 from PIconnect.PIConsts import AuthenticationMode
 from PIconnect.PIData import PISeries, PISeriesContainer
+
+_NOTHING = object()
 
 
 class PIServer(object):  # pylint: disable=useless-object-inheritance
@@ -56,12 +59,12 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         of known servers is available in the `PIServer.servers` dictionary.
     """
 
-    version = "0.2.1"
+    version = "0.2.2"
 
     #: Dictionary of known servers, as reported by the SDK
-    servers = {server.Name: server for server in AF.PI.PIServers()}
+    _servers = _NOTHING
     #: Default server, as reported by the SDK
-    default_server = AF.PI.PIServers().DefaultPIServer
+    _default_server = _NOTHING
 
     def __init__(
         self,
@@ -100,6 +103,33 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
             from System import TimeSpan
 
             self.connection.ConnectionInfo.OperationTimeOut = TimeSpan(0, 0, timeout)  # hour, min, sec
+
+    @classproperty
+    def servers(self):
+        if self._servers is _NOTHING:
+            i, failures = 0, 0
+            self._servers = {}
+            for i, server in enumerate(AF.PI.PIServers(), start=1):
+                try:
+                    self._servers[server.Name] = server
+                except Exception:
+                    failures += 1
+            if failures:
+                warn(
+                    "Could not load {} PI Server(s) out of {}".format(failures, i),
+                    ResourceWarning,
+                )
+        return self._servers
+
+    @classproperty
+    def default_server(self):
+        if self._default_server is _NOTHING:
+            self._default_server = None
+            try:
+                self._default_server = AF.PI.PIServers().DefaultPIServer
+            except Exception:
+                warn("Could not load the default PI Server", ResourceWarning)
+        return self._default_server
 
     def __enter__(self):
         if self._credentials:
