@@ -214,7 +214,6 @@ class PISeriesContainer(ABC):
         """
 
         if ddatetime:
-            assert ddatetime.tzinfo, "No timezone specified for the datetime passed."
             ddatetime = AF.Time.AFTime(ddatetime.isoformat())
 
         af_value_obj = AF.Asset.AFValue(value, ddatetime)
