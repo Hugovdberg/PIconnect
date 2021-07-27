@@ -37,6 +37,7 @@ from warnings import warn
 from PIconnect._operators import OPERATORS, add_operators
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer
+from PIconnect._utils import classproperty
 
 _NOTHING = object()
 
@@ -58,7 +59,7 @@ class PIAFDatabase(object):
         self._initialise_server(server)
         self._initialise_database(database)
 
-    @property
+    @classproperty
     def servers(self):
         if self._servers is _NOTHING:
             i, j, failed_servers, failed_databases = 0, 0, 0, 0
@@ -81,7 +82,7 @@ class PIAFDatabase(object):
                 )
         return self._servers
 
-    @property
+    @classproperty
     def default_server(self):
         if self._default_server is _NOTHING:
             self._default_server = None
