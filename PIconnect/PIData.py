@@ -198,9 +198,9 @@ class PISeriesContainer(ABC):
     def update_value(
         self,
         value,
-        time: Optional[datetime] = None,
-        update_mode: UpdateMode = UpdateMode.NO_REPLACE,
-        buffer_mode: BufferMode = BufferMode.BUFFER_IF_POSSIBLE,
+        time=None,
+        update_mode=UpdateMode.NO_REPLACE,
+        buffer_mode=BufferMode.BUFFER_IF_POSSIBLE,
     ):
         """Update value for existing PI object.
 
