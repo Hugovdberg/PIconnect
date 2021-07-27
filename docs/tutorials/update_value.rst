@@ -9,7 +9,7 @@ it can be used by final users
 
 After discussion with @Hugovdberg & with contribution of @ldariva we finally implemented an interface for the AFSDK UpdateValue method with 4 parameters
 value as AFValue
-ddatetime as python datetime.datetime with specified timezone
+time as python datetime.datetime with specified timezone
 replace_option as AFUpdateOption
 buffer_option as AFBufferOption.
 

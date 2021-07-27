@@ -198,7 +198,7 @@ class PISeriesContainer(ABC):
     def update_value(
         self,
         value,
-        ddatetime: Optional[datetime] = None,
+        time: Optional[datetime] = None,
         update_mode: UpdateMode = UpdateMode.NO_REPLACE,
         buffer_mode: BufferMode = BufferMode.BUFFER_IF_POSSIBLE,
     ):
@@ -207,16 +207,16 @@ class PISeriesContainer(ABC):
         Args:
             value: value type should be in cohesion with PI object or
                 it will raise PIException: [-10702] STATE Not Found
-            ddatetime (datetime, optional): it is not possible to set future value,
+            time (datetime, optional): it is not possible to set future value,
                 it raises PIException: [-11046] Target Date in Future.
 
-        You can combine update_mode and ddatetime to change already stored value.
+        You can combine update_mode and time to change already stored value.
         """
 
-        if ddatetime:
-            ddatetime = AF.Time.AFTime(ddatetime.isoformat())
+        if time:
+            time = AF.Time.AFTime(time.isoformat())
 
-        value = AF.Asset.AFValue(value, ddatetime)
+        value = AF.Asset.AFValue(value, time)
         return self._update_value(value, int(update_mode), int(buffer_mode))
 
     def recorded_values(
