@@ -45,7 +45,7 @@ class TestAFDatabase:
         database = PI.AF.PISystems().DefaultPISystem.Databases.DefaultDatabase.Name
         server = PI.PIAFDatabase(AFserver, database)
         assert server.server_name == AFserver
-        assert server.database_name == "TestDatabase"
+        assert server.database_name == database
         assert repr(server) == "PIAFDatabase(\\\\{s}\\{d})".format(
             s=AFserver, d=database
         )
