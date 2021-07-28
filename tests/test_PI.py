@@ -47,8 +47,9 @@ class TestServer:
 
     def test_server_name(self):
         """Test that the server reports the same name as which was connected to."""
-        server = PI.PIServer("Testing")
-        assert server.server_name == "Testing"
+        servername = PI.PIServer.default_server.Name
+        server = PI.PIServer(servername)
+        assert server.server_name == servername
 
     def test_warn_unkown_server(self):
         """Test that the server reports a warning when an unknown host is specified."""
@@ -59,8 +60,9 @@ class TestServer:
 
     def test_repr(self):
         """Test that the server representation matches the connected server."""
-        server = PI.PIServer("Testing")
-        assert repr(server) == "PIServer(\\\\Testing)"
+        servername = PI.PIServer.default_server.Name
+        server = PI.PIServer(servername)
+        assert repr(server) == "PIServer(\\\\{})".format(servername)
 
 
 class TestSearchPIPoints:
