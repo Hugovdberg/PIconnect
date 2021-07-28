@@ -30,7 +30,8 @@ from builtins import (
 
 # pragma pylint: enable=unused-import
 
-import datetime
+from datetime import datetime
+from typing import Optional
 
 try:
     from abc import ABC, abstractmethod
@@ -51,6 +52,8 @@ from PIconnect.PIConsts import (
     SummaryType,
     TimestampCalculation,
     get_enumerated_value,
+    UpdateMode,
+    BufferMode,
 )
 
 
@@ -61,7 +64,7 @@ class PISeries(Series):
 
     Args:
         tag (str): Name of the new series
-        timestamp (List[datetime.datetime]): List of datetime objects to
+        timestamp (List[datetime]): List of datetime objects to
             create the new index
         value (List): List of values for the timeseries, should be equally long
             as the `timestamp` argument
@@ -83,7 +86,7 @@ class PISeries(Series):
 
     @staticmethod
     def timestamp_to_index(timestamp):
-        """Convert AFTime object to datetime.datetime in local timezone.
+        """Convert AFTime object to datetime in local timezone.
 
         .. todo::
 
@@ -95,7 +98,7 @@ class PISeries(Series):
         """
         local_tz = pytz.timezone(PIConfig.DEFAULT_TIMEZONE)
         return (
-            datetime.datetime(
+            datetime(
                 timestamp.Year,
                 timestamp.Month,
                 timestamp.Day,
@@ -112,7 +115,8 @@ class PISeries(Series):
 class PISeriesContainer(ABC):
     """PISeriesContainer
 
-    General class for objects that return :class:`PISeries` objects
+    With the ABC class we represent a general behaviour with PI Point object
+    (General class for objects that return :class:`PISeries` objects).
 
     .. todo::
 
@@ -173,6 +177,10 @@ class PISeriesContainer(ABC):
         pass
 
     @abstractmethod
+    def _update_value(self, value, update_mode, buffer_mode):
+        pass
+
+    @abstractmethod
     def name(self):
         pass
 
@@ -186,6 +194,30 @@ class PISeriesContainer(ABC):
 
         Return the current value of the attribute."""
         return self._current_value()
+
+    def update_value(
+        self,
+        value,
+        time=None,
+        update_mode=UpdateMode.NO_REPLACE,
+        buffer_mode=BufferMode.BUFFER_IF_POSSIBLE,
+    ):
+        """Update value for existing PI object.
+
+        Args:
+            value: value type should be in cohesion with PI object or
+                it will raise PIException: [-10702] STATE Not Found
+            time (datetime, optional): it is not possible to set future value,
+                it raises PIException: [-11046] Target Date in Future.
+
+        You can combine update_mode and time to change already stored value.
+        """
+
+        if time:
+            time = AF.Time.AFTime(time.isoformat())
+
+        value = AF.Asset.AFValue(value, time)
+        return self._update_value(value, int(update_mode), int(buffer_mode))
 
     def recorded_values(
         self, start_time, end_time, boundary_type="inside", filter_expression=""

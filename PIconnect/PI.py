@@ -97,6 +97,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
             self._credentials = (NetworkCredential(*cred), int(authentication_mode))
         else:
             self._credentials = None
+
         self.connection = self.servers.get(server, self.default_server)
 
         if timeout:
@@ -263,6 +264,9 @@ class PIPoint(PISeriesContainer):
     def _current_value(self):
         """Return the last recorded value for this PI Point (internal use only)."""
         return self.pi_point.CurrentValue().Value
+
+    def _update_value(self, value, update_mode, buffer_mode):
+        return self.pi_point.UpdateValue(value, update_mode, buffer_mode)
 
     def _recorded_values(self, time_range, boundary_type, filter_expression):
         include_filtered_values = False
