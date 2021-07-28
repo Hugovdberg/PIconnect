@@ -48,6 +48,10 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
 
     Args:
         server (str, optional): Name of the server to connect to, defaults to None
+        username (str, optional): can be used only with password as well
+        password (str, optional): -//-
+        todo: domain, auth
+        timeout (int, optional): the maximum seconds an operation can take
 
     .. note::
         If the specified `server` is unknown a warning is thrown and the connection
@@ -69,6 +73,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         password=None,
         domain=None,
         authentication_mode=AuthenticationMode.PI_USER_AUTHENTICATION,
+        timeout=None,
     ):
         if server and server not in self.servers:
             message = 'Server "{server}" not found, using the default server.'
@@ -93,6 +98,12 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         else:
             self._credentials = None
         self.connection = self.servers.get(server, self.default_server)
+
+        if timeout:
+            from System import TimeSpan
+
+            # TimeSpan arguments: hours, minutes, seconds
+            self.connection.ConnectionInfo.OperationTimeOut = TimeSpan(0, 0, timeout)
 
     @classproperty
     def servers(self):
