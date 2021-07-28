@@ -26,6 +26,7 @@ PyYAML = "*"
 "doc8" = "*"
 "flake8" = "*"
 twine = "*"
+coverage = ">=6.0b1"
 
 [requires]
 python_version = "3.8"
