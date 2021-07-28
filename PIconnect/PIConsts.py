@@ -40,7 +40,7 @@ class BufferMode(IntEnum):
     """
 
     #: Updating data reference values without buffer.
-    DO_NOT_BUFFER	= 0
+    DO_NOT_BUFFER = 0
     #: Try updating data reference values with buffer.
     #: If fails (e.g. data reference AFDataMethods does not support Buffering, or its Buffering system is not available),
     #: then try updating directly without buffer.
