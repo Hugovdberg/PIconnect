@@ -12,9 +12,6 @@ on:
     branches:
       - master
       - develop
-  pull_request_target:
-    branches:
-      - develop
 
 jobs:
   build:
@@ -70,30 +67,3 @@ jobs:
         run: |
           # stop the build if there are Python syntax errors or undefined names
           black --check --diff PIconnect
-
-  check_coverage:
-    runs-on: windows-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install codecov pytest-cov codacy-coverage
-          python -m pip install .
-
-      - name: Test with pytest
-        run: |
-          pytest
-
-      - name: Run codacy-coverage-reporter
-        uses: codacy/codacy-coverage-reporter-action@master
-        with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: coverage.xml
