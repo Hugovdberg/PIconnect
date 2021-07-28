@@ -1,26 +1,6 @@
 """ PIconnect.test.test_PI
     Test communication with the PI System.
 """
-# Copyright 2017 Hugo van den Berg, Stijn de Jong
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
 # pragma pylint: disable=unused-import
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -48,12 +28,14 @@ from builtins import (
     zip,
 )
 
-# pragma pylint: enable=unused-import
-
-import PIconnect as PI
 import pytest
 import pytz
+
+import PIconnect as PI
+
 from .fakes import pi_point  # pylint: disable=unused-import
+
+# pragma pylint: enable=unused-import
 
 
 class TestServer:
@@ -65,8 +47,9 @@ class TestServer:
 
     def test_server_name(self):
         """Test that the server reports the same name as which was connected to."""
-        server = PI.PIServer("Testing")
-        assert server.server_name == "Testing"
+        servername = PI.PIServer.default_server.Name
+        server = PI.PIServer(servername)
+        assert server.server_name == servername
 
     def test_warn_unkown_server(self):
         """Test that the server reports a warning when an unknown host is specified."""
@@ -77,8 +60,9 @@ class TestServer:
 
     def test_repr(self):
         """Test that the server representation matches the connected server."""
-        server = PI.PIServer("Testing")
-        assert repr(server) == "PIServer(\\\\Testing)"
+        servername = PI.PIServer.default_server.Name
+        server = PI.PIServer(servername)
+        assert repr(server) == "PIServer(\\\\{})".format(servername)
 
 
 class TestSearchPIPoints:

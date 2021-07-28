@@ -1,28 +1,9 @@
 """ PIAF
     Core containers for connections to the PI Asset Framework.
 """
-# Copyright 2017 Hugo van den Berg, Stijn de Jong
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
 # pragma pylint: disable=unused-import, redefined-builtin
 from __future__ import absolute_import, division, print_function, unicode_literals
+
 from builtins import (
     ascii,
     bytes,
@@ -53,9 +34,12 @@ except ImportError:
 # pragma pylint: enable=unused-import, redefined-builtin
 from warnings import warn
 
+from PIconnect._operators import OPERATORS, add_operators
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer
-from PIconnect._operators import add_operators, OPERATORS
+from PIconnect._utils import classproperty
+
+_NOTHING = object()
 
 
 class PIAFDatabase(object):
@@ -64,24 +48,51 @@ class PIAFDatabase(object):
     Context manager for connections to the PI Asset Framework database.
     """
 
-    version = "0.1.1"
+    version = "0.1.2"
 
-    servers = {
-        s.Name: {"server": s, "databases": {d.Name: d for d in s.Databases}}
-        for s in AF.PISystems()
-    }
-    if AF.PISystems().DefaultPISystem:
-        default_server = servers[AF.PISystems().DefaultPISystem.Name]
-    elif len(servers) > 0:
-        default_server = servers[list(servers)[0]]
-    else:
-        default_server = None
+    _servers = _NOTHING
+    _default_server = _NOTHING
 
     def __init__(self, server=None, database=None):
         self.server = None
         self.database = None
         self._initialise_server(server)
         self._initialise_database(database)
+
+    @classproperty
+    def servers(self):
+        if self._servers is _NOTHING:
+            i, j, failed_servers, failed_databases = 0, 0, 0, 0
+            self._servers = {}
+            for i, s in enumerate(AF.PISystems(), start=1):
+                try:
+                    self._servers[s.Name] = {"server": s, "databases": {}}
+                    for j, d in enumerate(s.Databases, start=1):
+                        try:
+                            self._servers[s.Name]["databases"][d.Name] = d
+                        except Exception:
+                            failed_databases += 1
+                except Exception:
+                    failed_servers += 1
+            if failed_servers or failed_databases:
+                warn(
+                    "Failed loading {}/{} servers and {}/{} databases".format(
+                        failed_servers, i, failed_databases, j
+                    )
+                )
+        return self._servers
+
+    @classproperty
+    def default_server(self):
+        if self._default_server is _NOTHING:
+            self._default_server = None
+            if AF.PISystems().DefaultPISystem:
+                self._default_server = self.servers[AF.PISystems().DefaultPISystem.Name]
+            elif len(self.servers) > 0:
+                self._default_server = self.servers[list(self.servers)[0]]
+            else:
+                self._default_server = None
+        return self._default_server
 
     def _initialise_server(self, server):
         if server and server not in self.servers:

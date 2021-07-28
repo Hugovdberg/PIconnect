@@ -13,18 +13,23 @@ piconnect = {editable = true,path = "."}
 [dev-packages]
 black = "*"
 tox = "*"
-coverage = "*"
-mypy = "*"
+# coverage = "*"
+# mypy = "*"
+codecov = "*"
+codacy-coverage = "*"
 pylint = "*"
 pytest = "*"
 pytest-runner = "*"
+pytest-cov = "*"
 Sphinx = "*"
 PyYAML = "*"
 "doc8" = "*"
+"flake8" = "*"
 twine = "*"
+coverage = ">=6.0b1"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
 
 [pipenv]
 allow_prereleases = true
