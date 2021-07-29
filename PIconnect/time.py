@@ -1,10 +1,9 @@
 from datetime import datetime
-from typing import Union
 
 from PIconnect.AFSDK import AF
 
 
-def to_af_time_range(start_time: Union[str, datetime], end_time: Union[str, datetime]):
+def to_af_time_range(start_time, end_time):
     """to_af_time_range
 
     Return AF.Time.AFTimeRange object from datetime or string
