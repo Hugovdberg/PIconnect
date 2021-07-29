@@ -5,10 +5,10 @@ name: Test PIconnect
 
 on:
   push:
-    branches: [develop, master]
+    branches: [develop, master, remove_python2_support]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [develop]
+    branches: [develop, remove_python2_support]
   schedule:
     - cron: "27 19 * * 3"
 
@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [2.7, 3.6, 3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8, 3.9]
 
     steps:
       - uses: actions/checkout@v2
