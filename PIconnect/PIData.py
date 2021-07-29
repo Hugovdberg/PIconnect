@@ -31,7 +31,6 @@ from builtins import (
 # pragma pylint: enable=unused-import
 
 from datetime import datetime
-from typing import Optional
 
 try:
     from abc import ABC, abstractmethod
@@ -41,11 +40,9 @@ except ImportError:
 
     ABC = ABCMeta(BuiltinStr("ABC"), (object,), {"__slots__": ()})
 
-import pytz
 from pandas import DataFrame, Series
 
 from PIconnect.AFSDK import AF
-from PIconnect.config import PIConfig
 from PIconnect.PIConsts import (
     CalculationBasis,
     ExpressionSampleType,
@@ -55,7 +52,7 @@ from PIconnect.PIConsts import (
     UpdateMode,
     BufferMode,
 )
-from PIconnect.time import to_af_time_range
+from PIconnect.time import to_af_time_range, timestamp_to_index
 
 
 class PISeries(Series):
@@ -84,33 +81,6 @@ class PISeries(Series):
         Series.__init__(self, data=value, index=timestamp, name=tag, *args, **kwargs)
         self.tag = tag
         self.uom = uom
-
-    @staticmethod
-    def timestamp_to_index(timestamp):
-        """Convert AFTime object to datetime in local timezone.
-
-        .. todo::
-
-            Allow to define timezone, default to UTC?
-
-        .. todo::
-
-            Move outside as separate function?
-        """
-        local_tz = pytz.timezone(PIConfig.DEFAULT_TIMEZONE)
-        return (
-            datetime(
-                timestamp.Year,
-                timestamp.Month,
-                timestamp.Day,
-                timestamp.Hour,
-                timestamp.Minute,
-                timestamp.Second,
-                timestamp.Millisecond * 1000,
-            )
-            .replace(tzinfo=pytz.utc)
-            .astimezone(local_tz)
-        )
 
 
 class PISeriesContainer(ABC):
@@ -281,7 +251,7 @@ class PISeriesContainer(ABC):
         pivalues = self._recorded_values(time_range, boundary_type, filter_expression)
         timestamps, values = [], []
         for value in pivalues:
-            timestamps.append(PISeries.timestamp_to_index(value.Timestamp.UtcTime))
+            timestamps.append(timestamp_to_index(value.Timestamp.UtcTime))
             values.append(value.Value)
         return PISeries(
             tag=self.name,
@@ -332,7 +302,7 @@ class PISeriesContainer(ABC):
         pivalues = self._interpolated_values(time_range, interval, filter_expression)
         timestamps, values = [], []
         for value in pivalues:
-            timestamps.append(PISeries.timestamp_to_index(value.Timestamp.UtcTime))
+            timestamps.append(timestamp_to_index(value.Timestamp.UtcTime))
             values.append(value.Value)
         return PISeries(
             tag=self.name,
@@ -386,7 +356,7 @@ class PISeriesContainer(ABC):
         for summary in pivalues:
             key = SummaryType(summary.Key).name
             value = summary.Value
-            timestamp = PISeries.timestamp_to_index(value.Timestamp.UtcTime)
+            timestamp = timestamp_to_index(value.Timestamp.UtcTime)
             value = value.Value
             df = df.join(DataFrame(data={key: value}, index=[timestamp]), how="outer")
         return df
@@ -444,7 +414,7 @@ class PISeriesContainer(ABC):
             key = SummaryType(summary.Key).name
             timestamps, values = zip(
                 *[
-                    (PISeries.timestamp_to_index(value.Timestamp.UtcTime), value.Value)
+                    (timestamp_to_index(value.Timestamp.UtcTime), value.Value)
                     for value in summary.Value
                 ]
             )
@@ -539,7 +509,7 @@ class PISeriesContainer(ABC):
             key = SummaryType(summary.Key).name
             timestamps, values = zip(
                 *[
-                    (PISeries.timestamp_to_index(value.Timestamp.UtcTime), value.Value)
+                    (timestamp_to_index(value.Timestamp.UtcTime), value.Value)
                     for value in summary.Value
                 ]
             )
