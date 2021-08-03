@@ -35,9 +35,9 @@ except ImportError:
 from warnings import warn
 
 from PIconnect._operators import OPERATORS, add_operators
+from PIconnect._utils import classproperty
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeries, PISeriesContainer
-from PIconnect._utils import classproperty
 
 _NOTHING = object()
 
