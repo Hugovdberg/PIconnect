@@ -38,7 +38,8 @@ from PIconnect._operators import OPERATORS, add_operators
 from PIconnect._utils import classproperty
 from PIconnect.AFSDK import AF
 from PIconnect.PIConsts import AuthenticationMode
-from PIconnect.PIData import PISeries, PISeriesContainer
+from PIconnect.PIData import PISeriesContainer
+from PIconnect.time import timestamp_to_index
 
 _NOTHING = object()
 
@@ -103,7 +104,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         if timeout:
             from System import TimeSpan
 
-            # TimeSpan arguments: hours, minutes, seconds
+            # System.TimeSpan(hours, minutes, seconds)
             self.connection.ConnectionInfo.OperationTimeOut = TimeSpan(0, 0, timeout)
 
     @classproperty
@@ -221,9 +222,7 @@ class PIPoint(PISeriesContainer):
     @property
     def last_update(self):
         """Return the time at which the last value for this PI Point was recorded."""
-        return PISeries.timestamp_to_index(
-            self.pi_point.CurrentValue().Timestamp.UtcTime
-        )
+        return timestamp_to_index(self.pi_point.CurrentValue().Timestamp.UtcTime)
 
     @property
     def raw_attributes(self):
