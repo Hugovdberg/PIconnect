@@ -15,7 +15,6 @@ buffer_option as AFBufferOption.
 
 
 .. code-block:: python
-
     from datetime import datetime
     import pytz
     import PIconnect as PI

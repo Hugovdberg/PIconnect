@@ -20,7 +20,9 @@ from unittest.mock import MagicMock
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-sys.path.insert(0, os.path.abspath(".."))
+import PIconnect
+
+# sys.path.insert(0, os.path.abspath('..'))
 
 
 class Mock(MagicMock):
@@ -33,15 +35,14 @@ MOCK_MODULES = ["pygtk", "gtk", "gobject", "argparse", "numpy", "pandas"]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # Get the project root dir, which is the parent dir of this
-# cwd = os.getcwd()
-# project_root = os.path.dirname(cwd)
+cwd = os.getcwd()
+project_root = os.path.dirname(cwd)
 
 # Insert the project root dir as the first element in the PYTHONPATH.
 # This lets us ensure that the source package is imported, and that its
 # version is used.
-# sys.path.insert(0, project_root)
+sys.path.insert(0, project_root)
 
-import PIconnect
 
 # -- General configuration ---------------------------------------------
 
@@ -54,7 +55,6 @@ import PIconnect
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
     "sphinx.ext.todo",
     "sphinx.ext.coverage",
     "sphinx.ext.githubpages",
@@ -94,8 +94,7 @@ extlinks = {
 }
 
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3.8", None),
-    "pandas": ("https://pandas.pydata.org/docs", None),
+    "pandas": ("http://pandas.pydata.org/docs", None),
     "pytz": ("http://pytz.sourceforge.net", None),
 }
 
@@ -117,7 +116,7 @@ pygments_style = "sphinx"
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
 
-autosummary_generate = True
+
 # -- Options for HTML output ----------------------------------------------
 
 

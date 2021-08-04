@@ -1,7 +1,7 @@
-PIconnect.time module
-=====================
+PIconnect.PI module
+===================
 
-.. automodule:: PIconnect.time
+.. automodule:: PIconnect.PI
     :members:
     :undoc-members:
     :inherited-members:
