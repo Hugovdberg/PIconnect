@@ -89,9 +89,7 @@ version = PIconnect.__version__
 # The full version, including alpha/beta/rc tags.
 release = PIconnect.__version__
 
-extlinks = {
-    "afsdk": ("https://techsupport.osisoft.com/Documentation/PI-AF-SDK/html/%s", "")
-}
+extlinks = {"afsdk": ("https://docs.osisoft.com/bundle/af-sdk/page/html/%s", "")}
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3.8", None),
