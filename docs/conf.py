@@ -94,6 +94,7 @@ extlinks = {
 }
 
 intersphinx_mapping = {
+    "python": ("https://docs.python.org/3.8", None),
     "pandas": ("https://pandas.pydata.org/docs", None),
     "pytz": ("http://pytz.sourceforge.net", None),
 }
