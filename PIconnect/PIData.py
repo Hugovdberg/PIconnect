@@ -5,6 +5,7 @@ among :class:`PIPoint` and :class:`PIAFAttribute` objects.
 
 # pragma pylint: disable=unused-import
 from __future__ import absolute_import, division, print_function, unicode_literals
+
 from builtins import (
     ascii,
     bytes,
@@ -27,32 +28,34 @@ from builtins import (
     super,
     zip,
 )
+from datetime import datetime
 
 # pragma pylint: enable=unused-import
 
-import datetime
 
 try:
     from abc import ABC, abstractmethod
 except ImportError:
-    from __builtin__ import str as BuiltinStr
     from abc import ABCMeta, abstractmethod
+
+    from __builtin__ import str as BuiltinStr
 
     ABC = ABCMeta(BuiltinStr("ABC"), (object,), {"__slots__": ()})
 
-import pytz
 from pandas import DataFrame, Series
 
 from PIconnect.AFSDK import AF
-from PIconnect.config import PIConfig
 from PIconnect.PIConsts import (
+    BufferMode,
     CalculationBasis,
     ExpressionSampleType,
     RetrievalMode,
     SummaryType,
     TimestampCalculation,
+    UpdateMode,
     get_enumerated_value,
 )
+from PIconnect.time import timestamp_to_index, to_af_time_range
 
 
 class PISeries(Series):
@@ -62,7 +65,7 @@ class PISeries(Series):
 
     Args:
         tag (str): Name of the new series
-        timestamp (List[datetime.datetime]): List of datetime objects to
+        timestamp (List[datetime]): List of datetime objects to
             create the new index
         value (List): List of values for the timeseries, should be equally long
             as the `timestamp` argument
@@ -82,38 +85,12 @@ class PISeries(Series):
         self.tag = tag
         self.uom = uom
 
-    @staticmethod
-    def timestamp_to_index(timestamp):
-        """Convert AFTime object to datetime.datetime in local timezone.
-
-        .. todo::
-
-            Allow to define timezone, default to UTC?
-
-        .. todo::
-
-            Move outside as separate function?
-        """
-        local_tz = pytz.timezone(PIConfig.DEFAULT_TIMEZONE)
-        return (
-            datetime.datetime(
-                timestamp.Year,
-                timestamp.Month,
-                timestamp.Day,
-                timestamp.Hour,
-                timestamp.Minute,
-                timestamp.Second,
-                timestamp.Millisecond * 1000,
-            )
-            .replace(tzinfo=pytz.utc)
-            .astimezone(local_tz)
-        )
-
 
 class PISeriesContainer(ABC):
     """PISeriesContainer
 
-    General class for objects that return :class:`PISeries` objects
+    With the ABC class we represent a general behaviour with PI Point object
+    (General class for objects that return :class:`PISeries` objects).
 
     .. todo::
 
@@ -182,6 +159,10 @@ class PISeriesContainer(ABC):
         pass
 
     @abstractmethod
+    def _update_value(self, value, update_mode, buffer_mode):
+        pass
+
+    @abstractmethod
     def name(self):
         pass
 
@@ -215,7 +196,7 @@ class PISeriesContainer(ABC):
         return PISeries(
             tag=self.name,
             value=pivalue.Value,
-            timestamp=[PISeries.timestamp_to_index(pivalue.Timestamp.UtcTime)],
+            timestamp=[timestamp_to_index(pivalue.Timestamp.UtcTime)],
             uom=self.units_of_measurement,
         )
 
@@ -241,9 +222,33 @@ class PISeriesContainer(ABC):
         return PISeries(
             tag=self.name,
             value=pivalue.Value,
-            timestamp=[PISeries.timestamp_to_index(pivalue.Timestamp.UtcTime)],
+            timestamp=[timestamp_to_index(pivalue.Timestamp.UtcTime)],
             uom=self.units_of_measurement,
         )
+
+    def update_value(
+        self,
+        value,
+        time=None,
+        update_mode=UpdateMode.NO_REPLACE,
+        buffer_mode=BufferMode.BUFFER_IF_POSSIBLE,
+    ):
+        """Update value for existing PI object.
+
+        Args:
+            value: value type should be in cohesion with PI object or
+                it will raise PIException: [-10702] STATE Not Found
+            time (datetime, optional): it is not possible to set future value,
+                it raises PIException: [-11046] Target Date in Future.
+
+        You can combine update_mode and time to change already stored value.
+        """
+
+        if time:
+            time = AF.Time.AFTime(time.isoformat())
+
+        value = AF.Asset.AFValue(value, time)
+        return self._update_value(value, int(update_mode), int(buffer_mode))
 
     def recorded_values(
         self, start_time, end_time, boundary_type="inside", filter_expression=""
@@ -272,11 +277,11 @@ class PISeriesContainer(ABC):
         filtered values are always left out entirely.
 
         Args:
-            start_time (str): String containing the date, and possibly time,
+            start_time (str or datetime): Containing the date, and possibly time,
                 from which to retrieve the values. This is parsed, together
                 with `end_time`, using
                 :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
-            end_time (str): String containing the date, and possibly time,
+            end_time (str or datetime): Containing the date, and possibly time,
                 until which to retrieve values. This is parsed, together
                 with `start_time`, using
                 :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
@@ -295,7 +300,7 @@ class PISeriesContainer(ABC):
                 `ValueError` is raised.
         """
 
-        time_range = AF.Time.AFTimeRange(start_time, end_time)
+        time_range = to_af_time_range(start_time, end_time)
         boundary_type = self.__boundary_types.get(boundary_type.lower())
         filter_expression = self._normalize_filter_expression(filter_expression)
         if boundary_type is None:
@@ -306,7 +311,7 @@ class PISeriesContainer(ABC):
         pivalues = self._recorded_values(time_range, boundary_type, filter_expression)
         timestamps, values = [], []
         for value in pivalues:
-            timestamps.append(PISeries.timestamp_to_index(value.Timestamp.UtcTime))
+            timestamps.append(timestamp_to_index(value.Timestamp.UtcTime))
             values.append(value.Value)
         return PISeries(
             tag=self.name,
@@ -333,11 +338,11 @@ class PISeriesContainer(ABC):
         and filtered values are always left out entirely.
 
         Args:
-            start_time (str): String containing the date, and possibly time,
+            start_time (str or datetime): Containing the date, and possibly time,
                 from which to retrieve the values. This is parsed, together
                 with `end_time`, using
                 :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
-            end_time (str): String containing the date, and possibly time,
+            end_time (str or datetime): Containing the date, and possibly time,
                 until which to retrieve values. This is parsed, together
                 with `start_time`, using
                 :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
@@ -351,13 +356,13 @@ class PISeriesContainer(ABC):
         Returns:
             PISeries: Timeseries of the values returned by the SDK
         """
-        time_range = AF.Time.AFTimeRange(start_time, end_time)
+        time_range = to_af_time_range(start_time, end_time)
         interval = AF.Time.AFTimeSpan.Parse(interval)
         filter_expression = self._normalize_filter_expression(filter_expression)
         pivalues = self._interpolated_values(time_range, interval, filter_expression)
         timestamps, values = [], []
         for value in pivalues:
-            timestamps.append(PISeries.timestamp_to_index(value.Timestamp.UtcTime))
+            timestamps.append(timestamp_to_index(value.Timestamp.UtcTime))
             values.append(value.Value)
         return PISeries(
             tag=self.name,
@@ -379,10 +384,10 @@ class PISeriesContainer(ABC):
         Return one or more summary values over a single time range.
 
         Args:
-            start_time (str): String containing the date, and possibly time,
+            start_time (str or datetime): Containing the date, and possibly time,
                 from which to retrieve the values. This is parsed, together
                 with `end_time`, using :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
-            end_time (str): String containing the date, and possibly time,
+            end_time (str or datetime): Containing the date, and possibly time,
                 until which to retrieve values. This is parsed, together
                 with `start_time`, using :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
             summary_types (int or PIConsts.SummaryType): Type(s) of summaries
@@ -400,7 +405,7 @@ class PISeriesContainer(ABC):
             pandas.DataFrame: Dataframe with the unique timestamps as row index
                 and the summary name as column name.
         """
-        time_range = AF.Time.AFTimeRange(start_time, end_time)
+        time_range = to_af_time_range(start_time, end_time)
         summary_types = int(summary_types)
         calculation_basis = int(calculation_basis)
         time_type = int(time_type)
@@ -411,7 +416,7 @@ class PISeriesContainer(ABC):
         for summary in pivalues:
             key = SummaryType(summary.Key).name
             value = summary.Value
-            timestamp = PISeries.timestamp_to_index(value.Timestamp.UtcTime)
+            timestamp = timestamp_to_index(value.Timestamp.UtcTime)
             value = value.Value
             df = df.join(DataFrame(data={key: value}, index=[timestamp]), how="outer")
         return df
@@ -430,11 +435,11 @@ class PISeriesContainer(ABC):
         Return one or more summary values for each interval within a time range
 
         Args:
-            start_time (str): String containing the date, and possibly time,
+            start_time (str or datetime): Containing the date, and possibly time,
                 from which to retrieve the values. This is parsed, together
                 with `end_time`, using
                 :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
-            end_time (str): String containing the date, and possibly time,
+            end_time (str or datetime): Containing the date, and possibly time,
                 until which to retrieve values. This is parsed, together
                 with `start_time`, using
                 :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
@@ -456,7 +461,7 @@ class PISeriesContainer(ABC):
             pandas.DataFrame: Dataframe with the unique timestamps as row index
                 and the summary name as column name.
         """
-        time_range = AF.Time.AFTimeRange(start_time, end_time)
+        time_range = to_af_time_range(start_time, end_time)
         interval = AF.Time.AFTimeSpan.Parse(interval)
         summary_types = int(summary_types)
         calculation_basis = int(calculation_basis)
@@ -469,7 +474,7 @@ class PISeriesContainer(ABC):
             key = SummaryType(summary.Key).name
             timestamps, values = zip(
                 *[
-                    (PISeries.timestamp_to_index(value.Timestamp.UtcTime), value.Value)
+                    (timestamp_to_index(value.Timestamp.UtcTime), value.Value)
                     for value in summary.Value
                 ]
             )
@@ -493,11 +498,11 @@ class PISeriesContainer(ABC):
         Return one or more summary values for each interval within a time range
 
         Args:
-            start_time (str): String containing the date, and possibly time,
+            start_time (str or datetime): String containing the date, and possibly time,
                 from which to retrieve the values. This is parsed, together
                 with `end_time`, using
                 :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
-            end_time (str): String containing the date, and possibly time,
+            end_time (str or datetime): String containing the date, and possibly time,
                 until which to retrieve values. This is parsed, together
                 with `start_time`, using
                 :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
@@ -530,7 +535,7 @@ class PISeriesContainer(ABC):
             pandas.DataFrame: Dataframe with the unique timestamps as row index
                 and the summary name as column name.
         """
-        time_range = AF.Time.AFTimeRange(start_time, end_time)
+        time_range = to_af_time_range(start_time, end_time)
         interval = AF.Time.AFTimeSpan.Parse(interval)
         filter_expression = self._normalize_filter_expression(filter_expression)
         calculation_basis = get_enumerated_value(
@@ -564,7 +569,7 @@ class PISeriesContainer(ABC):
             key = SummaryType(summary.Key).name
             timestamps, values = zip(
                 *[
-                    (PISeries.timestamp_to_index(value.Timestamp.UtcTime), value.Value)
+                    (timestamp_to_index(value.Timestamp.UtcTime), value.Value)
                     for value in summary.Value
                 ]
             )

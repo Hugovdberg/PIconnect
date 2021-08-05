@@ -35,9 +35,10 @@ except ImportError:
 from warnings import warn
 
 from PIconnect._operators import OPERATORS, add_operators
-from PIconnect.AFSDK import AF
-from PIconnect.PIData import PISeries, PISeriesContainer
 from PIconnect._utils import classproperty
+from PIconnect.AFSDK import AF
+from PIconnect.PIData import PISeriesContainer
+from PIconnect.time import timestamp_to_index
 
 _NOTHING = object()
 
@@ -238,7 +239,7 @@ class PIAFAttribute(PISeriesContainer):
     @property
     def last_update(self):
         """Return the time at which the current_value was last updated."""
-        return PISeries.timestamp_to_index(self.attribute.GetValue().Timestamp.UtcTime)
+        return timestamp_to_index(self.attribute.GetValue().Timestamp.UtcTime)
 
     @property
     def units_of_measurement(self):
@@ -254,6 +255,13 @@ class PIAFAttribute(PISeriesContainer):
     def _recorded_value(self, time, retrieval_mode):
         return self.attribute.Data.RecordedValue(
             time, int(retrieval_mode), self.attribute.DefaultUOM
+        )
+
+    def _update_value(self, value, update_mode, buffer_mode):
+        return self.attribute.Data.UpdateValue(
+            value,
+            update_mode,
+            buffer_mode,
         )
 
     def _recorded_values(self, time_range, boundary_type, filter_expression):

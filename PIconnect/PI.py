@@ -38,7 +38,8 @@ from PIconnect._operators import OPERATORS, add_operators
 from PIconnect._utils import classproperty
 from PIconnect.AFSDK import AF
 from PIconnect.PIConsts import AuthenticationMode
-from PIconnect.PIData import PISeries, PISeriesContainer
+from PIconnect.PIData import PISeriesContainer
+from PIconnect.time import timestamp_to_index
 
 _NOTHING = object()
 
@@ -48,6 +49,10 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
 
     Args:
         server (str, optional): Name of the server to connect to, defaults to None
+        username (str, optional): can be used only with password as well
+        password (str, optional): -//-
+        todo: domain, auth
+        timeout (int, optional): the maximum seconds an operation can take
 
     .. note::
         If the specified `server` is unknown a warning is thrown and the connection
@@ -69,6 +74,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         password=None,
         domain=None,
         authentication_mode=AuthenticationMode.PI_USER_AUTHENTICATION,
+        timeout=None,
     ):
         if server and server not in self.servers:
             message = 'Server "{server}" not found, using the default server.'
@@ -92,7 +98,14 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
             self._credentials = (NetworkCredential(*cred), int(authentication_mode))
         else:
             self._credentials = None
+
         self.connection = self.servers.get(server, self.default_server)
+
+        if timeout:
+            from System import TimeSpan
+
+            # System.TimeSpan(hours, minutes, seconds)
+            self.connection.ConnectionInfo.OperationTimeOut = TimeSpan(0, 0, timeout)
 
     @classproperty
     def servers(self):
@@ -209,9 +222,7 @@ class PIPoint(PISeriesContainer):
     @property
     def last_update(self):
         """Return the time at which the last value for this PI Point was recorded."""
-        return PISeries.timestamp_to_index(
-            self.pi_point.CurrentValue().Timestamp.UtcTime
-        )
+        return timestamp_to_index(self.pi_point.CurrentValue().Timestamp.UtcTime)
 
     @property
     def raw_attributes(self):
@@ -260,6 +271,9 @@ class PIPoint(PISeriesContainer):
     def _recorded_value(self, time, retrieval_mode):
         """Return a single value for this PI Point"""
         return self.pi_point.RecordedValue(time, int(retrieval_mode))
+
+    def _update_value(self, value, update_mode, buffer_mode):
+        return self.pi_point.UpdateValue(value, update_mode, buffer_mode)
 
     def _recorded_values(self, time_range, boundary_type, filter_expression):
         include_filtered_values = False

@@ -74,3 +74,7 @@ target/
 
 # MyPy cache
 .mypy_cache/
+
+# Pycharm
+.idea
+venv/

@@ -21,3 +21,4 @@ Data extraction
    tutorials/interpolated_values
    tutorials/summaries
    tutorials/timezones
+   tutorials/update_value
