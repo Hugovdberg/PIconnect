@@ -14,7 +14,7 @@ structure:
 - The basic introductions to using :py:mod:`PIconnect` are covered in the
   :doc:`/tutorials`.
 - The technical reference to all modules within :py:mod:`PIconnect` are
-  covered in :doc:`/modules`. These also include several links to the original
+  covered in :doc:`/api/index`. These also include several links to the original
   SDK documentation for important implementation details.
 - Background explanations and how-to guides still need to be written.
 
@@ -26,7 +26,7 @@ Contents
 
    installation
    tutorials
-   modules
+   api/index
    contributing
    authors
    history
