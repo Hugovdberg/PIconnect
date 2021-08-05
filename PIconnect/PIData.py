@@ -5,6 +5,7 @@ among :class:`PIPoint` and :class:`PIAFAttribute` objects.
 
 # pragma pylint: disable=unused-import
 from __future__ import absolute_import, division, print_function, unicode_literals
+
 from builtins import (
     ascii,
     bytes,
@@ -27,16 +28,17 @@ from builtins import (
     super,
     zip,
 )
+from datetime import datetime
 
 # pragma pylint: enable=unused-import
 
-from datetime import datetime
 
 try:
     from abc import ABC, abstractmethod
 except ImportError:
-    from __builtin__ import str as BuiltinStr
     from abc import ABCMeta, abstractmethod
+
+    from __builtin__ import str as BuiltinStr
 
     ABC = ABCMeta(BuiltinStr("ABC"), (object,), {"__slots__": ()})
 
@@ -44,15 +46,16 @@ from pandas import DataFrame, Series
 
 from PIconnect.AFSDK import AF
 from PIconnect.PIConsts import (
+    BufferMode,
     CalculationBasis,
     ExpressionSampleType,
+    RetrievalMode,
     SummaryType,
     TimestampCalculation,
-    get_enumerated_value,
     UpdateMode,
-    BufferMode,
+    get_enumerated_value,
 )
-from PIconnect.time import to_af_time_range, timestamp_to_index
+from PIconnect.time import timestamp_to_index, to_af_time_range
 
 
 class PISeries(Series):
@@ -120,6 +123,14 @@ class PISeriesContainer(ABC):
         pass
 
     @abstractmethod
+    def _interpolated_value(self, time):
+        pass
+
+    @abstractmethod
+    def _recorded_value(self, time, retrieval_mode):
+        pass
+
+    @abstractmethod
     def _summary(self, time_range, summary_types, calculation_basis, time_type):
         pass
 
@@ -166,6 +177,55 @@ class PISeriesContainer(ABC):
         Return the current value of the attribute."""
         return self._current_value()
 
+    def interpolated_value(self, time):
+        """interpolated_value
+
+        Return a PISeries with an interpolated value at the given time
+
+        Args:
+            time (str): String containing the date, and possibly time,
+                for which to retrieve the value. This is parsed, using
+                :afsdk:`AF.Time.AFTime <M_OSIsoft_AF_Time_AFTime__ctor_7.htm>`.
+
+        Returns:
+            PISeries: A PISeries with a single row, with the corresponding time as
+                the index
+        """
+        time = AF.Time.AFTime(time)
+        pivalue = self._interpolated_value(time)
+        return PISeries(
+            tag=self.name,
+            value=pivalue.Value,
+            timestamp=[timestamp_to_index(pivalue.Timestamp.UtcTime)],
+            uom=self.units_of_measurement,
+        )
+
+    def recorded_value(self, time, retrieval_mode=RetrievalMode.AUTO):
+        """recorded_value
+
+        Return a PISeries with the recorded value at or close to the given time
+
+        Args:
+            time (str): String containing the date, and possibly time,
+                for which to retrieve the value. This is parsed, using
+                :afsdk:`AF.Time.AFTime <M_OSIsoft_AF_Time_AFTime__ctor_7.htm>`.
+            retrieval_mode (int or :any:`PIConsts.RetrievalMode`): Flag determining
+                which value to return if no value available at the exact requested
+                time.
+
+        Returns:
+            PISeries: A PISeries with a single row, with the corresponding time as
+                the index
+        """
+        time = AF.Time.AFTime(time)
+        pivalue = self._recorded_value(time, retrieval_mode)
+        return PISeries(
+            tag=self.name,
+            value=pivalue.Value,
+            timestamp=[timestamp_to_index(pivalue.Timestamp.UtcTime)],
+            uom=self.units_of_measurement,
+        )
+
     def update_value(
         self,
         value,
@@ -206,7 +266,7 @@ class PISeriesContainer(ABC):
         the first value after *start_time* to the last value before *end_time*.
         The other options are 'outside', which returns from the last value
         before *start_time* to the first value before *end_time*, and
-        'interpolate', which interpolates the  first value to the given
+        'interpolate', which interpolates the first value to the given
         *start_time* and the last value to the given *end_time*.
 
         *filter_expression* is an optional string to filter the returned
