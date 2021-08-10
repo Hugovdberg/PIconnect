@@ -11,7 +11,7 @@ from codecs import open
 from os import path
 
 # Always prefer setuptools over distutils
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 HERE = path.abspath(path.dirname(__file__))
 
@@ -41,13 +41,13 @@ TEST_REQUIREMENTS = ["pytest"]
 
 setup(
     name="PIconnect",
-    version="0.8.0",
+    version="0.9.0",
     description="Python connector to OSIsoft PI SDK",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/x-rst",
     # Author details
-    author="Hugo van den Berg",
-    author_email="hugo.van.den.berg@brabantwater.nl",
+    author="Hugo Lapré",
+    author_email="hugo.lapre@brabantwater.nl",
     url="https://github.com/Hugovdberg/PIconnect",
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
@@ -74,10 +74,11 @@ setup(
         # 'Programming Language :: Python :: 3',
         # 'Programming Language :: Python :: 3.3',
         # 'Programming Language :: Python :: 3.4',
-        "Programming Language :: Python :: 3.5",
+        # "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
     test_suite="tests",
     tests_require=TEST_REQUIREMENTS,

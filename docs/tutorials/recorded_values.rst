@@ -2,24 +2,59 @@
 Extracting recorded values
 ##########################
 
-The data in the PI archives are typically compressed. To get the exact values
+The data in the PI archives are typically compressed [#compression]_. To get the exact values
 as they are stored in the archive, the `recorded_values` method should be
-used. This is available on both :any:`PIPoint`, and :any:`PIAFAttribute`
-objects. More information on the compression algortithm can be found in this
-youtube video:
-`OSIsoft: Exception and Compression Full Details <https://youtu.be/89hg2mme7S0>`_.
+used. It is also possible to extract a single historic value using `recorded_value`.
+This is available on both :class:`~PIconnect.PI.PIPoint`, and :any:`PIAFAttribute` objects.
 
-For simplicity this tutorial only uses :any:`PIPoint` objects, see the
-tutorial on :doc:`PI AF</tutorials/piaf>` to find how to access
+For simplicity this tutorial only uses :class:`~PIconnect.PI.PIPoint` objects,
+see the tutorial on :doc:`PI AF</tutorials/piaf>` to find how to access
 :any:`PIAFAttribute` objects.
 
-**************
-Boundary types
-**************
+.. [#compression] More information on the compression algorithm can be found in this youtube
+    video:
+    `OSIsoft: Exception and Compression Full Details <https://youtu.be/89hg2mme7S0>`_.
 
-The basic example takes the first :any:`PIPoint` that is returned by the
-server and gets the data for the last 48 hours, by specifying the `start_time`
-and `end_time` arguments to `recorded_values`:
+*************************
+Single vs Multiple values
+*************************
+
+We start of by extracting a the value from the first :class:`~PIconnect.PI.PIPoint`
+that is returned by the server as it was 5 minutes ago.
+
+.. code-block:: python
+
+    import PIconnect as PI
+
+    with PI.PIServer() as server:
+        point = server.search('*')[0]
+        data = point.recorded_value('-5m')
+        print(data)
+
+You will see :any:`PISeries` is printed containing a single row, with the PIPoint name
+as the Series name, the point value as the value, and the corresponding timestamp as
+the index.
+
+By default the PI Server automatically detects which value to select and returns it
+with the requested timestamp as the index. To control which value is returned, we pass
+the `retrieval_mode` argument to `recorded_value`:
+
+.. code-block:: python
+
+    import PIconnect as PI
+    from PIconnect.PIConsts import RetrievalMode
+
+    with PI.PIServer() as server:
+        point = server.search('*')[0]
+        data = point.recorded_value('-5m', retrieval_mode=RetrievalMode.AT_OR_BEFORE)
+        print(data)
+
+Since it is unlikely there is a value at exactly 5 minutes ago, the PI Server now
+returns the latest value that's before the requested time. Also the index is now no
+longer at the requested time, but at the time the value was recorded.
+
+Now to get a time series of the values from the :class:`~PIconnect.PI.PIPoint` we use
+the `recorded_values` method, and pass a `start_time` and `end_time`:
 
 .. code-block:: python
 
@@ -29,6 +64,10 @@ and `end_time` arguments to `recorded_values`:
         points = server.search('*')[0]
         data = points.recorded_values('*-48h', '*')
         print(data)
+
+**************
+Boundary types
+**************
 
 By default only the data between the `start_time` and `end_time` is returned.
 It is also possible to instead return the data from the last value before

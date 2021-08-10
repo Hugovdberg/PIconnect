@@ -1,28 +1,9 @@
 """ PI
     Core containers for connections to PI databases
 """
-# Copyright 2017 Hugo van den Berg, Stijn de Jong
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
 # pragma pylint: disable=unused-import, redefined-builtin
 from __future__ import absolute_import, division, print_function, unicode_literals
+
 from builtins import (
     ascii,
     bytes,
@@ -54,8 +35,13 @@ except ImportError:
 from warnings import warn
 
 from PIconnect._operators import OPERATORS, add_operators
+from PIconnect._utils import classproperty
 from PIconnect.AFSDK import AF
-from PIconnect.PIData import PISeries, PISeriesContainer
+from PIconnect.PIConsts import AuthenticationMode
+from PIconnect.PIData import PISeriesContainer
+from PIconnect.time import timestamp_to_index
+
+_NOTHING = object()
 
 
 class PIServer(object):  # pylint: disable=useless-object-inheritance
@@ -63,6 +49,10 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
 
     Args:
         server (str, optional): Name of the server to connect to, defaults to None
+        username (str, optional): can be used only with password as well
+        password (str, optional): -//-
+        todo: domain, auth
+        timeout (int, optional): the maximum seconds an operation can take
 
     .. note::
         If the specified `server` is unknown a warning is thrown and the connection
@@ -70,23 +60,87 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         of known servers is available in the `PIServer.servers` dictionary.
     """
 
-    version = "0.2.1"
+    version = "0.2.2"
 
     #: Dictionary of known servers, as reported by the SDK
-    servers = {server.Name: server for server in AF.PI.PIServers()}
+    _servers = _NOTHING
     #: Default server, as reported by the SDK
-    default_server = AF.PI.PIServers().DefaultPIServer
+    _default_server = _NOTHING
 
-    def __init__(self, server=None):
+    def __init__(
+        self,
+        server=None,
+        username=None,
+        password=None,
+        domain=None,
+        authentication_mode=AuthenticationMode.PI_USER_AUTHENTICATION,
+        timeout=None,
+    ):
         if server and server not in self.servers:
             message = 'Server "{server}" not found, using the default server.'
             warn(message=message.format(server=server), category=UserWarning)
+        if bool(username) != bool(password):
+            raise ValueError(
+                "When passing credentials both the username and password must be specified."
+            )
+        if domain and not username:
+            raise ValueError(
+                "A domain can only specified together with a username and password."
+            )
+        if username:
+            from System.Net import NetworkCredential
+            from System.Security import SecureString
+
+            secure_pass = SecureString()
+            for c in password:
+                secure_pass.AppendChar(c)
+            cred = [username, secure_pass] + ([domain] if domain else [])
+            self._credentials = (NetworkCredential(*cred), int(authentication_mode))
+        else:
+            self._credentials = None
+
         self.connection = self.servers.get(server, self.default_server)
 
+        if timeout:
+            from System import TimeSpan
+
+            # System.TimeSpan(hours, minutes, seconds)
+            self.connection.ConnectionInfo.OperationTimeOut = TimeSpan(0, 0, timeout)
+
+    @classproperty
+    def servers(self):
+        if self._servers is _NOTHING:
+            i, failures = 0, 0
+            self._servers = {}
+            for i, server in enumerate(AF.PI.PIServers(), start=1):
+                try:
+                    self._servers[server.Name] = server
+                except Exception:
+                    failures += 1
+            if failures:
+                warn(
+                    "Could not load {} PI Server(s) out of {}".format(failures, i),
+                    ResourceWarning,
+                )
+        return self._servers
+
+    @classproperty
+    def default_server(self):
+        if self._default_server is _NOTHING:
+            self._default_server = None
+            try:
+                self._default_server = AF.PI.PIServers().DefaultPIServer
+            except Exception:
+                warn("Could not load the default PI Server", ResourceWarning)
+        return self._default_server
+
     def __enter__(self):
-        # Don't force to retry connecting if previous attempt failed
-        force_connection = False
-        self.connection.Connect(force_connection)
+        if self._credentials:
+            self.connection.Connect(*self._credentials)
+        else:
+            # Don't force to retry connecting if previous attempt failed
+            force_connection = False
+            self.connection.Connect(force_connection)
         return self
 
     def __exit__(self, *args):
@@ -168,9 +222,7 @@ class PIPoint(PISeriesContainer):
     @property
     def last_update(self):
         """Return the time at which the last value for this PI Point was recorded."""
-        return PISeries.timestamp_to_index(
-            self.pi_point.CurrentValue().Timestamp.UtcTime
-        )
+        return timestamp_to_index(self.pi_point.CurrentValue().Timestamp.UtcTime)
 
     @property
     def raw_attributes(self):
@@ -211,6 +263,17 @@ class PIPoint(PISeriesContainer):
     def _current_value(self):
         """Return the last recorded value for this PI Point (internal use only)."""
         return self.pi_point.CurrentValue().Value
+
+    def _interpolated_value(self, time):
+        """Return a single value for this PI Point"""
+        return self.pi_point.InterpolatedValue(time)
+
+    def _recorded_value(self, time, retrieval_mode):
+        """Return a single value for this PI Point"""
+        return self.pi_point.RecordedValue(time, int(retrieval_mode))
+
+    def _update_value(self, value, update_mode, buffer_mode):
+        return self.pi_point.UpdateValue(value, update_mode, buffer_mode)
 
     def _recorded_values(self, time_range, boundary_type, filter_expression):
         include_filtered_values = False
