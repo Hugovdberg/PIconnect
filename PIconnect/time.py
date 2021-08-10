@@ -30,6 +30,21 @@ def to_af_time_range(start_time, end_time):
     return AF.Time.AFTimeRange(start_time, end_time)
 
 
+def to_af_time(time):
+    """Convert a time to a AFTime value.
+
+    Args:
+        time (str | datetime): Time to convert to AFTime.
+
+    Returns:
+        :afsdk:`AF.Time.AFTime <M_OSIsoft_AF_Time_AFTime__ctor_7.htm>`: Time range covered by the start and end time.
+    """
+    if isinstance(time, datetime):
+        time = time.isoformat()
+
+    return AF.Time.AFTime(time)
+
+
 def timestamp_to_index(timestamp):
     """Convert AFTime object to datetime in local timezone.
 
