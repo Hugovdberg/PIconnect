@@ -55,7 +55,7 @@ from PIconnect.PIConsts import (
     UpdateMode,
     get_enumerated_value,
 )
-from PIconnect.time import timestamp_to_index, to_af_time_range
+from PIconnect.time import timestamp_to_index, to_af_time_range, to_af_time
 
 
 class PISeries(Series):
@@ -191,7 +191,7 @@ class PISeriesContainer(ABC):
             PISeries: A PISeries with a single row, with the corresponding time as
                 the index
         """
-        time = AF.Time.AFTime(time)
+        time = to_af_time(time)
         pivalue = self._interpolated_value(time)
         return PISeries(
             tag=self.name,
@@ -217,7 +217,7 @@ class PISeriesContainer(ABC):
             PISeries: A PISeries with a single row, with the corresponding time as
                 the index
         """
-        time = AF.Time.AFTime(time)
+        time = to_af_time(time)
         pivalue = self._recorded_value(time, retrieval_mode)
         return PISeries(
             tag=self.name,
@@ -245,7 +245,7 @@ class PISeriesContainer(ABC):
         """
 
         if time:
-            time = AF.Time.AFTime(time.isoformat())
+            time = to_af_time(time)
 
         value = AF.Asset.AFValue(value, time)
         return self._update_value(value, int(update_mode), int(buffer_mode))

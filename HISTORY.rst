@@ -1,6 +1,19 @@
 History
 =======
 
+0.9.0 (2021-08-10)
+------------------
+
+.. warning:: This is the final version to support python 2.7
+
+* Added support to write values to the databases (#573)
+* Added support for extracting Event frames from PI-AF (#587)
+* Added methods to extract a single historic value from both `PIPoint` and `PIAFAttribute` objects. (#523)
+* Added options to login to the PI Server using provided credentials (#522)
+* Added option to set the connection timeout for data extraction (#572)
+* Better loading of the configured servers (#580)
+* All data extracting functions now support both extraction using strings and `datetime` objects. (#574)
+
 0.8.0 (2020-03-03)
 ------------------
 
