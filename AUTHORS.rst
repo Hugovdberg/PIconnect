@@ -11,3 +11,5 @@ Contributors
 ------------
 
 * Stijn de Jong
+* AlcibiadesCleinias <https://github.com/AlcibiadesCleinias>
+* Leandro Dariva Pinto <https://github.com/ldariva>
