@@ -264,6 +264,14 @@ class PIPoint(PISeriesContainer):
         """Return the last recorded value for this PI Point (internal use only)."""
         return self.pi_point.CurrentValue().Value
 
+    def _interpolated_value(self, time):
+        """Return a single value for this PI Point"""
+        return self.pi_point.InterpolatedValue(time)
+
+    def _recorded_value(self, time, retrieval_mode):
+        """Return a single value for this PI Point"""
+        return self.pi_point.RecordedValue(time, int(retrieval_mode))
+
     def _update_value(self, value, update_mode, buffer_mode):
         return self.pi_point.UpdateValue(value, update_mode, buffer_mode)
 
