@@ -22,3 +22,10 @@ Data extraction
    tutorials/summaries
    tutorials/timezones
    tutorials/event_frames
+
+
+Data manipulation
+-----------------
+
+.. toctree::
+   tutorials/update_value

@@ -75,5 +75,6 @@ target/
 # MyPy cache
 .mypy_cache/
 
-# IDE confs
+# Pycharm
 .idea
+venv/
