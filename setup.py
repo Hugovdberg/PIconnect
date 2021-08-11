@@ -41,7 +41,7 @@ TEST_REQUIREMENTS = ["pytest"]
 
 setup(
     name="PIconnect",
-    version="0.9.0",
+    version="0.9.1",
     description="Python connector to OSIsoft PI SDK",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/x-rst",
