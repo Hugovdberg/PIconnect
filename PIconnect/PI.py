@@ -112,10 +112,14 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         if self._servers is _NOTHING:
             i, failures = 0, 0
             self._servers = {}
+            from System import Exception as dotNetException  # type: ignore
+
             for i, server in enumerate(AF.PI.PIServers(), start=1):
                 try:
                     self._servers[server.Name] = server
                 except Exception:
+                    failures += 1
+                except dotNetException:
                     failures += 1
             if failures:
                 warn(
