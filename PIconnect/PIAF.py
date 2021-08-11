@@ -64,6 +64,7 @@ class PIAFDatabase(object):
         if self._servers is _NOTHING:
             i, j, failed_servers, failed_databases = 0, 0, 0, 0
             self._servers = {}
+            from System import Exception as dotNetException  # type: ignore
             for i, s in enumerate(AF.PISystems(), start=1):
                 try:
                     self._servers[s.Name] = {"server": s, "databases": {}}
@@ -72,7 +73,11 @@ class PIAFDatabase(object):
                             self._servers[s.Name]["databases"][d.Name] = d
                         except Exception:
                             failed_databases += 1
+                        except dotNetException:
+                            failed_databases += 1
                 except Exception:
+                    failed_servers += 1
+                except dotNetException:
                     failed_servers += 1
             if failed_servers or failed_databases:
                 warn(
