@@ -12,20 +12,20 @@ Connections to the database are therefore implemented as context managers, to
 allow opening a connection using a with statement.
 
 .. image:: https://img.shields.io/pypi/v/PIconnect.svg
-        :target: https://pypi.python.org/pypi/PIconnect
-        :alt: PyPI listing
+    :target: https://pypi.python.org/pypi/PIconnect
+    :alt: PyPI listing
 
 .. image:: https://github.com/Hugovdberg/PIconnect/actions/workflows/ci.yml/badge.svg?branch=develop
-        :target: https://github.com/Hugovdberg/PIconnect/actions/workflows/ci.yml
-        :alt: Continuous Integration status
+    :target: https://github.com/Hugovdberg/PIconnect/actions/workflows/ci.yml
+    :alt: Continuous Integration status
 
 .. image:: https://readthedocs.org/projects/piconnect/badge/?version=develop
-        :target: https://piconnect.readthedocs.io/en/latest/?badge=develop
-        :alt: Documentation Status
+    :target: https://piconnect.readthedocs.io/en/latest/?badge=develop
+    :alt: Documentation Status
 
 .. image:: https://pyup.io/repos/github/Hugovdberg/PIconnect/shield.svg
-     :target: https://pyup.io/repos/github/Hugovdberg/PIconnect/
-     :alt: Security Updates
+    :target: https://pyup.io/repos/github/Hugovdberg/PIconnect/
+    :alt: Security Updates
 
 .. image:: https://api.codacy.com/project/badge/Grade/568734c85e07467c99e0e791d8eb17b6
     :target: https://www.codacy.com/app/Hugovdberg/PIconnect?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Hugovdberg/PIconnect&amp;utm_campaign=Badge_Grade
