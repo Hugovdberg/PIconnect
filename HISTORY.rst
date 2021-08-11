@@ -1,6 +1,12 @@
 History
 =======
 
+0.9.1 (2021-08-11)
+------------------
+
+* Fixes the Exception type to swallow (related to #580)
+* Fixes missing dependency in wheel (#595)
+
 0.9.0 (2021-08-10)
 ------------------
 
