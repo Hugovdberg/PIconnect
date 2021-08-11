@@ -65,6 +65,7 @@ class PIAFDatabase(object):
             i, j, failed_servers, failed_databases = 0, 0, 0, 0
             self._servers = {}
             from System import Exception as dotNetException  # type: ignore
+
             for i, s in enumerate(AF.PISystems(), start=1):
                 try:
                     self._servers[s.Name] = {"server": s, "databases": {}}
