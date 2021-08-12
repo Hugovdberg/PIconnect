@@ -73,10 +73,10 @@ def add_operators(operators, members, newclassname, attributes):
                 )
                 for member in members
             }
-            newclass = type(BuiltinStr(newclassname), (cls,), newmembers)
+            newclass = type(str(newclassname), (cls,), newmembers)
             return newclass(*[getattr(self, attr) for attr in attributes])
 
-        patch_members.__name__ = BuiltinStr(method)
+        patch_members.__name__ = str(method)
         patch_members.__doc__ = docstring
         return patch_members
 

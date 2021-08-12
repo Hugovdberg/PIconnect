@@ -154,7 +154,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         return [
             PIPoint(pi_point)
             for pi_point in AF.PI.PIPoint.FindPIPoints(
-                self.connection, BuiltinStr(query), source, None
+                self.connection, str(query), source, None
             )
         ]
 
