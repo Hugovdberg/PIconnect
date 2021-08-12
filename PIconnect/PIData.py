@@ -2,45 +2,7 @@
 PIData contains a number of auxiliary classes that define common functionality
 among :class:`PIPoint` and :class:`PIAFAttribute` objects.
 """
-
-# pragma pylint: disable=unused-import
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-from builtins import (
-    ascii,
-    bytes,
-    chr,
-    dict,
-    filter,
-    hex,
-    input,
-    int,
-    list,
-    map,
-    next,
-    object,
-    oct,
-    open,
-    pow,
-    range,
-    round,
-    str,
-    super,
-    zip,
-)
-from datetime import datetime
-
-# pragma pylint: enable=unused-import
-
-
-try:
-    from abc import ABC, abstractmethod
-except ImportError:
-    from abc import ABCMeta, abstractmethod
-
-    from __builtin__ import str as BuiltinStr
-
-    ABC = ABCMeta(BuiltinStr("ABC"), (object,), {"__slots__": ()})
+from abc import ABC, abstractmethod
 
 from pandas import DataFrame, Series
 
@@ -55,7 +17,7 @@ from PIconnect.PIConsts import (
     UpdateMode,
     get_enumerated_value,
 )
-from PIconnect.time import timestamp_to_index, to_af_time_range, to_af_time
+from PIconnect.time import timestamp_to_index, to_af_time, to_af_time_range
 
 
 class PISeries(Series):

@@ -1,33 +1,5 @@
 """Test VirtualPIPoint calculus."""
-# pragma pylint: disable=unused-import
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-from builtins import (
-    ascii,
-    bytes,
-    chr,
-    dict,
-    filter,
-    hex,
-    input,
-    int,
-    list,
-    map,
-    next,
-    object,
-    oct,
-    open,
-    pow,
-    range,
-    round,
-    str,
-    super,
-    zip,
-)
-
 from .fakes import pi_point  # pylint: disable=unused-import
-
-# pragma pylint: enable=unused-import
 
 
 class TestVirtualAddition:

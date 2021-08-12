@@ -1,35 +1,4 @@
 """helpers to define numeric operators in batch on classes"""
-# pragma pylint: disable=unused-import
-from __future__ import absolute_import, division, print_function, unicode_literals
-from builtins import (
-    bytes,
-    dict,
-    int,
-    list,
-    object,
-    range,
-    str,
-    ascii,
-    chr,
-    hex,
-    input,
-    next,
-    oct,
-    open,
-    pow,
-    round,
-    super,
-    filter,
-    map,
-    zip,
-)
-
-try:
-    from __builtin__ import str as BuiltinStr
-except ImportError:
-    BuiltinStr = str
-# pragma pylint: enable=unused-import
-
 from collections import namedtuple
 
 import wrapt

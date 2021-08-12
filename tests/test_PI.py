@@ -1,32 +1,7 @@
 """ PIconnect.test.test_PI
     Test communication with the PI System.
 """
-# pragma pylint: disable=unused-import
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import datetime
-from builtins import (
-    ascii,
-    bytes,
-    chr,
-    dict,
-    filter,
-    hex,
-    input,
-    int,
-    list,
-    map,
-    next,
-    object,
-    oct,
-    open,
-    pow,
-    range,
-    round,
-    str,
-    super,
-    zip,
-)
 
 import pytest
 import pytz
@@ -34,8 +9,6 @@ import pytz
 import PIconnect as PI
 
 from .fakes import pi_point  # pylint: disable=unused-import
-
-# pragma pylint: enable=unused-import
 
 
 class TestServer:

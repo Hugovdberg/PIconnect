@@ -1,35 +1,8 @@
 """ AFSDK
     Loads the .NET libraries from the OSIsoft AF SDK
 """
-# pragma pylint: disable=unused-import
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import os
-
-# pragma pylint: enable=unused-import
 import sys
-from builtins import (
-    ascii,
-    bytes,
-    chr,
-    dict,
-    filter,
-    hex,
-    input,
-    int,
-    list,
-    map,
-    next,
-    object,
-    oct,
-    open,
-    pow,
-    range,
-    round,
-    str,
-    super,
-    zip,
-)
 
 try:
     import clr
