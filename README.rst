@@ -13,8 +13,12 @@ allow opening a connection using a with statement.
 
 .. image:: https://img.shields.io/pypi/v/PIconnect.svg
     :target: https://pypi.python.org/pypi/PIconnect
-    :alt: PyPI listing
+    :alt: PIconnect on PyPI
 
+.. image:: https://img.shields.io/conda/vn/conda-forge/piconnect
+    :target: https://anaconda.org/conda-forge/piconnect
+    :alt: PIconnect on conda-forge
+    
 .. image:: https://github.com/Hugovdberg/PIconnect/actions/workflows/ci.yml/badge.svg?branch=develop
     :target: https://github.com/Hugovdberg/PIconnect/actions/workflows/ci.yml
     :alt: Continuous Integration status
