@@ -116,14 +116,12 @@ OPERATORS = [
         lambda x, y: y * x,
         """Multiply value(s) by PIPoint (reverse order)""",
     ),
-    # # Removed for now, Python 3 only
-    # Operator('__matmul__',
-    #          lambda x, y: x @ y,
-    #          """Matrix multiply"""),
-    # # Removed for now, Python 3 only
-    # Operator('__rmatmul__',
-    #          lambda x, y: y @ x,
-    #          """Matrix multiply (reverse order)"""),
+    Operator('__matmul__',
+             lambda x, y: x @ y,
+             """Matrix multiply"""),
+    Operator('__rmatmul__',
+             lambda x, y: y @ x,
+             """Matrix multiply (reverse order)"""),
     Operator("__div__", lambda x, y: x / y, """Divide PIPoint by value(s)"""),
     Operator(
         "__rdiv__", lambda x, y: y / x, """Divide value(s) by PIPoint (reverse order)"""
