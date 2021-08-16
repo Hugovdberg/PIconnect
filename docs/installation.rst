@@ -12,16 +12,27 @@ To install PIconnect, run this command in your terminal:
 
 .. code-block:: console
 
+    $ conda install PIconnect
+
+This is the preferred method to install PIconnect, 
+as it will always install the most recent stable release, 
+including the dependencies.
+If you don't have conda installed 
+(either using `Miniconda`_ or `Anaconda`_),
+you can also install using `pip`_.
+
+.. code-block:: console
+
     $ pip install PIconnect
 
-This is the preferred method to install PIconnect, as it will always install the most recent stable release.
 
 If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.
 
 .. _pip: https://pip.pypa.io
 .. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
-
+.. _Miniconda: https://docs.conda.io/en/latest/miniconda.html
+.. _Anaconda: https://www.anaconda.com/
 
 From sources
 ------------
