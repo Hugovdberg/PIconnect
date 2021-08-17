@@ -214,7 +214,12 @@ class PIAFEventFrame(PIAFBaseElement):
 
     @property
     def parent(self):
-        """Return the parent element of the current element, or None if it has none."""
+        """Return the parent element of the current event frame, or None if it has none."""
         if not self.element.Parent:
             return None
         return self.__class__(self.element.Parent)
+
+    @property
+    def children(self):
+        """Return a dictionary of the direct child event frames of the current event frame."""
+        return {c.Name: self.__class__(c) for c in self.element.EventFrames}
