@@ -237,8 +237,7 @@ class PIPoint(PISeriesContainer):
     @property
     def units_of_measurement(self):
         """Return the units of measument in which values for this PI Point are reported."""
-        self.__load_attributes()
-        return self.__raw_attributes["engunits"]
+        return self.raw_attributes["engunits"]
 
     @property
     def description(self):
@@ -248,8 +247,12 @@ class PIPoint(PISeriesContainer):
 
             Add setter to alter displayed description
         """
-        self.__load_attributes()
-        return self.__raw_attributes["descriptor"]
+        return self.raw_attributes["descriptor"]
+
+    @property
+    def created(self):
+        """Return the creation datetime of a point."""
+        return timestamp_to_index(self.raw_attributes["creationdate"])
 
     def __load_attributes(self):
         """Load the raw attributes of the PI Point from the server"""
