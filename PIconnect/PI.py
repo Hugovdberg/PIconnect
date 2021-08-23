@@ -79,10 +79,6 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         if server and server not in self.servers:
             message = 'Server "{server}" not found, using the default server.'
             warn(message=message.format(server=server), category=UserWarning)
-        if bool(username) != bool(password):
-            raise ValueError(
-                "When passing credentials both the username and password must be specified."
-            )
         if domain and not username:
             raise ValueError(
                 "A domain can only specified together with a username and password."
@@ -92,8 +88,10 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
             from System.Security import SecureString
 
             secure_pass = SecureString()
-            for c in password:
-                secure_pass.AppendChar(c)
+
+            if password != None:
+                for c in password:
+                    secure_pass.AppendChar(c)
             cred = [username, secure_pass] + ([domain] if domain else [])
             self._credentials = (NetworkCredential(*cred), int(authentication_mode))
         else:
