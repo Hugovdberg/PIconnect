@@ -18,7 +18,7 @@ allow opening a connection using a with statement.
 .. image:: https://img.shields.io/conda/vn/conda-forge/piconnect
     :target: https://anaconda.org/conda-forge/piconnect
     :alt: PIconnect on conda-forge
-    
+
 .. image:: https://github.com/Hugovdberg/PIconnect/actions/workflows/ci.yml/badge.svg?branch=develop
     :target: https://github.com/Hugovdberg/PIconnect/actions/workflows/ci.yml
     :alt: Continuous Integration status
@@ -48,13 +48,13 @@ Python connector to OSIsoft PI SDK
 
 Features
 --------
+Features below are for both: PI Server and PIAF Database:
 
-* Get PI tag value(s) from both: PI Server or PIAF Database
-    * recorded values
-    * time interpolated values
-* Update tag value
-* Summarize data before extract in OSIsoft PI SDK
-* Filter data as well
+* Extract recorded values
+* Extract interpolated values
+* Update a value
+* Summarize data before extraction with help of OSIsoft PI SDK
+* Filter data before extraction with help of OSIsoft PI SDK
 
 Copyright notice
 ================
