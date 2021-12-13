@@ -33,12 +33,6 @@ REQUIREMENTS += ["future", "pandas", "wrapt", "pytz"]
 if os.name == "nt":
     REQUIREMENTS += ["pythonnet"]
 
-needs_pytest = {"pytest", "test", "ptr"}.intersection(sys.argv)
-pytest_runner = ["pytest-runner"] if needs_pytest else []
-SETUP_REQUIREMENTS = [] + pytest_runner
-
-TEST_REQUIREMENTS = ["pytest"]
-
 setup(
     name="PIconnect",
     version="0.9.1",
@@ -75,9 +69,6 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
     ],
-    test_suite="tests",
-    tests_require=TEST_REQUIREMENTS,
-    setup_requires=SETUP_REQUIREMENTS,
     # What does your project relate to?
     keywords="OSIsoft PI ProcessInformation PIconnect",
     # Alternatively, if you want to distribute just a my_module.py, uncomment
