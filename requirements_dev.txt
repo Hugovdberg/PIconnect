@@ -62,7 +62,7 @@ python-dateutil==2.8.2; python_version >= '2.7' and python_version not in '3.0, 
 pytz==2022.1
 pywin32-ctypes==0.2.0; sys_platform == 'win32'
 pyyaml==6.0
-readme-renderer==32.0; python_version >= '3.6'
+readme-renderer==35.0; python_version >= '3.6'
 requests-toolbelt==0.9.1
 requests==2.26.0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5'
 restructuredtext-lint==1.3.2
