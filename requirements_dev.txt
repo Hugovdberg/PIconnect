@@ -45,7 +45,7 @@ mypy-extensions==0.4.3
 numpy==1.23.3; python_version < '3.10' and platform_machine != 'aarch64' and platform_machine != 'arm64'
 packaging==21.3; python_version >= '3.6'
 pandas==1.4.4
-pathspec==0.9.0
+pathspec==0.10.1
 pbr==5.8.0; python_version >= '2.6'
 pkginfo==1.8.2
 platformdirs==2.4.0; python_version >= '3.6'
