@@ -32,12 +32,9 @@ class PISystem:
 
     def Connect(self):
         """Stub to connect to the testing system"""
-        pass
 
     def Disconnect(self):
         """Stub to disconnect from the testing system"""
-
-        pass
 
 
 class PISystems:

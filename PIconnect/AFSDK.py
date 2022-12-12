@@ -12,7 +12,7 @@ __all__ = ["AF", "AF_SDK_VERSION"]
 
 logger = logging.getLogger(__name__)
 
-pythonnet.load()
+pythonnet.load("netfx")
 
 
 def __fallback():
