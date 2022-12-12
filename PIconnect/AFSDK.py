@@ -6,9 +6,13 @@ import sys
 import typing
 import logging
 
-logger = logging.getLogger(__name__)
+import pythonnet
 
 __all__ = ["AF", "AF_SDK_VERSION"]
+
+logger = logging.getLogger(__name__)
+
+pythonnet.load()
 
 
 def __fallback():
@@ -157,9 +161,6 @@ def __fallback():
 if os.getenv("GITHUB_ACTIONS") == "true":
     AF, AF_SDK_VERSION = __fallback()
 else:
-    import pythonnet
-
-    pythonnet.load("netfx")
     import clr
 
     # Get the installation directory from the environment variable or fall back
@@ -182,6 +183,7 @@ else:
         raise ImportError("PIAF SDK not found, check installation")
 
     sys.path.append(PIAF_SDK)
+
     clr.AddReference("OSIsoft.AFSDK")  # type: ignore ; pylint: disable=no-member
 
     from OSIsoft import AF  # type: ignore ; pylint: wrong-import-position
