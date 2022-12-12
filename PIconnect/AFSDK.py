@@ -3,25 +3,15 @@
 """
 import os
 import sys
+import typing
+import logging
 
-try:
-    import clr
+logger = logging.getLogger(__name__)
 
-    # Get the installation directory from the environment variable or fall back
-    # to the Windows default installation path
-    PIAF_SDK = os.getenv("PIHOME", "C:\\Program Files\\PIPC")
-    PIAF_SDK += "\\AF\\PublicAssemblies\\4.0\\"
-    if not os.path.isdir(PIAF_SDK):
-        raise ImportError("PIAF SDK not found in %s, check installation" % PIAF_SDK)
+__all__ = ["AF", "AF_SDK_VERSION"]
 
-    sys.path.append(PIAF_SDK)
-    clr.AddReference("OSIsoft.AFSDK")  # pylint: disable=no-member
 
-    from OSIsoft import AF  # pylint: wrong-import-position
-
-    AF_SDK_VERSION = AF.PISystems().Version
-    print("OSIsoft(r) AF SDK Version: {}".format(AF_SDK_VERSION))
-except ImportError:
+def __fallback():
     import enum
     import warnings
 
@@ -46,6 +36,9 @@ except ImportError:
 
             class PIPoint:
                 """Mock class of the AF.PI.PIPoint class"""
+
+                Name: str
+                """This property identifies the name of the PIPoint"""
 
                 @staticmethod
                 def FindPIPoints(connection, query, source, attribute_names):
@@ -158,3 +151,46 @@ except ImportError:
                     return AF.Time.AFTimeSpan()
 
     # pragma pylint: enable=invalid-name, unused-argument, too-few-public-methods
+    return AF, AF_SDK_VERSION
+
+
+if os.getenv("GITHUB_ACTIONS") == "true":
+    AF, AF_SDK_VERSION = __fallback()
+else:
+    import pythonnet
+
+    pythonnet.load("netfx")
+    import clr
+
+    # Get the installation directory from the environment variable or fall back
+    # to the Windows default installation path
+    installation_directories = [
+        os.getenv("PIHOME"),
+        "C:\\Program Files\\PIPC",
+        "C:\\Program Files (x86)\\PIPC",
+    ]
+    for directory in installation_directories:
+        logging.debug("Trying installation directory '%s'", directory)
+        if not directory:
+            continue
+        AF_dir = os.path.join(directory, "AF\\PublicAssemblies\\4.0\\")
+        logging.debug("Full path to potential SDK location: '%s'", AF_dir)
+        if os.path.isdir(AF_dir):
+            PIAF_SDK = AF_dir
+            break
+    else:
+        raise ImportError("PIAF SDK not found, check installation")
+
+    sys.path.append(PIAF_SDK)
+    clr.AddReference("OSIsoft.AFSDK")  # type: ignore ; pylint: disable=no-member
+
+    from OSIsoft import AF  # type: ignore ; pylint: wrong-import-position
+
+    AF_SDK_VERSION = AF.PISystems().Version
+    print("OSIsoft(r) AF SDK Version: {}".format(AF_SDK_VERSION))
+
+
+if typing.TYPE_CHECKING:
+    # This branch is separate from previous one as otherwise no typechecking takes place
+    # on the main logic.
+    AF, AF_SDK_VERSION = __fallback()
