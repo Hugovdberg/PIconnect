@@ -1,33 +1,7 @@
 """ PIconnect.test.fakes
     Fake classes to mask SDK complexity
 """
-# pragma pylint: disable=unused-import
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-# pragma pylint: enable=unused-import
 import datetime
-from builtins import (
-    ascii,
-    bytes,
-    chr,
-    dict,
-    filter,
-    hex,
-    input,
-    int,
-    list,
-    map,
-    next,
-    object,
-    oct,
-    open,
-    pow,
-    range,
-    round,
-    str,
-    super,
-    zip,
-)
 
 import pytest
 import pytz

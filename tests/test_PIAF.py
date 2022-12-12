@@ -1,35 +1,7 @@
 """Test communication with the PI AF system"""
-# pragma pylint: disable=unused-import
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-from builtins import (
-    ascii,
-    bytes,
-    chr,
-    dict,
-    filter,
-    hex,
-    input,
-    int,
-    list,
-    map,
-    next,
-    object,
-    oct,
-    open,
-    pow,
-    range,
-    round,
-    str,
-    super,
-    zip,
-)
-
 import pytest
 
 import PIconnect as PI
-
-# pragma pylint: enable=unused-import
 
 
 class TestAFDatabase:

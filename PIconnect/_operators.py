@@ -1,35 +1,4 @@
 """helpers to define numeric operators in batch on classes"""
-# pragma pylint: disable=unused-import
-from __future__ import absolute_import, division, print_function, unicode_literals
-from builtins import (
-    bytes,
-    dict,
-    int,
-    list,
-    object,
-    range,
-    str,
-    ascii,
-    chr,
-    hex,
-    input,
-    next,
-    oct,
-    open,
-    pow,
-    round,
-    super,
-    filter,
-    map,
-    zip,
-)
-
-try:
-    from __builtin__ import str as BuiltinStr
-except ImportError:
-    BuiltinStr = str
-# pragma pylint: enable=unused-import
-
 from collections import namedtuple
 
 import wrapt
@@ -104,10 +73,10 @@ def add_operators(operators, members, newclassname, attributes):
                 )
                 for member in members
             }
-            newclass = type(BuiltinStr(newclassname), (cls,), newmembers)
+            newclass = type(str(newclassname), (cls,), newmembers)
             return newclass(*[getattr(self, attr) for attr in attributes])
 
-        patch_members.__name__ = BuiltinStr(method)
+        patch_members.__name__ = str(method)
         patch_members.__doc__ = docstring
         return patch_members
 
@@ -147,14 +116,8 @@ OPERATORS = [
         lambda x, y: y * x,
         """Multiply value(s) by PIPoint (reverse order)""",
     ),
-    # # Removed for now, Python 3 only
-    # Operator('__matmul__',
-    #          lambda x, y: x @ y,
-    #          """Matrix multiply"""),
-    # # Removed for now, Python 3 only
-    # Operator('__rmatmul__',
-    #          lambda x, y: y @ x,
-    #          """Matrix multiply (reverse order)"""),
+    Operator("__matmul__", lambda x, y: x @ y, """Matrix multiply"""),
+    Operator("__rmatmul__", lambda x, y: y @ x, """Matrix multiply (reverse order)"""),
     Operator("__div__", lambda x, y: x / y, """Divide PIPoint by value(s)"""),
     Operator(
         "__rdiv__", lambda x, y: y / x, """Divide value(s) by PIPoint (reverse order)"""
