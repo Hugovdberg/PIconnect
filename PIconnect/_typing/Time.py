@@ -1,8 +1,16 @@
-class DateTime:
+from typing import Optional, Protocol
+
+
+class DateTime(Protocol):
     """Mock for System.DateTime"""
 
-    def __init__(self) -> None:
-        pass
+    Year: int
+    Month: int
+    Day: int
+    Hour: int
+    Minute: int
+    Second: int
+    Millisecond: int
 
 
 class AFTime:
@@ -15,7 +23,7 @@ class AFTime:
 class AFTimeRange:
     """Mock class of the AF.Time.AFTimeRange class"""
 
-    def __init__(self, start_time, end_time):
+    def __init__(self, start_time: str, end_time: str):
         pass
 
 
@@ -26,6 +34,6 @@ class AFTimeSpan:
         pass
 
     @staticmethod
-    def Parse(interval: str, /) -> "AFTimeSpan":
+    def Parse(interval: Optional[str], /) -> "AFTimeSpan":
         """Stub for parsing strings that should return a AFTimeSpan"""
         return AFTimeSpan()
