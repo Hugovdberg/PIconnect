@@ -1,6 +1,19 @@
-from typing import Any, Dict, List
-import Asset
-import Time
+from typing import Any, Generic, Iterator, List, TypeVar
+from . import Asset, Time
+
+_KT = TypeVar("_KT")
+_VT = TypeVar("_VT")
+
+
+class DictItem(Generic[_KT, _VT]):
+    def __init__(self, key: _KT, value: _VT) -> None:
+        self.Key = key
+        self.Value = value
+
+
+class Dict(Generic[_KT, _VT]):
+    def __iter__(self) -> Iterator[DictItem[_KT, _VT]]:  # type: ignore
+        pass
 
 
 class PIPoint:
@@ -39,11 +52,9 @@ class PIServer:
 
     def Connect(self, retry):
         """Stub for connecting to test server"""
-        pass
 
     def Disconnect(self):
         """Stub for disconnecting from test server"""
-        pass
 
 
 class PIServers:

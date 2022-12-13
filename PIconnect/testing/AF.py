@@ -1,7 +1,4 @@
-import Asset
-import Data
-import Time
-import PI
+from . import Asset, Data, Time, PI
 
 __all__ = ["Asset", "Data", "Time", "PI", "AFDatabase"]
 
