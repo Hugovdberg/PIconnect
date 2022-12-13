@@ -1,10 +1,10 @@
 """ AFSDK
     Loads the .NET libraries from the OSIsoft AF SDK
 """
+import logging
 import os
 import sys
 import typing
-import logging
 
 import pythonnet
 
@@ -20,7 +20,7 @@ def __fallback():
 
     warnings.warn("Can't import the PI AF SDK, running in test mode", ImportWarning)
 
-    from .testing import AF, AF_SDK_VERSION
+    from ._typing import AF, AF_SDK_VERSION
 
     return AF, AF_SDK_VERSION
 

@@ -1,6 +1,10 @@
 from PIconnect._operators import OPERATORS, add_operators
+from PIconnect._typing.Generic import SummariesDict
 from PIconnect.PIData import PISeriesContainer
 from PIconnect.time import timestamp_to_index
+
+from . import PIConsts
+from .AFSDK import AF
 
 
 @add_operators(
@@ -69,7 +73,9 @@ class PIAFAttribute(PISeriesContainer):
         """Return a single value for this PI Point"""
         return self.attribute.Data.InterpolatedValue(time, self.attribute.DefaultUOM)
 
-    def _recorded_value(self, time, retrieval_mode):
+    def _recorded_value(
+        self, time: AF.Time.AFTime, retrieval_mode: PIConsts.RetrievalMode
+    ) -> AF.Asset.AFValue:
         """Return a single value for this PI Point"""
         return self.attribute.Data.RecordedValue(
             time, int(retrieval_mode), self.attribute.DefaultUOM
@@ -110,15 +116,15 @@ class PIAFAttribute(PISeriesContainer):
 
     def _filtered_summaries(
         self,
-        time_range,
-        interval,
-        filter_expression,
-        summary_types,
-        calculation_basis,
-        filter_evaluation,
-        filter_interval,
-        time_type,
-    ):
+        time_range: AF.Time.AFTimeRange,
+        interval: AF.Time.AFTimeSpan,
+        filter_expression: str,
+        summary_types: AF.Data.AFSummaryTypes,
+        calculation_basis: AF.Data.AFCalculationBasis,
+        filter_evaluation: AF.Data.AFSampleType,
+        filter_interval: AF.Time.AFTimeSpan,
+        time_type: AF.Data.AFTimestampCalculation,
+    ) -> SummariesDict:
         return self.attribute.Data.FilteredSummaries(
             time_range,
             interval,
