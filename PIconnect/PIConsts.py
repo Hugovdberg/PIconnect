@@ -1,12 +1,7 @@
-from enum import IntEnum
-
-try:
-    from enum import IntFlag
-except ImportError:
-    IntFlag = IntEnum
+import enum
 
 
-class UpdateMode(IntEnum):
+class UpdateMode(enum.IntEnum):
     """Indicates how to treat duplicate values in the archive, when supported by the Data Reference.
 
     Detailed information is available at :afsdk:`AF.Data.AFUpdateOption <T_OSIsoft_AF_Data_AFUpdateOption.htm>`
@@ -33,7 +28,7 @@ class UpdateMode(IntEnum):
     REMOVE = 6
 
 
-class BufferMode(IntEnum):
+class BufferMode(enum.IntEnum):
     """Indicates buffering option in updating values, when supported by the Data Reference.
 
     Detailed information is available at :afsdk:`AF.Data.AFBufferOption <T_OSIsoft_AF_Data_AFBufferOption.htm>`
@@ -49,7 +44,7 @@ class BufferMode(IntEnum):
     BUFFER = 2
 
 
-class AuthenticationMode(IntEnum):
+class AuthenticationMode(enum.IntEnum):
     """AuthenticationMode indicates how a user authenticates to a PI Server
 
     Detailed information is available at :afsdk:`AF.PI.PIAuthenticationMode <T_OSIsoft_AF_PI_PIAuthenticationMode.htm>`.
@@ -61,7 +56,7 @@ class AuthenticationMode(IntEnum):
     PI_USER_AUTHENTICATION = 1
 
 
-class CalculationBasis(IntEnum):
+class CalculationBasis(enum.IntEnum):
     """CalculationBasis indicates how values should be weighted over a time range
 
     Detailed information is available at :afsdk:`AF.Data.AFCalculationBasis <T_OSIsoft_AF_Data_AFCalculationBasis.htm>`.
@@ -83,7 +78,7 @@ class CalculationBasis(IntEnum):
     EVENT_WEIGHTED_INCLUDE_BOTH_ENDS = 6
 
 
-class ExpressionSampleType(IntEnum):
+class ExpressionSampleType(enum.IntEnum):
     """ExpressionSampleType indicates how expressions are evaluated over a time range.
 
     Detailed information is available at :afsdk:`AF.Data.AFSampleType <T_OSIsoft_AF_Data_AFSampleType.htm>`.
@@ -95,7 +90,7 @@ class ExpressionSampleType(IntEnum):
     INTERVAL = 1
 
 
-class RetrievalMode(IntEnum):
+class RetrievalMode(enum.IntEnum):
     """RetrievalMode indicates which recorded value should be returned
 
     Detailed information is available at :afsdk:`AF.Data.AFRetrievalMode <T_OSIsoft_AF_Data_AFRetrievalMode.htm>`.
@@ -115,7 +110,7 @@ class RetrievalMode(IntEnum):
     EXACT = 4
 
 
-class SummaryType(IntFlag):
+class SummaryType(enum.IntFlag):
     """SummaryType indicates which types of summary should be calculated.
 
     Based on :class:`enum.IntEnum` in Python 3.5 or earlier. `SummaryType`'s can
@@ -157,7 +152,7 @@ class SummaryType(IntFlag):
     ALL_FOR_NON_NUMERIC = 8320
 
 
-class TimestampCalculation(IntEnum):
+class TimestampCalculation(enum.IntEnum):
     """
     TimestampCalculation defines the timestamp returned for a given summary calculation
 
@@ -172,7 +167,7 @@ class TimestampCalculation(IntEnum):
     MOST_RECENT_TIME = 2
 
 
-class EventFrameSearchMode(IntEnum):
+class EventFrameSearchMode(enum.IntEnum):
     """EventFrameSearchMode
 
     EventFrameSearchMode defines the interpretation and direction from the start time
@@ -203,9 +198,3 @@ class EventFrameSearchMode(IntEnum):
     #: Forward in progress, also known as starting after and in progress
     FORWARD_IN_PROGRESS = 6
     STARTING_AFTER_IN_PROGRESS = 6
-
-
-def get_enumerated_value(enumeration, value, default):
-    if not value:
-        return default
-    return enumeration(value)
