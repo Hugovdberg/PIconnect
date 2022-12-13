@@ -1,12 +1,19 @@
-from datetime import datetime
+"""Time related functions and classes."""
+# pyright: strict
+import datetime
+from typing import Union
 
 import pytz
 
 from PIconnect.AFSDK import AF
 from PIconnect.config import PIConfig
 
+from ._typing import Time
 
-def to_af_time_range(start_time, end_time):
+TimeLike = Union[str, datetime.datetime]
+
+
+def to_af_time_range(start_time: TimeLike, end_time: TimeLike) -> AF.Time.AFTimeRange:
     """Convert a combination of start and end time to a time range.
 
     Both `start_time` and `end_time` can be either a :any:`datetime.datetime` object or a string.
@@ -22,15 +29,15 @@ def to_af_time_range(start_time, end_time):
     Returns:
         :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`: Time range covered by the start and end time.
     """
-    if isinstance(start_time, datetime):
+    if isinstance(start_time, datetime.datetime):
         start_time = start_time.isoformat()
-    if isinstance(end_time, datetime):
+    if isinstance(end_time, datetime.datetime):
         end_time = end_time.isoformat()
 
     return AF.Time.AFTimeRange(start_time, end_time)
 
 
-def to_af_time(time):
+def to_af_time(time: TimeLike) -> AF.Time.AFTime:
     """Convert a time to a AFTime value.
 
     Args:
@@ -39,13 +46,13 @@ def to_af_time(time):
     Returns:
         :afsdk:`AF.Time.AFTime <M_OSIsoft_AF_Time_AFTime__ctor_7.htm>`: Time range covered by the start and end time.
     """
-    if isinstance(time, datetime):
+    if isinstance(time, datetime.datetime):
         time = time.isoformat()
 
     return AF.Time.AFTime(time)
 
 
-def timestamp_to_index(timestamp):
+def timestamp_to_index(timestamp: Time.DateTime) -> datetime.datetime:
     """Convert AFTime object to datetime in local timezone.
 
     Args:
@@ -56,7 +63,7 @@ def timestamp_to_index(timestamp):
     """
     local_tz = pytz.timezone(PIConfig.DEFAULT_TIMEZONE)
     return (
-        datetime(
+        datetime.datetime(
             timestamp.Year,
             timestamp.Month,
             timestamp.Day,
