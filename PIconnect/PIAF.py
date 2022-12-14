@@ -1,14 +1,65 @@
 """ PIAF
     Core containers for connections to the PI Asset Framework.
 """
-from warnings import warn
+import dataclasses
+import warnings
+from typing import Any, Dict, Optional, Union, cast
 
-from PIconnect._utils import classproperty
-from PIconnect.AFSDK import AF
-from PIconnect.PIAFBase import PIAFBaseElement
-from PIconnect.PIConsts import EventFrameSearchMode
+from PIconnect import AF, PIAFBase, PIConsts, _time
+from PIconnect._utils import InitialisationWarning
 
-_NOTHING = object()
+
+@dataclasses.dataclass(frozen=True)
+class PIAFServer:
+    server: AF.PISystem
+    databases: Dict[str, AF.AFDatabase] = dataclasses.field(default_factory=dict)
+
+    def __getitem__(self, attr: str) -> Union[AF.PISystem, Dict[str, AF.AFDatabase]]:
+        return getattr(self, attr)
+
+
+ServerSpec = Dict[str, Union[AF.PISystem, Dict[str, AF.AFDatabase]]]
+
+
+def _lookup_servers() -> Dict[str, ServerSpec]:
+    from System import Exception as dotNetException  # type: ignore
+
+    servers: Dict[str, PIAFServer] = {}
+    for s in AF.PISystems():
+        try:
+            servers[s.Name] = server = PIAFServer(s)
+            for d in s.Databases:
+                try:
+                    server.databases[d.Name] = d
+                except (Exception, dotNetException) as e:  # type: ignore
+                    warnings.warn(
+                        f"Failed loading database data for {d.Name} on {s.Name} "
+                        f"with error {type(cast(Exception, e)).__qualname__}",
+                        InitialisationWarning,
+                    )
+        except (Exception, dotNetException) as e:  # type: ignore
+            warnings.warn(
+                f"Failed loading server data for {s.Name} "
+                f"with error {type(cast(Exception, e)).__qualname__}",
+                InitialisationWarning,
+            )
+    return {
+        server_name: {
+            "server": server.server,
+            "databases": {db_name: db for db_name, db in server.databases.items()},
+        }
+        for server_name, server in servers.items()
+    }
+
+
+def _lookup_default_server() -> Optional[ServerSpec]:
+    servers = _lookup_servers()
+    if AF.PISystems().DefaultPISystem:
+        return servers[AF.PISystems().DefaultPISystem.Name]
+    elif len(servers) > 0:
+        return servers[list(_lookup_servers())[0]]
+    else:
+        return None
 
 
 class PIAFDatabase(object):
@@ -19,84 +70,61 @@ class PIAFDatabase(object):
 
     version = "0.2.0"
 
-    _servers = _NOTHING
-    _default_server = _NOTHING
+    servers: Dict[str, ServerSpec] = _lookup_servers()
+    default_server: Optional[ServerSpec] = _lookup_default_server()
 
-    def __init__(self, server=None, database=None):
-        self.server = None
-        self.database = None
-        self._initialise_server(server)
-        self._initialise_database(database)
+    def __init__(
+        self, server: Optional[str] = None, database: Optional[str] = None
+    ) -> None:
+        server_spec = self._initialise_server(server)
+        self.server: AF.PISystem = server_spec["server"]  # type: ignore
+        self.database: AF.AFDatabase = self._initialise_database(server_spec, database)
 
-    @classproperty
-    def servers(self):
-        if self._servers is _NOTHING:
-            i, j, failed_servers, failed_databases = 0, 0, 0, 0
-            self._servers = {}
-            from System import Exception as dotNetException  # type: ignore
+    def _initialise_server(self, server: Optional[str]) -> ServerSpec:
+        if server is None:
+            if self.default_server is None:
+                raise ValueError("No server specified and no default server found.")
+            return self.default_server
 
-            for i, s in enumerate(AF.PISystems(), start=1):
-                try:
-                    self._servers[s.Name] = {"server": s, "databases": {}}
-                    for j, d in enumerate(s.Databases, start=1):
-                        try:
-                            self._servers[s.Name]["databases"][d.Name] = d
-                        except Exception:
-                            failed_databases += 1
-                        except dotNetException:
-                            failed_databases += 1
-                except Exception:
-                    failed_servers += 1
-                except dotNetException:
-                    failed_servers += 1
-            if failed_servers or failed_databases:
-                warn(
-                    "Failed loading {}/{} servers and {}/{} databases".format(
-                        failed_servers, i, failed_databases, j
-                    )
+        if server not in self.servers:
+            if self.default_server is None:
+                raise ValueError(
+                    f'Server "{server}" not found and no default server found.'
                 )
-        return self._servers
-
-    @classproperty
-    def default_server(self):
-        if self._default_server is _NOTHING:
-            self._default_server = None
-            if AF.PISystems().DefaultPISystem:
-                self._default_server = self.servers[AF.PISystems().DefaultPISystem.Name]
-            elif len(self.servers) > 0:
-                self._default_server = self.servers[list(self.servers)[0]]
-            else:
-                self._default_server = None
-        return self._default_server
-
-    def _initialise_server(self, server):
-        if server and server not in self.servers:
             message = 'Server "{server}" not found, using the default server.'
-            warn(message=message.format(server=server), category=UserWarning)
-        server = self.servers.get(server, self.default_server)
-        self.server = server["server"]
+            warnings.warn(message=message.format(server=server), category=UserWarning)
+            return self.default_server
 
-    def _initialise_database(self, database):
-        server = self.servers.get(self.server.Name)
-        if not server["databases"]:
-            server["databases"] = {x.Name: x for x in self.server.Databases}
-        if database and database not in server["databases"]:
-            message = 'Database "{database}" not found, using the default database.'
-            warn(message=message.format(database=database), category=UserWarning)
+        return self.servers[server]
+
+    def _initialise_database(
+        self, server: ServerSpec, database: Optional[str]
+    ) -> AF.AFDatabase:
         default_db = self.server.Databases.DefaultDatabase
-        self.database = server["databases"].get(database, default_db)
+        if database is None:
+            return default_db
 
-    def __enter__(self):
+        databases = cast(Dict[str, AF.AFDatabase], server["databases"])
+        if database not in databases:
+            message = 'Database "{database}" not found, using the default database.'
+            warnings.warn(
+                message=message.format(database=database), category=UserWarning
+            )
+            return default_db
+
+        return databases[database]
+
+    def __enter__(self) -> "PIAFDatabase":
         self.server.Connect()
         return self
 
-    def __exit__(self, *args):
+    def __exit__(self, *args: Any) -> None:
         pass
         # Disabled disconnecting because garbage collection sometimes impedes
         # connecting to another server later
         # self.server.Disconnect()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "%s(\\\\%s\\%s)" % (
             self.__class__.__name__,
             self.server_name,
@@ -104,43 +132,43 @@ class PIAFDatabase(object):
         )
 
     @property
-    def server_name(self):
+    def server_name(self) -> str:
         """Return the name of the connected PI AF server."""
         return self.server.Name
 
     @property
-    def database_name(self):
+    def database_name(self) -> str:
         """Return the name of the connected PI AF database."""
         return self.database.Name
 
     @property
-    def children(self):
+    def children(self) -> Dict[str, "PIAFElement"]:
         """Return a dictionary of the direct child elements of the database."""
         return {c.Name: PIAFElement(c) for c in self.database.Elements}
 
-    def descendant(self, path):
+    def descendant(self, path: str) -> "PIAFElement":
         """Return a descendant of the database from an exact path."""
         return PIAFElement(self.database.Elements.get_Item(path))
 
     def event_frames(
         self,
-        start_time=None,
-        start_index=0,
-        max_count=1000,
-        search_mode=EventFrameSearchMode.STARTING_AFTER,
-        search_full_hierarchy=False,
-    ):
-        if not start_time:
-            start_time = AF.Time.AFTime.Now
+        start_time: _time.TimeLike = "",
+        start_index: int = 0,
+        max_count: int = 1000,
+        search_mode: PIConsts.EventFrameSearchMode = PIConsts.EventFrameSearchMode.STARTING_AFTER,
+        search_full_hierarchy: bool = False,
+    ) -> Dict[str, "PIAFEventFrame"]:
+        _start_time = _time.to_af_time(start_time)
+        _search_mode = AF.EventFrame.AFEventFrameSearchMode(int(search_mode))
         return {
             frame.Name: PIAFEventFrame(frame)
             for frame in AF.EventFrame.AFEventFrame.FindEventFrames(
                 self.database,
                 None,
-                start_time,
+                _start_time,
                 start_index,
                 max_count,
-                search_mode,
+                _search_mode,
                 None,
                 None,
                 None,
@@ -150,45 +178,45 @@ class PIAFDatabase(object):
         }
 
 
-class PIAFElement(PIAFBaseElement):
+class PIAFElement(PIAFBase.PIAFBaseElement[AF.Asset.AFElement]):
     """Container for PI AF elements in the database."""
 
     version = "0.1.0"
 
     @property
-    def parent(self):
+    def parent(self) -> Optional["PIAFElement"]:
         """Return the parent element of the current element, or None if it has none."""
         if not self.element.Parent:
             return None
         return self.__class__(self.element.Parent)
 
     @property
-    def children(self):
+    def children(self) -> Dict[str, "PIAFElement"]:
         """Return a dictionary of the direct child elements of the current element."""
         return {c.Name: self.__class__(c) for c in self.element.Elements}
 
-    def descendant(self, path):
+    def descendant(self, path: str) -> "PIAFElement":
         """Return a descendant of the current element from an exact path."""
         return self.__class__(self.element.Elements.get_Item(path))
 
 
-class PIAFEventFrame(PIAFBaseElement):
+class PIAFEventFrame(PIAFBase.PIAFBaseElement[AF.EventFrame.AFEventFrame]):
     """Container for PI AF Event Frames in the database."""
 
     version = "0.1.0"
 
     @property
-    def event_frame(self):
+    def event_frame(self) -> AF.EventFrame.AFEventFrame:
         return self.element
 
     @property
-    def parent(self):
+    def parent(self) -> Optional["PIAFEventFrame"]:
         """Return the parent element of the current event frame, or None if it has none."""
         if not self.element.Parent:
             return None
         return self.__class__(self.element.Parent)
 
     @property
-    def children(self):
+    def children(self) -> Dict[str, "PIAFEventFrame"]:
         """Return a dictionary of the direct child event frames of the current event frame."""
         return {c.Name: self.__class__(c) for c in self.element.EventFrames}
