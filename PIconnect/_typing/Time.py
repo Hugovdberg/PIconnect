@@ -19,6 +19,8 @@ class AFTime:
     def __init__(self, time: str) -> None:
         self.UtcTime: DateTime
 
+    Now: DateTime
+
 
 class AFTimeRange:
     """Mock class of the AF.Time.AFTimeRange class"""

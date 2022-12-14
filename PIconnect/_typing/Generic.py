@@ -1,7 +1,5 @@
 from typing import Any, Generic, Iterable, Iterator, Tuple, TypeVar
 
-from . import Asset, Data
-
 _KT = TypeVar("_KT")
 _VT = TypeVar("_VT")
 
@@ -21,7 +19,4 @@ class Dictionary(Generic[_KT, _VT]):
             yield DictItem(*item)
 
 
-AttributeDict = Dictionary[str, Asset.AFAttribute]
 PropertyDict = Dictionary[str, Any]
-SummariesDict = Dictionary[Data.AFSummaryTypes, Asset.AFValues]
-SummaryDict = Dictionary[Data.AFSummaryTypes, Asset.AFValue]

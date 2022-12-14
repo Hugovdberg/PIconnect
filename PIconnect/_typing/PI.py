@@ -1,6 +1,35 @@
-from typing import List
+"""Mock classes of the AF.PI namespace of the OSIsoft PI-AF SDK"""
+from typing import Iterable, Iterator, List, Optional
 
 from . import Asset, Data, Generic, Time
+
+__all__ = ["PIPoint", "PIServer", "PIServers"]
+
+
+class PIServer:
+    """Mock class of the AF.PI.PIServer class"""
+
+    def __init__(self, name: str) -> None:
+        self.Name = name
+        self._connected = False
+
+    def Connect(self, retry: bool) -> None:
+        """Stub for connecting to test server"""
+        self._connected = True
+
+    def Disconnect(self) -> None:
+        """Stub for disconnecting from test server"""
+        self._connected = False
+
+
+class PIServers:
+    """Mock class of the AF.PI.PIServers class"""
+
+    def __init__(self) -> None:
+        self.DefaultPIServer = PIServer("Testing")
+
+    def __iter__(self) -> Iterator[PIServer]:
+        return (x for x in [self.DefaultPIServer])
 
 
 class PIPoint:
@@ -24,11 +53,16 @@ class PIPoint:
         sample_interval: Time.AFTimeSpan,
         time_type: Data.AFTimestampCalculation,
         /,
-    ) -> Generic.SummariesDict:
-        return Generic.SummariesDict([])
+    ) -> Asset.SummariesDict:
+        return Asset.SummariesDict([])
 
     @staticmethod
-    def FindPIPoints(connection, query, source, attribute_names) -> List["PIPoint"]:
+    def FindPIPoints(
+        connection: PIServer,
+        query: str,
+        source: Optional[str],
+        attribute_names: Optional[Iterable[str]],
+    ) -> Iterable["PIPoint"]:
         """Stub to mock querying PIPoints"""
         return []
 
@@ -79,8 +113,8 @@ class PIPoint:
         calculation_basis: Data.AFCalculationBasis,
         time_type: Data.AFTimestampCalculation,
         /,
-    ) -> Generic.SummariesDict:
-        return Generic.SummariesDict([])
+    ) -> Asset.SummariesDict:
+        return Asset.SummariesDict([])
 
     @staticmethod
     def Summary(
@@ -88,8 +122,8 @@ class PIPoint:
         summary_type: Data.AFSummaryTypes,
         calculation_basis: Data.AFCalculationBasis,
         time_type: Data.AFTimestampCalculation,
-    ) -> Generic.SummariesDict:
-        return Generic.SummariesDict([])
+    ) -> Asset.SummariesDict:
+        return Asset.SummariesDict([])
 
     @staticmethod
     def UpdateValue(
@@ -99,25 +133,3 @@ class PIPoint:
         /,
     ) -> None:
         pass
-
-
-class PIServer:
-    """Mock class of the AF.PI.PIServer class"""
-
-    def __init__(self, name):
-        self.Name = name
-
-    def Connect(self, retry):
-        """Stub for connecting to test server"""
-
-    def Disconnect(self):
-        """Stub for disconnecting from test server"""
-
-
-class PIServers:
-    """Mock class of the AF.PI.PIServers class"""
-
-    DefaultPIServer = PIServer("Testing")
-
-    def __iter__(self):
-        return (x for x in [self.DefaultPIServer])
