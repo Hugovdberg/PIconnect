@@ -2,9 +2,8 @@
 PIData contains a number of auxiliary classes that define common functionality
 among :class:`PIPoint` and :class:`PIAFAttribute` objects.
 """
-import datetime
 from abc import ABC, abstractmethod
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 import pandas as pd
 from pandas import DataFrame, Series
