@@ -157,7 +157,7 @@ class PISeriesContainer(abc.ABC):
         )
         df = pd.DataFrame()
         for summary in pivalues:
-            key = PIConsts.SummaryType(summary.Key).name
+            key = PIConsts.SummaryType(int(summary.Key)).name
             timestamps, values = zip(
                 *[
                     (_time.timestamp_to_index(value.Timestamp.UtcTime), value.Value)
@@ -462,7 +462,7 @@ class PISeriesContainer(abc.ABC):
         )
         df = pd.DataFrame()
         for summary in pivalues:
-            key = PIConsts.SummaryType(summary.Key).name
+            key = PIConsts.SummaryType(int(summary.Key)).name
             value = summary.Value
             timestamp = _time.timestamp_to_index(value.Timestamp.UtcTime)
             value = value.Value
@@ -531,7 +531,7 @@ class PISeriesContainer(abc.ABC):
         )
         df = pd.DataFrame()
         for summary in pivalues:
-            key = PIConsts.SummaryType(summary.Key).name
+            key = PIConsts.SummaryType(int(summary.Key)).name
             timestamps, values = zip(
                 *[
                     (_time.timestamp_to_index(value.Timestamp.UtcTime), value.Value)
