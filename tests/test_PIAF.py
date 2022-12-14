@@ -1,35 +1,9 @@
 """Test communication with the PI AF system"""
-# pragma pylint: disable=unused-import
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-from builtins import (
-    ascii,
-    bytes,
-    chr,
-    dict,
-    filter,
-    hex,
-    input,
-    int,
-    list,
-    map,
-    next,
-    object,
-    oct,
-    open,
-    pow,
-    range,
-    round,
-    str,
-    super,
-    zip,
-)
-
+from typing import cast
 import pytest
 
 import PIconnect as PI
-
-# pragma pylint: enable=unused-import
+from PIconnect._typing import AF
 
 
 class TestAFDatabase:
@@ -60,7 +34,7 @@ class TestAFDatabase:
 
     def test_unknown_database_name(self):
         """Test that the server reports a warning for an unknown database."""
-        server = PI.PIAFDatabase.default_server["server"]
+        server = cast(AF.PISystem, PI.PIAFDatabase.default_server["server"]) # type: ignore
         databases = [db.Name for db in server.Databases]
         AFdatabase_name = "__".join(databases + ["UnkownDatabaseName"])
         with pytest.warns(UserWarning):

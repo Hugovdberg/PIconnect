@@ -1,12 +1,15 @@
+"""Configuration for PIconnect package."""
+
+
 class PIConfigContainer:
-    _default_timezone = "UTC"
+    _default_timezone: str = "UTC"
 
     @property
-    def DEFAULT_TIMEZONE(self):
+    def DEFAULT_TIMEZONE(self) -> str:
         return self._default_timezone
 
     @DEFAULT_TIMEZONE.setter
-    def DEFAULT_TIMEZONE(self, value):
+    def DEFAULT_TIMEZONE(self, value: str) -> None:
         import pytz
 
         if value not in pytz.all_timezones:

@@ -41,8 +41,8 @@ System
 ------
 
 -   OS: \[e.g. Windows, Linux]
--   Python version: \[Python 2.7/ Python 3.6]
--   PIconnect version: \[e.g. 0.5.2]
+-   Python version: \[Python 3.x]
+-   PIconnect version: \[e.g. 0.10.0]
 
 Additional context
 ------------------

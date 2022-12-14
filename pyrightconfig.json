@@ -1,0 +1,13 @@
+{
+    "typeCheckingMode": "strict",
+    "exclude": [
+        ".venv/*",
+        "*.egg-info/*",
+        "build/*",
+        "dist/*",
+        ".tox/*"
+    ],
+    "ignore": [
+        "PIconnect/_operators.py"
+    ]
+}

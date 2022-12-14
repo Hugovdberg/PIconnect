@@ -1,47 +1,42 @@
 """ PI
     Core containers for connections to PI databases
 """
-# pragma pylint: disable=unused-import, redefined-builtin
-from __future__ import absolute_import, division, print_function, unicode_literals
+import warnings
+from typing import Any, Dict, List, Optional, Union, cast
 
-from builtins import (
-    ascii,
-    bytes,
-    chr,
-    dict,
-    filter,
-    hex,
-    input,
-    int,
-    list,
-    map,
-    next,
-    object,
-    oct,
-    open,
-    pow,
-    range,
-    round,
-    str,
-    super,
-    zip,
-)
+import PIconnect._typing.AF as _AFtyping
+import PIconnect._typing.Generic as _dotNetGeneric
+from PIconnect import AF, PIConsts, PIData, _time
+from PIconnect._operators import OPERATORS, add_operators  # type: ignore
+from PIconnect._utils import InitialisationWarning
 
-try:
-    from __builtin__ import str as BuiltinStr
-except ImportError:
-    BuiltinStr = str
-# pragma pylint: enable=unused-import, redefined-builtin
-from warnings import warn
+__all__ = ["PIPoint", "PIServer"]
 
-from PIconnect._operators import OPERATORS, add_operators
-from PIconnect._utils import classproperty
-from PIconnect.AFSDK import AF
-from PIconnect.PIConsts import AuthenticationMode
-from PIconnect.PIData import PISeriesContainer
-from PIconnect.time import timestamp_to_index
 
-_NOTHING = object()
+def _lookup_servers() -> Dict[str, AF.PI.PIServer]:
+    servers: Dict[str, AF.PI.PIServer] = {}
+    from System import Exception as dotNetException  # type: ignore
+
+    for server in AF.PI.PIServers():
+        try:
+            servers[server.Name] = server
+        except (Exception, dotNetException) as e:  # type: ignore
+            warnings.warn(
+                f"Failed loading server data for {server.Name} "
+                f"with error {type(cast(Exception, e)).__qualname__}",
+                InitialisationWarning,
+            )
+    return servers
+
+
+def _lookup_default_server() -> Optional[AF.PI.PIServer]:
+
+    default_server = None
+    try:
+        default_server = AF.PI.PIServers().DefaultPIServer
+    except Exception:
+        warnings.warn("Could not load the default PI Server", ResourceWarning)
+    return default_server
 
 
 class PIServer(object):  # pylint: disable=useless-object-inheritance
@@ -63,22 +58,36 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
     version = "0.2.2"
 
     #: Dictionary of known servers, as reported by the SDK
-    _servers = _NOTHING
+    servers = _lookup_servers()
     #: Default server, as reported by the SDK
-    _default_server = _NOTHING
+    default_server = _lookup_default_server()
 
     def __init__(
         self,
-        server=None,
-        username=None,
-        password=None,
-        domain=None,
-        authentication_mode=AuthenticationMode.PI_USER_AUTHENTICATION,
-        timeout=None,
-    ):
-        if server and server not in self.servers:
+        server: Optional[str] = None,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        domain: Optional[str] = None,
+        authentication_mode: PIConsts.AuthenticationMode = PIConsts.AuthenticationMode.PI_USER_AUTHENTICATION,
+        timeout: Optional[int] = None,
+    ) -> None:
+        if server is None:
+            if self.default_server is None:
+                raise ValueError(
+                    "No server was specified and no default server was found."
+                )
+            self.connection = self.default_server
+        elif server not in self.servers:
+            if self.default_server is None:
+                raise ValueError(
+                    f"Server '{server}' not found and no default server was found."
+                )
             message = 'Server "{server}" not found, using the default server.'
-            warn(message=message.format(server=server), category=UserWarning)
+            warnings.warn(message=message.format(server=server), category=UserWarning)
+            self.connection = self.default_server
+        else:
+            self.connection = self.servers[server]
+
         if bool(username) != bool(password):
             raise ValueError(
                 "When passing credentials both the username and password must be specified."
@@ -88,55 +97,28 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
                 "A domain can only specified together with a username and password."
             )
         if username:
-            from System.Net import NetworkCredential
-            from System.Security import SecureString
+            from System.Net import NetworkCredential  # type: ignore
+            from System.Security import SecureString  # type: ignore
 
-            secure_pass = SecureString()
-            for c in password:
-                secure_pass.AppendChar(c)
+            secure_pass = cast(_dotNetGeneric.SecureString, SecureString())
+            if password is not None:
+                for c in password:
+                    secure_pass.AppendChar(c)
             cred = [username, secure_pass] + ([domain] if domain else [])
-            self._credentials = (NetworkCredential(*cred), int(authentication_mode))
+            self._credentials = (
+                cast(_dotNetGeneric.NetworkCredential, NetworkCredential(*cred)),
+                AF.PI.PIAuthenticationMode(int(authentication_mode)),
+            )
         else:
             self._credentials = None
 
-        self.connection = self.servers.get(server, self.default_server)
-
         if timeout:
-            from System import TimeSpan
+            from System import TimeSpan  # type: ignore
 
             # System.TimeSpan(hours, minutes, seconds)
-            self.connection.ConnectionInfo.OperationTimeOut = TimeSpan(0, 0, timeout)
-
-    @classproperty
-    def servers(self):
-        if self._servers is _NOTHING:
-            i, failures = 0, 0
-            self._servers = {}
-            from System import Exception as dotNetException  # type: ignore
-
-            for i, server in enumerate(AF.PI.PIServers(), start=1):
-                try:
-                    self._servers[server.Name] = server
-                except Exception:
-                    failures += 1
-                except dotNetException:
-                    failures += 1
-            if failures:
-                warn(
-                    "Could not load {} PI Server(s) out of {}".format(failures, i),
-                    ResourceWarning,
-                )
-        return self._servers
-
-    @classproperty
-    def default_server(self):
-        if self._default_server is _NOTHING:
-            self._default_server = None
-            try:
-                self._default_server = AF.PI.PIServers().DefaultPIServer
-            except Exception:
-                warn("Could not load the default PI Server", ResourceWarning)
-        return self._default_server
+            self.connection.ConnectionInfo.OperationTimeOut = cast(
+                _dotNetGeneric.TimeSpan, TimeSpan(0, 0, timeout)
+            )
 
     def __enter__(self):
         if self._credentials:
@@ -147,10 +129,10 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
             self.connection.Connect(force_connection)
         return self
 
-    def __exit__(self, *args):
+    def __exit__(self, *args: Any):
         self.connection.Disconnect()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "%s(\\\\%s)" % (self.__class__.__name__, self.server_name)
 
     @property
@@ -161,7 +143,9 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         """
         return self.connection.Name
 
-    def search(self, query, source=None):
+    def search(
+        self, query: Union[str, List[str]], source: Optional[str] = None
+    ) -> List["PIPoint"]:
         """search
 
         Search PIPoints on the PIServer
@@ -185,7 +169,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         return [
             PIPoint(pi_point)
             for pi_point in AF.PI.PIPoint.FindPIPoints(
-                self.connection, BuiltinStr(query), source, None
+                self.connection, str(query), source, None
             )
         ]
 
@@ -196,7 +180,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
     newclassname="VirtualPIPoint",
     attributes=["pi_point"],
 )
-class PIPoint(PISeriesContainer):
+class PIPoint(PIData.PISeriesContainer):
     """PIPoint
 
     Reference to a PI Point to get data and corresponding metadata from the server.
@@ -207,7 +191,7 @@ class PIPoint(PISeriesContainer):
 
     version = "0.3.0"
 
-    def __init__(self, pi_point):
+    def __init__(self, pi_point: AF.PI.PIPoint) -> None:
         super().__init__()
         self.pi_point = pi_point
         self.tag = pi_point.Name
@@ -224,21 +208,9 @@ class PIPoint(PISeriesContainer):
         )
 
     @property
-    def last_update(self):
-        """Return the time at which the last value for this PI Point was recorded."""
-        return timestamp_to_index(self.pi_point.CurrentValue().Timestamp.UtcTime)
-
-    @property
-    def raw_attributes(self):
-        """Return a dictionary of the raw attributes of the PI Point."""
-        self.__load_attributes()
-        return self.__raw_attributes
-
-    @property
-    def units_of_measurement(self):
-        """Return the units of measument in which values for this PI Point are reported."""
-        self.__load_attributes()
-        return self.__raw_attributes["engunits"]
+    def created(self):
+        """Return the creation datetime of a point."""
+        return _time.timestamp_to_index(self.raw_attributes["creationdate"])
 
     @property
     def description(self):
@@ -248,10 +220,29 @@ class PIPoint(PISeriesContainer):
 
             Add setter to alter displayed description
         """
-        self.__load_attributes()
-        return self.__raw_attributes["descriptor"]
+        return self.raw_attributes["descriptor"]
 
-    def __load_attributes(self):
+    @property
+    def last_update(self):
+        """Return the time at which the last value for this PI Point was recorded."""
+        return _time.timestamp_to_index(self.pi_point.CurrentValue().Timestamp.UtcTime)
+
+    @property
+    def name(self) -> str:
+        return self.tag
+
+    @property
+    def raw_attributes(self) -> Dict[str, Any]:
+        """Return a dictionary of the raw attributes of the PI Point."""
+        self.__load_attributes()
+        return self.__raw_attributes
+
+    @property
+    def units_of_measurement(self) -> Optional[str]:
+        """Return the units of measument in which values for this PI Point are reported."""
+        return self.raw_attributes["engunits"]
+
+    def __load_attributes(self) -> None:
         """Load the raw attributes of the PI Point from the server"""
         if not self.__attributes_loaded:
             self.pi_point.LoadAttributes([])
@@ -260,61 +251,21 @@ class PIPoint(PISeriesContainer):
             att.Key: att.Value for att in self.pi_point.GetAttributes([])
         }
 
-    @property
-    def name(self):
-        return self.tag
-
-    def _current_value(self):
+    def _current_value(self) -> Any:
         """Return the last recorded value for this PI Point (internal use only)."""
         return self.pi_point.CurrentValue().Value
 
-    def _interpolated_value(self, time):
-        """Return a single value for this PI Point"""
-        return self.pi_point.InterpolatedValue(time)
-
-    def _recorded_value(self, time, retrieval_mode):
-        """Return a single value for this PI Point"""
-        return self.pi_point.RecordedValue(time, int(retrieval_mode))
-
-    def _update_value(self, value, update_mode, buffer_mode):
-        return self.pi_point.UpdateValue(value, update_mode, buffer_mode)
-
-    def _recorded_values(self, time_range, boundary_type, filter_expression):
-        include_filtered_values = False
-        return self.pi_point.RecordedValues(
-            time_range, boundary_type, filter_expression, include_filtered_values
-        )
-
-    def _interpolated_values(self, time_range, interval, filter_expression):
-        """Internal function to actually query the pi point"""
-        include_filtered_values = False
-        return self.pi_point.InterpolatedValues(
-            time_range, interval, filter_expression, include_filtered_values
-        )
-
-    def _summary(self, time_range, summary_types, calculation_basis, time_type):
-        return self.pi_point.Summary(
-            time_range, summary_types, calculation_basis, time_type
-        )
-
-    def _summaries(
-        self, time_range, interval, summary_types, calculation_basis, time_type
-    ):
-        return self.pi_point.Summaries(
-            time_range, interval, summary_types, calculation_basis, time_type
-        )
-
     def _filtered_summaries(
         self,
-        time_range,
-        interval,
-        filter_expression,
-        summary_types,
-        calculation_basis,
-        filter_evaluation,
-        filter_interval,
-        time_type,
-    ):
+        time_range: AF.Time.AFTimeRange,
+        interval: AF.Time.AFTimeSpan,
+        filter_expression: str,
+        summary_types: AF.Data.AFSummaryTypes,
+        calculation_basis: AF.Data.AFCalculationBasis,
+        filter_evaluation: AF.Data.AFSampleType,
+        filter_interval: AF.Time.AFTimeSpan,
+        time_type: AF.Data.AFTimestampCalculation,
+    ) -> _AFtyping.Data.SummariesDict:
         return self.pi_point.FilteredSummaries(
             time_range,
             interval,
@@ -326,5 +277,71 @@ class PIPoint(PISeriesContainer):
             time_type,
         )
 
-    def _normalize_filter_expression(self, filter_expression):
+    def _interpolated_value(self, time: AF.Time.AFTime) -> AF.Asset.AFValue:
+        """Return a single value for this PI Point"""
+        return self.pi_point.InterpolatedValue(time)
+
+    def _interpolated_values(
+        self,
+        time_range: AF.Time.AFTimeRange,
+        interval: AF.Time.AFTimeSpan,
+        filter_expression: str,
+    ) -> AF.Asset.AFValues:
+        """Internal function to actually query the pi point"""
+        include_filtered_values = False
+        return self.pi_point.InterpolatedValues(
+            time_range, interval, filter_expression, include_filtered_values
+        )
+
+    def _normalize_filter_expression(self, filter_expression: str) -> str:
         return filter_expression.replace("%tag%", self.tag)
+
+    def _recorded_value(
+        self, time: AF.Time.AFTime, retrieval_mode: AF.Data.AFRetrievalMode
+    ) -> AF.Asset.AFValue:
+        """Return a single value for this PI Point"""
+        return self.pi_point.RecordedValue(
+            time, AF.Data.AFRetrievalMode(int(retrieval_mode))
+        )
+
+    def _recorded_values(
+        self,
+        time_range: AF.Time.AFTimeRange,
+        boundary_type: AF.Data.AFBoundaryType,
+        filter_expression: str,
+    ) -> AF.Asset.AFValues:
+        include_filtered_values = False
+        return self.pi_point.RecordedValues(
+            time_range, boundary_type, filter_expression, include_filtered_values
+        )
+
+    def _summary(
+        self,
+        time_range: AF.Time.AFTimeRange,
+        summary_types: AF.Data.AFSummaryTypes,
+        calculation_basis: AF.Data.AFCalculationBasis,
+        time_type: AF.Data.AFTimestampCalculation,
+    ) -> _AFtyping.Data.SummaryDict:
+        return self.pi_point.Summary(
+            time_range, summary_types, calculation_basis, time_type
+        )
+
+    def _summaries(
+        self,
+        time_range: AF.Time.AFTimeRange,
+        interval: AF.Time.AFTimeSpan,
+        summary_types: AF.Data.AFSummaryTypes,
+        calculation_basis: AF.Data.AFCalculationBasis,
+        time_type: AF.Data.AFTimestampCalculation,
+    ) -> _AFtyping.Data.SummariesDict:
+        return self.pi_point.Summaries(
+            time_range, interval, summary_types, calculation_basis, time_type
+        )
+
+    def _update_value(
+        self,
+        value: AF.Asset.AFValue,
+        update_mode: AF.Data.AFUpdateOption,
+        buffer_mode: AF.Data.AFBufferOption,
+    ) -> None:
+        return self.pi_point.UpdateValue(value, update_mode, buffer_mode)
