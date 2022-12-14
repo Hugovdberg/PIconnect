@@ -5,10 +5,9 @@
         "*.egg-info/*",
         "build/*",
         "dist/*",
-        ".tox/*",
+        ".tox/*"
     ],
     "ignore": [
         "PIconnect/_operators.py"
     ]
-    // "strict": []
 }
