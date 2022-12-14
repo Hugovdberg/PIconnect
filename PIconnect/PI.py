@@ -1,20 +1,16 @@
 """ PI
     Core containers for connections to PI databases
 """
+import warnings
 from typing import Any, Dict, List, Optional, Union, cast
-from warnings import warn
 
 import PIconnect._typing.AF as _AFtyping
 import PIconnect._typing.Generic as _dotNetGeneric
-from PIconnect import PIConsts, time
+from PIconnect import AF, PIConsts, PIData, _time
 from PIconnect._operators import OPERATORS, add_operators  # type: ignore
-from PIconnect.AFSDK import AF
-from PIconnect.PIData import PISeriesContainer
-
-from ._utils import InitialisationWarning
+from PIconnect._utils import InitialisationWarning
 
 __all__ = ["PIPoint", "PIServer"]
-_NOTHING = object()
 
 
 def _lookup_servers() -> Dict[str, AF.PI.PIServer]:
@@ -25,7 +21,7 @@ def _lookup_servers() -> Dict[str, AF.PI.PIServer]:
         try:
             servers[server.Name] = server
         except (Exception, dotNetException) as e:  # type: ignore
-            warn(
+            warnings.warn(
                 f"Failed loading server data for {server.Name} "
                 f"with error {type(cast(Exception, e)).__qualname__}",
                 InitialisationWarning,
@@ -39,7 +35,7 @@ def _lookup_default_server() -> Optional[AF.PI.PIServer]:
     try:
         default_server = AF.PI.PIServers().DefaultPIServer
     except Exception:
-        warn("Could not load the default PI Server", ResourceWarning)
+        warnings.warn("Could not load the default PI Server", ResourceWarning)
     return default_server
 
 
@@ -87,7 +83,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
                     f"Server '{server}' not found and no default server was found."
                 )
             message = 'Server "{server}" not found, using the default server.'
-            warn(message=message.format(server=server), category=UserWarning)
+            warnings.warn(message=message.format(server=server), category=UserWarning)
             self.connection = self.default_server
         else:
             self.connection = self.servers[server]
@@ -184,7 +180,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
     newclassname="VirtualPIPoint",
     attributes=["pi_point"],
 )
-class PIPoint(PISeriesContainer):
+class PIPoint(PIData.PISeriesContainer):
     """PIPoint
 
     Reference to a PI Point to get data and corresponding metadata from the server.
@@ -214,7 +210,7 @@ class PIPoint(PISeriesContainer):
     @property
     def created(self):
         """Return the creation datetime of a point."""
-        return time.timestamp_to_index(self.raw_attributes["creationdate"])
+        return _time.timestamp_to_index(self.raw_attributes["creationdate"])
 
     @property
     def description(self):
@@ -229,7 +225,7 @@ class PIPoint(PISeriesContainer):
     @property
     def last_update(self):
         """Return the time at which the last value for this PI Point was recorded."""
-        return time.timestamp_to_index(self.pi_point.CurrentValue().Timestamp.UtcTime)
+        return _time.timestamp_to_index(self.pi_point.CurrentValue().Timestamp.UtcTime)
 
     @property
     def name(self) -> str:

@@ -5,8 +5,7 @@ from typing import Union
 
 import pytz
 
-from PIconnect.AFSDK import AF
-from PIconnect.config import PIConfig
+from PIconnect import AF, PIConfig
 
 from ._typing import Time
 

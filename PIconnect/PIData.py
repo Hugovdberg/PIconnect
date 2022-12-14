@@ -2,15 +2,14 @@
 PIData contains a number of auxiliary classes that define common functionality
 among :class:`PIPoint` and :class:`PIAFAttribute` objects.
 """
+import abc
 import datetime
-from abc import ABC, abstractmethod
 from typing import Any, List, Optional
 
 import pandas as pd
 
 import PIconnect._typing.AF as _AFtyping
-from PIconnect import PIConsts, time
-from PIconnect.AFSDK import AF
+from PIconnect import PIConsts, _time, AF
 
 __all__ = [
     "PISeries",
@@ -54,7 +53,7 @@ class PISeries(pd.Series):  # type: ignore
         self.uom = uom
 
 
-class PISeriesContainer(ABC):
+class PISeriesContainer(abc.ABC):
     """PISeriesContainer
 
     With the ABC class we represent a general behaviour with PI Point object
@@ -80,14 +79,14 @@ class PISeriesContainer(ABC):
         Return the current value of the attribute."""
         return self._current_value()
 
-    @abstractmethod
+    @abc.abstractmethod
     def _current_value(self) -> Any:
         pass
 
     def filtered_summaries(
         self,
-        start_time: time.TimeLike,
-        end_time: time.TimeLike,
+        start_time: _time.TimeLike,
+        end_time: _time.TimeLike,
         interval: str,
         filter_expression: str,
         summary_types: PIConsts.SummaryType,
@@ -138,7 +137,7 @@ class PISeriesContainer(ABC):
             pandas.DataFrame: Dataframe with the unique timestamps as row index
                 and the summary name as column name.
         """
-        time_range = time.to_af_time_range(start_time, end_time)
+        time_range = _time.to_af_time_range(start_time, end_time)
         _interval = AF.Time.AFTimeSpan.Parse(interval)
         _filter_expression = self._normalize_filter_expression(filter_expression)
         _summary_types = AF.Data.AFSummaryTypes(int(summary_types))
@@ -161,7 +160,7 @@ class PISeriesContainer(ABC):
             key = PIConsts.SummaryType(summary.Key).name
             timestamps, values = zip(
                 *[
-                    (time.timestamp_to_index(value.Timestamp.UtcTime), value.Value)
+                    (_time.timestamp_to_index(value.Timestamp.UtcTime), value.Value)
                     for value in summary.Value
                 ]
             )
@@ -170,7 +169,7 @@ class PISeriesContainer(ABC):
             )
         return df
 
-    @abstractmethod
+    @abc.abstractmethod
     def _filtered_summaries(
         self,
         time_range: AF.Time.AFTimeRange,
@@ -184,7 +183,7 @@ class PISeriesContainer(ABC):
     ) -> _AFtyping.Data.SummariesDict:
         pass
 
-    def interpolated_value(self, time: time.TimeLike) -> PISeries:
+    def interpolated_value(self, time: _time.TimeLike) -> PISeries:
         """interpolated_value
 
         Return a PISeries with an interpolated value at the given time
@@ -198,7 +197,7 @@ class PISeriesContainer(ABC):
             PISeries: A PISeries with a single row, with the corresponding time as
                 the index
         """
-        from . import time as time_module
+        from . import _time as time_module
 
         _time = time_module.to_af_time(time)
         pivalue = self._interpolated_value(_time)
@@ -209,14 +208,14 @@ class PISeriesContainer(ABC):
             uom=self.units_of_measurement,
         )
 
-    @abstractmethod
+    @abc.abstractmethod
     def _interpolated_value(self, time: AF.Time.AFTime) -> AF.Asset.AFValue:
         pass
 
     def interpolated_values(
         self,
-        start_time: time.TimeLike,
-        end_time: time.TimeLike,
+        start_time: _time.TimeLike,
+        end_time: _time.TimeLike,
         interval: str,
         filter_expression: str = "",
     ) -> PISeries:
@@ -255,7 +254,7 @@ class PISeriesContainer(ABC):
         Returns:
             PISeries: Timeseries of the values returned by the SDK
         """
-        time_range = time.to_af_time_range(start_time, end_time)
+        time_range = _time.to_af_time_range(start_time, end_time)
         _interval = AF.Time.AFTimeSpan.Parse(interval)
         _filter_expression = self._normalize_filter_expression(filter_expression)
         pivalues = self._interpolated_values(time_range, _interval, _filter_expression)
@@ -263,7 +262,7 @@ class PISeriesContainer(ABC):
         timestamps: List[datetime.datetime] = []
         values: List[Any] = []
         for value in pivalues:
-            timestamps.append(time.timestamp_to_index(value.Timestamp.UtcTime))
+            timestamps.append(_time.timestamp_to_index(value.Timestamp.UtcTime))
             values.append(value.Value)
         return PISeries(  # type: ignore
             tag=self.name,
@@ -272,7 +271,7 @@ class PISeriesContainer(ABC):
             uom=self.units_of_measurement,
         )
 
-    @abstractmethod
+    @abc.abstractmethod
     def _interpolated_values(
         self,
         time_range: AF.Time.AFTimeRange,
@@ -282,7 +281,7 @@ class PISeriesContainer(ABC):
         pass
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def name(self) -> str:
         pass
 
@@ -291,7 +290,7 @@ class PISeriesContainer(ABC):
 
     def recorded_value(
         self,
-        time: time.TimeLike,
+        time: _time.TimeLike,
         retrieval_mode: PIConsts.RetrievalMode = PIConsts.RetrievalMode.AUTO,
     ) -> PISeries:
         """recorded_value
@@ -310,7 +309,7 @@ class PISeriesContainer(ABC):
             PISeries: A PISeries with a single row, with the corresponding time as
                 the index
         """
-        from . import time as time_module
+        from . import _time as time_module
 
         _time = time_module.to_af_time(time)
         _retrieval_mode = AF.Data.AFRetrievalMode(int(retrieval_mode))
@@ -322,7 +321,7 @@ class PISeriesContainer(ABC):
             uom=self.units_of_measurement,
         )
 
-    @abstractmethod
+    @abc.abstractmethod
     def _recorded_value(
         self, time: AF.Time.AFTime, retrieval_mode: AF.Data.AFRetrievalMode
     ) -> AF.Asset.AFValue:
@@ -330,8 +329,8 @@ class PISeriesContainer(ABC):
 
     def recorded_values(
         self,
-        start_time: time.TimeLike,
-        end_time: time.TimeLike,
+        start_time: _time.TimeLike,
+        end_time: _time.TimeLike,
         boundary_type: str = "inside",
         filter_expression: str = "",
     ):
@@ -382,7 +381,7 @@ class PISeriesContainer(ABC):
                 `ValueError` is raised.
         """
 
-        time_range = time.to_af_time_range(start_time, end_time)
+        time_range = _time.to_af_time_range(start_time, end_time)
         _boundary_type = self.__boundary_types.get(boundary_type.lower())
         if _boundary_type is None:
             raise ValueError(
@@ -396,7 +395,7 @@ class PISeriesContainer(ABC):
         timestamps: List[datetime.datetime] = []
         values: List[Any] = []
         for value in pivalues:
-            timestamps.append(time.timestamp_to_index(value.Timestamp.UtcTime))
+            timestamps.append(_time.timestamp_to_index(value.Timestamp.UtcTime))
             values.append(value.Value)
         return PISeries(  # type: ignore
             tag=self.name,
@@ -405,7 +404,7 @@ class PISeriesContainer(ABC):
             uom=self.units_of_measurement,
         )
 
-    @abstractmethod
+    @abc.abstractmethod
     def _recorded_values(
         self,
         time_range: AF.Time.AFTimeRange,
@@ -422,8 +421,8 @@ class PISeriesContainer(ABC):
 
     def summary(
         self,
-        start_time: time.TimeLike,
-        end_time: time.TimeLike,
+        start_time: _time.TimeLike,
+        end_time: _time.TimeLike,
         summary_types: PIConsts.SummaryType,
         calculation_basis: PIConsts.CalculationBasis = PIConsts.CalculationBasis.TIME_WEIGHTED,
         time_type: PIConsts.TimestampCalculation = PIConsts.TimestampCalculation.AUTO,
@@ -454,7 +453,7 @@ class PISeriesContainer(ABC):
             pandas.DataFrame: Dataframe with the unique timestamps as row index
                 and the summary name as column name.
         """
-        time_range = time.to_af_time_range(start_time, end_time)
+        time_range = _time.to_af_time_range(start_time, end_time)
         _summary_types = AF.Data.AFSummaryTypes(int(summary_types))
         _calculation_basis = AF.Data.AFCalculationBasis(int(calculation_basis))
         _time_type = AF.Data.AFTimestampCalculation(int(time_type))
@@ -465,14 +464,14 @@ class PISeriesContainer(ABC):
         for summary in pivalues:
             key = PIConsts.SummaryType(summary.Key).name
             value = summary.Value
-            timestamp = time.timestamp_to_index(value.Timestamp.UtcTime)
+            timestamp = _time.timestamp_to_index(value.Timestamp.UtcTime)
             value = value.Value
             df = df.join(  # type: ignore
                 pd.DataFrame(data={key: value}, index=[timestamp]), how="outer"
             )
         return df
 
-    @abstractmethod
+    @abc.abstractmethod
     def _summary(
         self,
         time_range: AF.Time.AFTimeRange,
@@ -484,8 +483,8 @@ class PISeriesContainer(ABC):
 
     def summaries(
         self,
-        start_time: time.TimeLike,
-        end_time: time.TimeLike,
+        start_time: _time.TimeLike,
+        end_time: _time.TimeLike,
         interval: str,
         summary_types: PIConsts.SummaryType,
         calculation_basis: PIConsts.CalculationBasis = PIConsts.CalculationBasis.TIME_WEIGHTED,
@@ -522,7 +521,7 @@ class PISeriesContainer(ABC):
             pandas.DataFrame: Dataframe with the unique timestamps as row index
                 and the summary name as column name.
         """
-        time_range = time.to_af_time_range(start_time, end_time)
+        time_range = _time.to_af_time_range(start_time, end_time)
         _interval = AF.Time.AFTimeSpan.Parse(interval)
         _summary_types = AF.Data.AFSummaryTypes(int(summary_types))
         _calculation_basis = AF.Data.AFCalculationBasis(int(calculation_basis))
@@ -535,7 +534,7 @@ class PISeriesContainer(ABC):
             key = PIConsts.SummaryType(summary.Key).name
             timestamps, values = zip(
                 *[
-                    (time.timestamp_to_index(value.Timestamp.UtcTime), value.Value)
+                    (_time.timestamp_to_index(value.Timestamp.UtcTime), value.Value)
                     for value in summary.Value
                 ]
             )
@@ -544,7 +543,7 @@ class PISeriesContainer(ABC):
             )
         return df
 
-    @abstractmethod
+    @abc.abstractmethod
     def _summaries(
         self,
         time_range: AF.Time.AFTimeRange,
@@ -556,14 +555,14 @@ class PISeriesContainer(ABC):
         pass
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def units_of_measurement(self) -> Optional[str]:
         pass
 
     def update_value(
         self,
         value: Any,
-        time: Optional[time.TimeLike] = None,
+        time: Optional[_time.TimeLike] = None,
         update_mode: PIConsts.UpdateMode = PIConsts.UpdateMode.NO_REPLACE,
         buffer_mode: PIConsts.BufferMode = PIConsts.BufferMode.BUFFER_IF_POSSIBLE,
     ) -> None:
@@ -577,7 +576,7 @@ class PISeriesContainer(ABC):
 
         You can combine update_mode and time to change already stored value.
         """
-        from . import time as time_module
+        from . import _time as time_module
 
         if time is not None:
             _value = AF.Asset.AFValue(value, time_module.to_af_time(time))
@@ -588,7 +587,7 @@ class PISeriesContainer(ABC):
         _buffer_mode = AF.Data.AFBufferOption(int(buffer_mode))
         self._update_value(_value, _update_mode, _buffer_mode)
 
-    @abstractmethod
+    @abc.abstractmethod
     def _update_value(
         self,
         value: AF.Asset.AFValue,

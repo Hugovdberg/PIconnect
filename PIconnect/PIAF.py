@@ -4,12 +4,9 @@
 import dataclasses
 import warnings
 from typing import Any, Dict, Optional, Union, cast
-from warnings import warn
 
-from PIconnect.AFSDK import AF
-
-from . import PIAFBase, PIConsts, time
-from ._utils import InitialisationWarning
+from PIconnect import AF, PIAFBase, PIConsts, _time
+from PIconnect._utils import InitialisationWarning
 
 
 @dataclasses.dataclass(frozen=True)
@@ -41,7 +38,7 @@ def _lookup_servers() -> Dict[str, ServerSpec]:
                         InitialisationWarning,
                     )
         except (Exception, dotNetException) as e:  # type: ignore
-            warn(
+            warnings.warn(
                 f"Failed loading server data for {s.Name} "
                 f"with error {type(cast(Exception, e)).__qualname__}",
                 InitialisationWarning,
@@ -95,7 +92,7 @@ class PIAFDatabase(object):
                     f'Server "{server}" not found and no default server found.'
                 )
             message = 'Server "{server}" not found, using the default server.'
-            warn(message=message.format(server=server), category=UserWarning)
+            warnings.warn(message=message.format(server=server), category=UserWarning)
             return self.default_server
 
         return self.servers[server]
@@ -110,7 +107,9 @@ class PIAFDatabase(object):
         databases = cast(Dict[str, AF.AFDatabase], server["databases"])
         if database not in databases:
             message = 'Database "{database}" not found, using the default database.'
-            warn(message=message.format(database=database), category=UserWarning)
+            warnings.warn(
+                message=message.format(database=database), category=UserWarning
+            )
             return default_db
 
         return databases[database]
@@ -153,13 +152,13 @@ class PIAFDatabase(object):
 
     def event_frames(
         self,
-        start_time: time.TimeLike = "",
+        start_time: _time.TimeLike = "",
         start_index: int = 0,
         max_count: int = 1000,
         search_mode: PIConsts.EventFrameSearchMode = PIConsts.EventFrameSearchMode.STARTING_AFTER,
         search_full_hierarchy: bool = False,
     ) -> Dict[str, "PIAFEventFrame"]:
-        _start_time = time.to_af_time(start_time)
+        _start_time = _time.to_af_time(start_time)
         _search_mode = AF.EventFrame.AFEventFrameSearchMode(int(search_mode))
         return {
             frame.Name: PIAFEventFrame(frame)
