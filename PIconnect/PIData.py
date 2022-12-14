@@ -6,14 +6,18 @@ from abc import ABC, abstractmethod
 from typing import Any, Optional
 
 import pandas as pd
-from pandas import DataFrame, Series
 
-import PIconnect._typing.Generic as _Generic
+import PIconnect._typing.AF as _AFtyping
 from PIconnect import PIConsts, time
 from PIconnect.AFSDK import AF
 
+__all__ = [
+    "PISeries",
+    "PISeriesContainer",
+]
 
-class PISeries(Series):
+
+class PISeries(pd.Series):
     """PISeries
 
     Create a timeseries, derived from :class:`pandas.Series`
@@ -143,7 +147,7 @@ class PISeriesContainer(ABC):
             _filter_interval,
             _time_type,
         )
-        df = DataFrame()
+        df = pd.DataFrame()
         for summary in pivalues:
             key = PIConsts.SummaryType(summary.Key).name
             timestamps, values = zip(
@@ -152,7 +156,9 @@ class PISeriesContainer(ABC):
                     for value in summary.Value
                 ]
             )
-            df = df.join(DataFrame(data={key: values}, index=timestamps), how="outer")
+            df = df.join(
+                pd.DataFrame(data={key: values}, index=timestamps), how="outer"
+            )
         return df
 
     @abstractmethod
@@ -166,7 +172,7 @@ class PISeriesContainer(ABC):
         filter_evaluation: AF.Data.AFSampleType,
         filter_interval: AF.Time.AFTimeSpan,
         time_type: AF.Data.AFTimestampCalculation,
-    ) -> _Generic.SummariesDict:
+    ) -> _AFtyping.Asset.SummariesDict:
         pass
 
     def interpolated_value(self, time: time.TimeLike) -> PISeries:
@@ -443,13 +449,15 @@ class PISeriesContainer(ABC):
         pivalues = self._summary(
             time_range, _summary_types, _calculation_basis, _time_type
         )
-        df = DataFrame()
+        df = pd.DataFrame()
         for summary in pivalues:
             key = PIConsts.SummaryType(summary.Key).name
             value = summary.Value
             timestamp = time.timestamp_to_index(value.Timestamp.UtcTime)
             value = value.Value
-            df = df.join(DataFrame(data={key: value}, index=[timestamp]), how="outer")
+            df = df.join(
+                pd.DataFrame(data={key: value}, index=[timestamp]), how="outer"
+            )
         return df
 
     @abstractmethod
@@ -459,7 +467,7 @@ class PISeriesContainer(ABC):
         summary_types: AF.Data.AFSummaryTypes,
         calculation_basis: AF.Data.AFCalculationBasis,
         time_type: AF.Data.AFTimestampCalculation,
-    ) -> _Generic.SummaryDict:
+    ) -> _AFtyping.Asset.SummaryDict:
         pass
 
     def summaries(
@@ -510,7 +518,7 @@ class PISeriesContainer(ABC):
         pivalues = self._summaries(
             time_range, _interval, _summary_types, _calculation_basis, _time_type
         )
-        df = DataFrame()
+        df = pd.DataFrame()
         for summary in pivalues:
             key = PIConsts.SummaryType(summary.Key).name
             timestamps, values = zip(
@@ -519,7 +527,9 @@ class PISeriesContainer(ABC):
                     for value in summary.Value
                 ]
             )
-            df = df.join(DataFrame(data={key: values}, index=timestamps), how="outer")
+            df = df.join(
+                pd.DataFrame(data={key: values}, index=timestamps), how="outer"
+            )
         return df
 
     @abstractmethod
@@ -530,7 +540,7 @@ class PISeriesContainer(ABC):
         summary_types: AF.Data.AFSummaryTypes,
         calculation_basis: AF.Data.AFCalculationBasis,
         time_type: AF.Data.AFTimestampCalculation,
-    ) -> _Generic.SummariesDict:
+    ) -> _AFtyping.Asset.SummariesDict:
         pass
 
     @property

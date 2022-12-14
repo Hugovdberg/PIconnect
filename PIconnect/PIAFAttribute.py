@@ -1,5 +1,5 @@
 from PIconnect._operators import OPERATORS, add_operators
-from PIconnect._typing.Generic import SummariesDict
+from PIconnect._typing import AF as _AFtyping
 from PIconnect.PIData import PISeriesContainer
 from PIconnect.time import timestamp_to_index
 
@@ -124,7 +124,7 @@ class PIAFAttribute(PISeriesContainer):
         filter_evaluation: AF.Data.AFSampleType,
         filter_interval: AF.Time.AFTimeSpan,
         time_type: AF.Data.AFTimestampCalculation,
-    ) -> SummariesDict:
+    ) -> _AFtyping.Asset.SummariesDict:
         return self.attribute.Data.FilteredSummaries(
             time_range,
             interval,

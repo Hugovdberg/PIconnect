@@ -1,12 +1,12 @@
 """ PI
     Core containers for connections to PI databases
 """
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Union
 from warnings import warn
 
+import PIconnect._typing.AF as _AFtyping
 from PIconnect import PIConsts, time
 from PIconnect._operators import OPERATORS, add_operators
-from PIconnect._typing.Generic import SummariesDict
 from PIconnect._utils import classproperty
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeriesContainer
@@ -133,7 +133,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         """
         return self.connection.Name
 
-    def search(self, query, source=None):
+    def search(self, query: Union[str, List[str]], source: Optional[str] = None):
         """search
 
         Search PIPoints on the PIServer
@@ -253,7 +253,7 @@ class PIPoint(PISeriesContainer):
         filter_evaluation: AF.Data.AFSampleType,
         filter_interval: AF.Time.AFTimeSpan,
         time_type: AF.Data.AFTimestampCalculation,
-    ) -> SummariesDict:
+    ) -> _AFtyping.Asset.SummariesDict:
         return self.pi_point.FilteredSummaries(
             time_range,
             interval,
@@ -302,14 +302,14 @@ class PIPoint(PISeriesContainer):
 
     def _summary(
         self, time_range, summary_types, calculation_basis, time_type
-    ) -> SummariesDict:
+    ) -> _AFtyping.Asset.SummariesDict:
         return self.pi_point.Summary(
             time_range, summary_types, calculation_basis, time_type
         )
 
     def _summaries(
         self, time_range, interval, summary_types, calculation_basis, time_type
-    ) -> SummariesDict:
+    ) -> _AFtyping.Asset.SummariesDict:
         return self.pi_point.Summaries(
             time_range, interval, summary_types, calculation_basis, time_type
         )
