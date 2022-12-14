@@ -1,5 +1,9 @@
 import enum
 
+from . import Time, Generic
+from . import UnitsOfMeasure as UOM
+from ._values import AFValue, AFValues
+
 
 class AFBoundaryType(enum.IntEnum):
     """Mock class of the AF.Data.AFBoundaryType enumeration"""
@@ -80,3 +84,94 @@ class AFUpdateOption(enum.IntEnum):
     ReplaceOnly = 3
     InsertNoCompression = 5
     Remove = 6
+
+
+SummariesDict = Generic.Dictionary[AFSummaryTypes, AFValues]
+SummaryDict = Generic.Dictionary[AFSummaryTypes, AFValue]
+
+
+class AFData:
+    """Mock class of the AF.Data.AFData class"""
+
+    @staticmethod
+    def FilteredSummaries(
+        time_range: Time.AFTimeRange,
+        interval: Time.AFTimeSpan,
+        filter_expression: str,
+        summary_types: AFSummaryTypes,
+        calculation_basis: AFCalculationBasis,
+        filter_evaluation: AFSampleType,
+        filter_interval: Time.AFTimeSpan,
+        time_type: AFTimestampCalculation,
+        /,
+    ) -> SummariesDict:
+        return SummariesDict([])
+
+    @staticmethod
+    def InterpolatedValue(
+        time: Time.AFTime,
+        uom: UOM.UOM,
+        /,
+    ) -> AFValue:
+        return AFValue(None, time)
+
+    @staticmethod
+    def InterpolatedValues(
+        time_range: Time.AFTimeRange,
+        interval: Time.AFTimeSpan,
+        uom: UOM.UOM,
+        filter_expression: str,
+        include_filtered_values: bool,
+        /,
+    ) -> AFValues:
+        return AFValues()
+
+    @staticmethod
+    def RecordedValue(
+        time: Time.AFTime,
+        retrieval_mode: AFRetrievalMode,
+        uom: UOM.UOM,
+        /,
+    ) -> AFValue:
+        return AFValue(None, time)
+
+    @staticmethod
+    def RecordedValues(
+        time_range: Time.AFTimeRange,
+        boundary_type: AFBoundaryType,
+        uom: UOM.UOM,
+        filter_expression: str,
+        include_filtered_values: bool,
+        /,
+    ) -> AFValues:
+        return AFValues()
+
+    @staticmethod
+    def Summaries(
+        time_range: Time.AFTimeRange,
+        interval: Time.AFTimeSpan,
+        summary_type: AFSummaryTypes,
+        calculation_basis: AFCalculationBasis,
+        time_type: AFTimestampCalculation,
+        /,
+    ) -> SummariesDict:
+        return SummariesDict([])
+
+    @staticmethod
+    def Summary(
+        time_range: Time.AFTimeRange,
+        summary_type: AFSummaryTypes,
+        calculation_basis: AFCalculationBasis,
+        time_type: AFTimestampCalculation,
+        /,
+    ) -> SummaryDict:
+        return SummaryDict([])
+
+    @staticmethod
+    def UpdateValue(
+        value: AFValue,
+        update_option: AFUpdateOption,
+        buffer_option: AFBufferOption,
+        /,
+    ) -> None:
+        pass

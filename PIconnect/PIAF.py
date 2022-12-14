@@ -3,18 +3,13 @@
 """
 import dataclasses
 import warnings
-from typing import Dict, Optional, Union, cast
+from typing import Any, Dict, Optional, Union, cast
 from warnings import warn
 
-from PIconnect._utils import classproperty
 from PIconnect.AFSDK import AF
-from PIconnect.PIAFBase import PIAFBaseElement
 
-from . import PIConsts, time
-
-
-class InitialisationWarning(UserWarning):
-    pass
+from . import PIAFBase, PIConsts, time
+from ._utils import InitialisationWarning
 
 
 @dataclasses.dataclass(frozen=True)
@@ -39,14 +34,16 @@ def _lookup_servers() -> Dict[str, ServerSpec]:
             for d in s.Databases:
                 try:
                     server.databases[d.Name] = d
-                except (Exception, dotNetException) as e:
+                except (Exception, dotNetException) as e:  # type: ignore
                     warnings.warn(
-                        f"Failed loading database data for {d.Name} on {s.Name} with error {type(e).__qualname__}",
+                        f"Failed loading database data for {d.Name} on {s.Name} "
+                        f"with error {type(cast(Exception, e)).__qualname__}",
                         InitialisationWarning,
                     )
-        except (Exception, dotNetException) as e:
+        except (Exception, dotNetException) as e:  # type: ignore
             warn(
-                f"Failed loading server data for {s.Name} with error {type(e).__qualname__}",
+                f"Failed loading server data for {s.Name} "
+                f"with error {type(cast(Exception, e)).__qualname__}",
                 InitialisationWarning,
             )
     return {
@@ -122,7 +119,7 @@ class PIAFDatabase(object):
         self.server.Connect()
         return self
 
-    def __exit__(self, *args) -> None:
+    def __exit__(self, *args: Any) -> None:
         pass
         # Disabled disconnecting because garbage collection sometimes impedes
         # connecting to another server later
@@ -182,7 +179,7 @@ class PIAFDatabase(object):
         }
 
 
-class PIAFElement(PIAFBaseElement[AF.Asset.AFElement]):
+class PIAFElement(PIAFBase.PIAFBaseElement[AF.Asset.AFElement]):
     """Container for PI AF elements in the database."""
 
     version = "0.1.0"
@@ -199,12 +196,12 @@ class PIAFElement(PIAFBaseElement[AF.Asset.AFElement]):
         """Return a dictionary of the direct child elements of the current element."""
         return {c.Name: self.__class__(c) for c in self.element.Elements}
 
-    def descendant(self, path) -> "PIAFElement":
+    def descendant(self, path: str) -> "PIAFElement":
         """Return a descendant of the current element from an exact path."""
         return self.__class__(self.element.Elements.get_Item(path))
 
 
-class PIAFEventFrame(PIAFBaseElement[AF.EventFrame.AFEventFrame]):
+class PIAFEventFrame(PIAFBase.PIAFBaseElement[AF.EventFrame.AFEventFrame]):
     """Container for PI AF Event Frames in the database."""
 
     version = "0.1.0"

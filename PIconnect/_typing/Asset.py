@@ -1,11 +1,34 @@
-from typing import Any, List, Optional, Union
+from typing import List, Optional, Union
 
-from . import AF, Data, Generic, Time
+from . import AF, Data, Generic
+from . import UnitsOfMeasure as UOM
+from ._values import AFValue, AFValues
+
+__all__ = [
+    "AFAttribute",
+    "AFAttributes",
+    "AFBaseElement",
+    "AFElement",
+    "AFElements",
+    "AFElementTemplate",
+    "AFValue",
+    "AFValues",
+]
 
 
 class AFAttribute:
     def __init__(self, name: str) -> None:
+        self.Attributes: AFAttributes
+        self.Data: Data.AFData
+        self.Description: str
+        self.DefaultUOM: UOM.UOM
         self.Name = name
+        self.Parent: Optional[AFAttribute]
+
+    @staticmethod
+    def GetValue() -> AFValue:
+        """Stub for getting a value"""
+        return AFValue(0)
 
 
 class AFAttributes(List[AFAttribute]):
@@ -44,20 +67,4 @@ class AFElementTemplate:
     """Mock class of the AF.Asset.AFElementTemplate class"""
 
 
-class AFValue:
-    def __init__(
-        self, value: Any, timestamp: Time.AFTime = Time.AFTime("MinValue")
-    ) -> None:
-        self.Value = value
-        self.Timestamp = timestamp
-
-
-class AFValues(List[AFValue]):
-    def __init__(self):
-        self.Count: int
-        self.Value: AFValue
-
-
 AttributeDict = Generic.Dictionary[str, AFAttribute]
-SummariesDict = Generic.Dictionary[Data.AFSummaryTypes, AFValues]
-SummaryDict = Generic.Dictionary[Data.AFSummaryTypes, AFValue]

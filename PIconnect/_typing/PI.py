@@ -1,19 +1,39 @@
 """Mock classes of the AF.PI namespace of the OSIsoft PI-AF SDK"""
-from typing import Iterable, Iterator, List, Optional
+import enum
+from typing import Iterable, Iterator, List, Optional, Union
 
 from . import Asset, Data, Generic, Time
 
 __all__ = ["PIPoint", "PIServer", "PIServers"]
 
 
+class PIConnectionInfo:
+    """Mock class of the AF.PI.PIConnectionInfo class"""
+
+    def __init__(self) -> None:
+        self.OperationTimeOut: Generic.TimeSpan
+
+
+class PIAuthenticationMode(enum.IntEnum):
+    """Mock class of the AF.PI.PIAuthenticationMode class"""
+
+    WindowsAuthentication = 0
+    PIUserAuthentication = 1
+
+
 class PIServer:
     """Mock class of the AF.PI.PIServer class"""
 
     def __init__(self, name: str) -> None:
+        self.ConnectionInfo = PIConnectionInfo()
         self.Name = name
         self._connected = False
 
-    def Connect(self, retry: bool) -> None:
+    def Connect(
+        self,
+        retry: Union[bool, Generic.NetworkCredential],
+        authentication_mode: Optional[PIAuthenticationMode] = None,
+    ) -> None:
         """Stub for connecting to test server"""
         self._connected = True
 
@@ -53,8 +73,8 @@ class PIPoint:
         sample_interval: Time.AFTimeSpan,
         time_type: Data.AFTimestampCalculation,
         /,
-    ) -> Asset.SummariesDict:
-        return Asset.SummariesDict([])
+    ) -> Data.SummariesDict:
+        return Data.SummariesDict([])
 
     @staticmethod
     def FindPIPoints(
@@ -113,8 +133,8 @@ class PIPoint:
         calculation_basis: Data.AFCalculationBasis,
         time_type: Data.AFTimestampCalculation,
         /,
-    ) -> Asset.SummariesDict:
-        return Asset.SummariesDict([])
+    ) -> Data.SummariesDict:
+        return Data.SummariesDict([])
 
     @staticmethod
     def Summary(
@@ -122,8 +142,8 @@ class PIPoint:
         summary_type: Data.AFSummaryTypes,
         calculation_basis: Data.AFCalculationBasis,
         time_type: Data.AFTimestampCalculation,
-    ) -> Asset.SummaryDict:
-        return Asset.SummaryDict([])
+    ) -> Data.SummaryDict:
+        return Data.SummaryDict([])
 
     @staticmethod
     def UpdateValue(

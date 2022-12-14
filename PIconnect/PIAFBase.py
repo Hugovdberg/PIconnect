@@ -25,7 +25,7 @@ class PIAFBaseElement(Generic[ElementType]):
     @property
     def attributes(self) -> Dict[str, PIAFAttribute]:
         """Return a dictionary of the attributes of the current element."""
-        return {a.Name: PIAFAttribute(self, a) for a in self.element.Attributes}
+        return {a.Name: PIAFAttribute(self.element, a) for a in self.element.Attributes}
 
     @property
     def categories(self) -> AF.AFCategories:

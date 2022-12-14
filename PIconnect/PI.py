@@ -1,18 +1,46 @@
 """ PI
     Core containers for connections to PI databases
 """
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, cast
 from warnings import warn
 
 import PIconnect._typing.AF as _AFtyping
+import PIconnect._typing.Generic as _dotNetGeneric
 from PIconnect import PIConsts, time
-from PIconnect._operators import OPERATORS, add_operators
-from PIconnect._utils import classproperty
+from PIconnect._operators import OPERATORS, add_operators  # type: ignore
 from PIconnect.AFSDK import AF
 from PIconnect.PIData import PISeriesContainer
 
+from ._utils import InitialisationWarning
+
 __all__ = ["PIPoint", "PIServer"]
 _NOTHING = object()
+
+
+def _lookup_servers() -> Dict[str, AF.PI.PIServer]:
+    servers: Dict[str, AF.PI.PIServer] = {}
+    from System import Exception as dotNetException  # type: ignore
+
+    for server in AF.PI.PIServers():
+        try:
+            servers[server.Name] = server
+        except (Exception, dotNetException) as e:  # type: ignore
+            warn(
+                f"Failed loading server data for {server.Name} "
+                f"with error {type(cast(Exception, e)).__qualname__}",
+                InitialisationWarning,
+            )
+    return servers
+
+
+def _lookup_default_server() -> Optional[AF.PI.PIServer]:
+
+    default_server = None
+    try:
+        default_server = AF.PI.PIServers().DefaultPIServer
+    except Exception:
+        warn("Could not load the default PI Server", ResourceWarning)
+    return default_server
 
 
 class PIServer(object):  # pylint: disable=useless-object-inheritance
@@ -34,22 +62,36 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
     version = "0.2.2"
 
     #: Dictionary of known servers, as reported by the SDK
-    _servers = _NOTHING
+    servers = _lookup_servers()
     #: Default server, as reported by the SDK
-    _default_server = _NOTHING
+    default_server = _lookup_default_server()
 
     def __init__(
         self,
-        server=None,
-        username=None,
-        password=None,
-        domain=None,
-        authentication_mode=PIConsts.AuthenticationMode.PI_USER_AUTHENTICATION,
-        timeout=None,
-    ):
-        if server and server not in self.servers:
+        server: Optional[str] = None,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        domain: Optional[str] = None,
+        authentication_mode: PIConsts.AuthenticationMode = PIConsts.AuthenticationMode.PI_USER_AUTHENTICATION,
+        timeout: Optional[int] = None,
+    ) -> None:
+        if server is None:
+            if self.default_server is None:
+                raise ValueError(
+                    "No server was specified and no default server was found."
+                )
+            self.connection = self.default_server
+        elif server not in self.servers:
+            if self.default_server is None:
+                raise ValueError(
+                    f"Server '{server}' not found and no default server was found."
+                )
             message = 'Server "{server}" not found, using the default server.'
             warn(message=message.format(server=server), category=UserWarning)
+            self.connection = self.default_server
+        else:
+            self.connection = self.servers[server]
+
         if bool(username) != bool(password):
             raise ValueError(
                 "When passing credentials both the username and password must be specified."
@@ -62,53 +104,25 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
             from System.Net import NetworkCredential  # type: ignore
             from System.Security import SecureString  # type: ignore
 
-            secure_pass = SecureString()
+            secure_pass = cast(_dotNetGeneric.SecureString, SecureString())
             if password is not None:
                 for c in password:
                     secure_pass.AppendChar(c)
             cred = [username, secure_pass] + ([domain] if domain else [])
-            self._credentials = (NetworkCredential(*cred), int(authentication_mode))
+            self._credentials = (
+                cast(_dotNetGeneric.NetworkCredential, NetworkCredential(*cred)),
+                AF.PI.PIAuthenticationMode(int(authentication_mode)),
+            )
         else:
             self._credentials = None
-
-        self.connection = self.servers.get(server, self.default_server)
 
         if timeout:
             from System import TimeSpan  # type: ignore
 
             # System.TimeSpan(hours, minutes, seconds)
-            self.connection.ConnectionInfo.OperationTimeOut = TimeSpan(0, 0, timeout)
-
-    @classproperty
-    def servers(self):
-        if self._servers is _NOTHING:
-            i, failures = 0, 0
-            self._servers = {}
-            from System import Exception as dotNetException  # type: ignore
-
-            for i, server in enumerate(AF.PI.PIServers(), start=1):
-                try:
-                    self._servers[server.Name] = server
-                except Exception:
-                    failures += 1
-                except dotNetException:
-                    failures += 1
-            if failures:
-                warn(
-                    "Could not load {} PI Server(s) out of {}".format(failures, i),
-                    ResourceWarning,
-                )
-        return self._servers
-
-    @classproperty
-    def default_server(self):
-        if self._default_server is _NOTHING:
-            self._default_server = None
-            try:
-                self._default_server = AF.PI.PIServers().DefaultPIServer
-            except Exception:
-                warn("Could not load the default PI Server", ResourceWarning)
-        return self._default_server
+            self.connection.ConnectionInfo.OperationTimeOut = cast(
+                _dotNetGeneric.TimeSpan, TimeSpan(0, 0, timeout)
+            )
 
     def __enter__(self):
         if self._credentials:
@@ -119,10 +133,10 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
             self.connection.Connect(force_connection)
         return self
 
-    def __exit__(self, *args):
+    def __exit__(self, *args: Any):
         self.connection.Disconnect()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "%s(\\\\%s)" % (self.__class__.__name__, self.server_name)
 
     @property
@@ -133,7 +147,9 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         """
         return self.connection.Name
 
-    def search(self, query: Union[str, List[str]], source: Optional[str] = None):
+    def search(
+        self, query: Union[str, List[str]], source: Optional[str] = None
+    ) -> List["PIPoint"]:
         """search
 
         Search PIPoints on the PIServer
@@ -253,7 +269,7 @@ class PIPoint(PISeriesContainer):
         filter_evaluation: AF.Data.AFSampleType,
         filter_interval: AF.Time.AFTimeSpan,
         time_type: AF.Data.AFTimestampCalculation,
-    ) -> _AFtyping.Asset.SummariesDict:
+    ) -> _AFtyping.Data.SummariesDict:
         return self.pi_point.FilteredSummaries(
             time_range,
             interval,
@@ -281,11 +297,11 @@ class PIPoint(PISeriesContainer):
             time_range, interval, filter_expression, include_filtered_values
         )
 
-    def _normalize_filter_expression(self, filter_expression):
+    def _normalize_filter_expression(self, filter_expression: str) -> str:
         return filter_expression.replace("%tag%", self.tag)
 
     def _recorded_value(
-        self, time: AF.Time.AFTime, retrieval_mode: PIConsts.RetrievalMode
+        self, time: AF.Time.AFTime, retrieval_mode: AF.Data.AFRetrievalMode
     ) -> AF.Asset.AFValue:
         """Return a single value for this PI Point"""
         return self.pi_point.RecordedValue(
@@ -293,7 +309,10 @@ class PIPoint(PISeriesContainer):
         )
 
     def _recorded_values(
-        self, time_range, boundary_type, filter_expression
+        self,
+        time_range: AF.Time.AFTimeRange,
+        boundary_type: AF.Data.AFBoundaryType,
+        filter_expression: str,
     ) -> AF.Asset.AFValues:
         include_filtered_values = False
         return self.pi_point.RecordedValues(
@@ -306,14 +325,19 @@ class PIPoint(PISeriesContainer):
         summary_types: AF.Data.AFSummaryTypes,
         calculation_basis: AF.Data.AFCalculationBasis,
         time_type: AF.Data.AFTimestampCalculation,
-    ) -> _AFtyping.Asset.SummaryDict:
+    ) -> _AFtyping.Data.SummaryDict:
         return self.pi_point.Summary(
             time_range, summary_types, calculation_basis, time_type
         )
 
     def _summaries(
-        self, time_range, interval, summary_types, calculation_basis, time_type
-    ) -> _AFtyping.Asset.SummariesDict:
+        self,
+        time_range: AF.Time.AFTimeRange,
+        interval: AF.Time.AFTimeSpan,
+        summary_types: AF.Data.AFSummaryTypes,
+        calculation_basis: AF.Data.AFCalculationBasis,
+        time_type: AF.Data.AFTimestampCalculation,
+    ) -> _AFtyping.Data.SummariesDict:
         return self.pi_point.Summaries(
             time_range, interval, summary_types, calculation_basis, time_type
         )
