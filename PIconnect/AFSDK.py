@@ -26,7 +26,7 @@ def __fallback():
 
 
 if os.getenv("GITHUB_ACTIONS") == "true":
-    AF, AF_SDK_VERSION = __fallback()
+    _af, _AF_SDK_version = __fallback()
 else:
     import clr
 
@@ -53,13 +53,16 @@ else:
 
     clr.AddReference("OSIsoft.AFSDK")  # type: ignore ; pylint: disable=no-member
 
-    from OSIsoft import AF  # type: ignore ; pylint: wrong-import-position
+    from OSIsoft import AF as _af  # type: ignore ; pylint: wrong-import-position
 
-    AF_SDK_VERSION = AF.PISystems().Version
-    print("OSIsoft(r) AF SDK Version: {}".format(AF_SDK_VERSION))
+    _AF_SDK_version: str = _af.PISystems().Version  # type: ignore ; pylint: disable=no-member
+    print("OSIsoft(r) AF SDK Version: {}".format(_AF_SDK_version))
 
 
 if typing.TYPE_CHECKING:
     # This branch is separate from previous one as otherwise no typechecking takes place
     # on the main logic.
-    AF, AF_SDK_VERSION = __fallback()
+    _af, _AF_SDK_version = __fallback()
+
+AF = _af
+AF_SDK_VERSION = _AF_SDK_version
