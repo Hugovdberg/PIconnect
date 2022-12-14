@@ -301,8 +301,12 @@ class PIPoint(PISeriesContainer):
         )
 
     def _summary(
-        self, time_range, summary_types, calculation_basis, time_type
-    ) -> _AFtyping.Asset.SummariesDict:
+        self,
+        time_range: AF.Time.AFTimeRange,
+        summary_types: AF.Data.AFSummaryTypes,
+        calculation_basis: AF.Data.AFCalculationBasis,
+        time_type: AF.Data.AFTimestampCalculation,
+    ) -> _AFtyping.Asset.SummaryDict:
         return self.pi_point.Summary(
             time_range, summary_types, calculation_basis, time_type
         )

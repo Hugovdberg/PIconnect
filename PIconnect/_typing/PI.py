@@ -122,8 +122,8 @@ class PIPoint:
         summary_type: Data.AFSummaryTypes,
         calculation_basis: Data.AFCalculationBasis,
         time_type: Data.AFTimestampCalculation,
-    ) -> Asset.SummariesDict:
-        return Asset.SummariesDict([])
+    ) -> Asset.SummaryDict:
+        return Asset.SummaryDict([])
 
     @staticmethod
     def UpdateValue(
