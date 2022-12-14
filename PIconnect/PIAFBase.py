@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar
+from typing import Dict, Generic, TypeVar
 
 from PIconnect.AFSDK import AF
 from PIconnect.PIAFAttribute import PIAFAttribute
@@ -23,7 +23,7 @@ class PIAFBaseElement(Generic[ElementType]):
         return self.element.Name
 
     @property
-    def attributes(self) -> dict[str, PIAFAttribute]:
+    def attributes(self) -> Dict[str, PIAFAttribute]:
         """Return a dictionary of the attributes of the current element."""
         return {a.Name: PIAFAttribute(self, a) for a in self.element.Attributes}
 
