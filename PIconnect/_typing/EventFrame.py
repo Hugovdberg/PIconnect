@@ -4,7 +4,7 @@
 import enum
 from typing import Iterable, List, Optional
 
-from . import Asset, AF, Time
+from . import AF, Asset, Time  # pylint: disable=unused-import
 
 
 class AFEventFrameSearchMode(enum.IntEnum):
