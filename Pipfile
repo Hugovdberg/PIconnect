@@ -7,7 +7,7 @@ name = "pypi"
 pandas = "*"
 pytz = "*"
 wrapt = "*"
-future = "*"
+pythonnet = "*"
 piconnect = {editable = true,path = "."}
 
 [dev-packages]
