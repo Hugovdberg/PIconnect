@@ -6,13 +6,10 @@ import os
 import sys
 import typing
 
-import pythonnet
 
 __all__ = ["AF", "AF_SDK_VERSION"]
 
 logger = logging.getLogger(__name__)
-
-pythonnet.load()
 
 
 def __fallback():
