@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d713fbb982057e7baf717df71afca43e2a9b3e27196db4a4fdcc73a5ff279da2"
+            "sha256": "b51a47164493e2915acbfaa04a41fbb94838e46398998bab389ee25417a1c882"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -92,13 +92,6 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==0.2.4"
-        },
-        "future": {
-            "hashes": [
-                "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"
-            ],
-            "index": "pypi",
-            "version": "==0.18.2"
         },
         "numpy": {
             "hashes": [
@@ -191,7 +184,7 @@
                 "sha256:46882dabb3532b8353f42815b21176545e1a34a5e4730b3cb04a8e430ae9f9ec",
                 "sha256:ed4f7f7f95515404112ddb3da1638e1a1013cb56e64c48c4fa60303f02b0a3dd"
             ],
-            "markers": "python_version < '3.12' and python_version >= '3.7'",
+            "index": "pypi",
             "version": "==3.0.1"
         },
         "pytz": {
@@ -412,7 +405,6 @@
             "version": "==0.9.1"
         },
         "coverage": {
-            "extras": [],
             "hashes": [
                 "sha256:00dc3243637dfcc5c93f61488c43ccb2d345398c831971924dcd5f6c892a29a3",
                 "sha256:07dbe3503bc49062b0e3da62f726ac98dcb693421a8f3cb16e4ce75599d62f27",
@@ -557,11 +549,11 @@
         },
         "isort": {
             "hashes": [
-                "sha256:6f62d78e2f89b4500b080fe3a81690850cd254227f27f75c3a0c491a1f351ba7",
-                "sha256:e8443a5e7a020e9d7f97f1d7d9cd17c88bcb3bc7e218bf9cf5095fe550be2951"
+                "sha256:dd8bbc5c0990f2a095d754e50360915f73b4c26fc82733eb5bfc6b48396af4d2",
+                "sha256:e486966fba83f25b8045f8dd7455b0a0d1e4de481e1d7ce4669902d9fb85e622"
             ],
-            "markers": "python_version < '4.0' and python_full_version >= '3.6.1'",
-            "version": "==5.10.1"
+            "markers": "python_full_version >= '3.7.0'",
+            "version": "==5.11.2"
         },
         "jaraco.classes": {
             "hashes": [
@@ -998,11 +990,11 @@
         },
         "tox": {
             "hashes": [
-                "sha256:4f282bcdea8abab26ccdfccbdd770899bb9b660b6e0a68814da83b5401ea41d6",
-                "sha256:da0899154e8b38e807a74adb53c331efc05a5790e4a717f9bd2e7c80c8e04c48"
+                "sha256:695fc21a276e6a4f11bd6ab25345c1e617353b23195335369365eb0b72129b2a",
+                "sha256:9521447370a375279139e9f80d7ba4ff88bd0407b744e63a33c3bf564cc0f19a"
             ],
             "index": "pypi",
-            "version": "==4.0.8"
+            "version": "==4.0.11"
         },
         "twine": {
             "hashes": [
