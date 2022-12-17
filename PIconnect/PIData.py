@@ -9,7 +9,7 @@ from typing import Any, List, Optional
 import pandas as pd
 
 import PIconnect._typing.AF as _AFtyping
-from PIconnect import PIConsts, _time, AF
+from PIconnect import AF, PIConsts, _time
 
 __all__ = [
     "PISeries",
