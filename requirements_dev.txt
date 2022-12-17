@@ -5,9 +5,7 @@ attrs==22.1.0 ; python_version >= '3.5'
 babel==2.11.0 ; python_version >= '3.6'
 black==22.12.0
 bleach==5.0.1 ; python_version >= '3.7'
-cachetools==5.2.0 ; python_version ~= '3.7'
 certifi==2022.12.7 ; python_version >= '3.6'
-chardet==5.1.0 ; python_version >= '3.7'
 charset-normalizer==2.1.1 ; python_full_version >= '3.6.0'
 click==8.1.3 ; python_version >= '3.7'
 codacy-coverage==1.3.11
@@ -16,17 +14,15 @@ colorama==0.4.6 ; sys_platform == 'win32'
 commonmark==0.9.1
 coverage==7.0.0b1
 dill==0.3.6 ; python_version >= '3.7'
-distlib==0.3.6
 doc8==1.0.0
 docutils==0.19 ; python_version >= '3.7'
 exceptiongroup==1.0.4 ; python_version < '3.11'
-filelock==3.8.2 ; python_version >= '3.7'
 flake8==6.0.0
 idna==3.4 ; python_version >= '3.5'
 imagesize==1.4.1 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
 importlib-metadata==5.1.0 ; python_version >= '3.7'
 iniconfig==1.1.1
-isort==5.11.2 ; python_full_version >= '3.7.0'
+isort==5.11.3 ; python_full_version >= '3.7.0'
 jaraco.classes==3.2.3 ; python_version >= '3.7'
 jinja2==3.1.2 ; python_version >= '3.7'
 keyring==23.11.0 ; python_version >= '3.7'
@@ -45,7 +41,6 @@ pycodestyle==2.10.0 ; python_version >= '3.6'
 pyflakes==3.0.1 ; python_version >= '3.6'
 pygments==2.13.0 ; python_version >= '3.6'
 pylint==3.0.0a5
-pyproject-api==1.2.1 ; python_version >= '3.7'
 pytest==7.2.0
 pytest-cov==4.0.0
 pytz==2022.6
@@ -70,10 +65,8 @@ sphinxcontrib-serializinghtml==1.1.5 ; python_version >= '3.5'
 stevedore==4.1.1 ; python_version >= '3.8'
 tomli==2.0.1 ; python_full_version < '3.11.0a7'
 tomlkit==0.11.6 ; python_version >= '3.6'
-tox==4.0.11
 twine==4.0.2
 urllib3==1.26.13 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5'
-virtualenv==20.17.1 ; python_version >= '3.6'
 webencodings==0.5.1
 wrapt==1.14.1
 zipp==3.11.0 ; python_version >= '3.7'

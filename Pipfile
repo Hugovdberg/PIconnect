@@ -12,7 +12,6 @@ piconnect = {editable = true,path = "."}
 
 [dev-packages]
 black = "*"
-tox = "*"
 # coverage = "*"
 # mypy = "*"
 codecov = "*"

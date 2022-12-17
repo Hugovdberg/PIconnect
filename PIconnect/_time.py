@@ -33,7 +33,7 @@ def to_af_time_range(start_time: TimeLike, end_time: TimeLike) -> AF.Time.AFTime
     if isinstance(end_time, datetime.datetime):
         end_time = end_time.isoformat()
 
-    return AF.Time.AFTimeRange(start_time, end_time)
+    return AF.Time.AFTimeRange.Parse(start_time, end_time)
 
 
 def to_af_time(time: TimeLike) -> AF.Time.AFTime:
