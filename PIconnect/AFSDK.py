@@ -6,9 +6,13 @@ import os
 import sys
 import typing
 
+import pythonnet
+
 __all__ = ["AF", "AF_SDK_VERSION"]
 
 logger = logging.getLogger(__name__)
+
+pythonnet.load()  # Required for the import of System in other modules
 
 
 def __fallback():
