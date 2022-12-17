@@ -6,7 +6,6 @@ import os
 import sys
 import typing
 
-
 __all__ = ["AF", "AF_SDK_VERSION"]
 
 logger = logging.getLogger(__name__)
@@ -22,7 +21,10 @@ def __fallback():
     return AF, AF_SDK_VERSION
 
 
-if os.getenv("GITHUB_ACTIONS") == "true":
+if (
+    os.getenv("GITHUB_ACTIONS", "false").lower() == "true"
+    or os.getenv("TF_BUILD", "false").lower() == "true"
+):
     _af, _AF_SDK_version = __fallback()
 else:
     import clr
