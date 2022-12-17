@@ -5,10 +5,13 @@ import warnings
 from typing import Any, Dict, List, Optional, Union, cast
 
 import PIconnect._typing.Generic as _dotNetGeneric
-from PIconnect import AF, PIConsts, PIPoint
+import PIconnect.PIPoint as PIPoint_
+from PIconnect import AF, PIConsts
 from PIconnect._utils import InitialisationWarning
 
-__all__ = ["PIServer"]
+__all__ = ["PIServer", "PIPoint"]
+
+PIPoint = PIPoint_.PIPoint
 
 
 def _lookup_servers() -> Dict[str, AF.PI.PIServer]:
@@ -143,7 +146,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
 
     def search(
         self, query: Union[str, List[str]], source: Optional[str] = None
-    ) -> List[PIPoint.PIPoint]:
+    ) -> List[PIPoint_.PIPoint]:
         """search
 
         Search PIPoints on the PIServer
@@ -165,7 +168,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         #     raise TypeError('Argument query must be either a string or a list of strings,' +
         #                     'got type ' + str(type(query)))
         return [
-            PIPoint.PIPoint(pi_point)
+            PIPoint_.PIPoint(pi_point)
             for pi_point in AF.PI.PIPoint.FindPIPoints(
                 self.connection, str(query), source, None
             )
