@@ -33,7 +33,7 @@ jobs:
       - name: Build package
         run: python -m build --outdir ./dist
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: PIconnect_builds
           path: ./dist/
@@ -52,7 +52,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install build
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: PIconnect_builds
           path: ./dist/

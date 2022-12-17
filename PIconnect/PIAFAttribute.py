@@ -1,10 +1,28 @@
+import dataclasses
 import datetime
 from typing import Any, Dict, Optional
 
-from PIconnect import AF, PIData, _time
+from PIconnect import AF, PIPoint, PIData, _time
 
 from ._operators import OPERATORS, add_operators  # type: ignore
 from ._typing import AF as _AFtyping
+
+__all__ = ["PIAFAttribute"]
+
+
+@dataclasses.dataclass
+class AFDataReference:
+    attribute: AF.Asset.AFAttribute
+    data_reference: AF.Asset.AFDataReference
+
+    @property
+    def name(self) -> str:
+        return self.data_reference.Name
+
+    @property
+    def pi_point(self) -> Optional[PIPoint.PIPoint]:
+        if self.data_reference.PIPoint is not None:
+            return PIPoint.PIPoint(self.data_reference.PIPoint)
 
 
 @add_operators(
@@ -33,6 +51,11 @@ class PIAFAttribute(PIData.PISeriesContainer):
             self.current_value,
             self.units_of_measurement,
         )
+
+    @property
+    def data_reference(self) -> AFDataReference:
+        """Return the data reference of the current attribute."""
+        return AFDataReference(self.attribute, self.attribute.DataReference)
 
     @property
     def name(self) -> str:
