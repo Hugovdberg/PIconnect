@@ -28,6 +28,10 @@ class AFTimeRange:
     def __init__(self, start_time: str, end_time: str):
         pass
 
+    @staticmethod
+    def Parse(start_time: str, end_time: str) -> "AFTimeRange":
+        return AFTimeRange(start_time, end_time)
+
 
 class AFTimeSpan:
     """Mock class of the AF.Time.AFTimeSpan class"""
