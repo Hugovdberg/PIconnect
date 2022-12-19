@@ -1,6 +1,6 @@
 -i https://pypi.org/simple
 alabaster==0.7.12
-astroid==2.11.7 ; python_full_version >= '3.6.2'
+astroid==2.12.13; python_full_version >= '3.6.2'
 attrs==22.1.0 ; python_version >= '3.5'
 babel==2.11.0 ; python_version >= '3.6'
 black==22.12.0
