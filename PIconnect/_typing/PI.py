@@ -2,7 +2,7 @@
 import enum
 from typing import Iterable, Iterator, List, Optional, Union
 
-from . import Asset, Data, Generic, Time
+from . import Data, Generic, Time, _values
 
 __all__ = ["PIPoint", "PIServer", "PIServers"]
 
@@ -59,8 +59,8 @@ class PIPoint:
     """This property identifies the name of the PIPoint"""
 
     @staticmethod
-    def CurrentValue() -> Asset.AFValue:
-        return Asset.AFValue(None)
+    def CurrentValue() -> _values.AFValue:
+        return _values.AFValue(None)
 
     @staticmethod
     def FilteredSummaries(
@@ -91,8 +91,8 @@ class PIPoint:
         return Generic.PropertyDict([])
 
     @staticmethod
-    def InterpolatedValue(time: Time.AFTime, /) -> Asset.AFValue:
-        return Asset.AFValue(None, time)
+    def InterpolatedValue(time: Time.AFTime, /) -> _values.AFValue:
+        return _values.AFValue(None, time)
 
     @staticmethod
     def InterpolatedValues(
@@ -101,8 +101,8 @@ class PIPoint:
         filter_expression: str,
         include_filtered_values: bool,
         /,
-    ) -> Asset.AFValues:
-        return Asset.AFValues()
+    ) -> _values.AFValues:
+        return _values.AFValues()
 
     @staticmethod
     def LoadAttributes(params: List[str], /) -> None:
@@ -111,8 +111,8 @@ class PIPoint:
     @staticmethod
     def RecordedValue(
         time: Time.AFTime, retrieval_mode: Data.AFRetrievalMode, /
-    ) -> Asset.AFValue:
-        return Asset.AFValue(None, time)
+    ) -> _values.AFValue:
+        return _values.AFValue(None, time)
 
     @staticmethod
     def RecordedValues(
@@ -122,8 +122,8 @@ class PIPoint:
         include_filtered_values: bool,
         max_count: int = 0,
         /,
-    ) -> Asset.AFValues:
-        return Asset.AFValues()
+    ) -> _values.AFValues:
+        return _values.AFValues()
 
     @staticmethod
     def Summaries(
@@ -147,7 +147,7 @@ class PIPoint:
 
     @staticmethod
     def UpdateValue(
-        value: Asset.AFValue,
+        value: _values.AFValue,
         update_mode: Data.AFUpdateOption,
         buffer_option: Data.AFBufferOption,
         /,

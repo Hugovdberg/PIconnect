@@ -1,7 +1,7 @@
 """Mock classes for the AF namespace of the OSIsoft PI-AF SDK"""
 from typing import Iterator, List
 
-from . import PI, Asset, Data, EventFrame, Time
+from . import PI, Asset, Data, EventFrame, Time, UnitsOfMeasure
 
 __all__ = [
     "Asset",
@@ -9,6 +9,7 @@ __all__ = [
     "EventFrame",
     "PI",
     "Time",
+    "UnitsOfMeasure",
     "AFDatabase",
     "AFCategory",
     "PISystem",

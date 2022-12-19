@@ -20,6 +20,7 @@ class AFAttribute:
     def __init__(self, name: str) -> None:
         self.Attributes: AFAttributes
         self.Data: Data.AFData
+        self.DataReference: AFDataReference
         self.Description: str
         self.DefaultUOM: UOM.UOM
         self.Name = name
@@ -65,6 +66,17 @@ class AFElements(List[AFElement]):
 
 class AFElementTemplate:
     """Mock class of the AF.Asset.AFElementTemplate class"""
+
+
+class AFDataReference:
+    from . import PI
+
+    def __init__(
+        self, name: str, attribute: AFAttribute, pi_point: Optional[PI.PIPoint] = None
+    ) -> None:
+        self.Attribute = attribute
+        self.Name = name
+        self.PIPoint = pi_point
 
 
 AttributeDict = Generic.Dictionary[str, AFAttribute]
