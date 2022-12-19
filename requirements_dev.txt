@@ -72,7 +72,7 @@ wrapt==1.14.1
 zipp==3.11.0 ; python_version >= '3.7'
 cffi==1.15.1
 clr-loader==0.2.4 ; python_version >= '3.7'
-numpy==1.24.0rc2 ; python_version >= '3.10'
+numpy==1.24.0; python_version >= '3.10'
 pandas==1.5.2
 -e .
 pycparser==2.21
