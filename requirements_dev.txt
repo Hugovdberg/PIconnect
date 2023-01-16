@@ -14,7 +14,7 @@ colorama==0.4.6 ; sys_platform == 'win32'
 commonmark==0.9.1
 coverage==7.0.5
 dill==0.3.6 ; python_version >= '3.7'
-doc8==1.0.0
+doc8==1.1.1
 docutils==0.19 ; python_version >= '3.7'
 exceptiongroup==1.0.4 ; python_version < '3.11'
 flake8==6.0.0
