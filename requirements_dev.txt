@@ -31,7 +31,7 @@ markupsafe==2.1.1 ; python_version >= '3.7'
 mccabe==0.7.0 ; python_version >= '3.6'
 more-itertools==9.0.0 ; python_version >= '3.7'
 mypy-extensions==0.4.3
-packaging==22.0 ; python_version >= '3.7'
+packaging==23.0; python_version >= '3.7'
 pathspec==0.10.3 ; python_version >= '3.7'
 pbr==5.11.0 ; python_version >= '2.6'
 pkginfo==1.9.2 ; python_version >= '3.6'
