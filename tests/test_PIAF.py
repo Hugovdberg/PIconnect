@@ -49,3 +49,13 @@ class TestDatabaseDescendants:
         with PI.PIAFDatabase() as db:
             children = db.children
         assert isinstance(children, dict)
+
+
+class TestDatabaseAttributes:
+    """Test retrieving attributes"""
+
+    def test_attributes(self):
+        """Test that calling attributes on the database returns a list of attributes"""
+        with PI.PIAFDatabase() as db:
+            attributes = db.attributes
+        assert isinstance(attributes, list)

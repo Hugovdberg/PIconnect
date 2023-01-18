@@ -150,6 +150,28 @@ class PIAFDatabase(object):
         """Return a descendant of the database from an exact path."""
         return PIAFElement(self.database.Elements.get_Item(path))
 
+    def attributes(self, query: Union[str, list[str]]) -> "PIAFAttribute":
+        """return a list of PIAFAttributes directly from a list of element|attribute path strings
+
+            like this:
+
+        list("BaseElement/childElement/childElement|Attribute|ChildAttribute|ChildAttribute",
+        "BaseElement/childElement/childElement|Attribute|ChildAttribute|ChildAttribute")
+
+        """
+        attributelist = []
+
+        for path in query:
+            if "/" in path and "|" in path:
+                splitpath = path.split("|")
+                elem = self.descendant(splitpath[0])
+                attribute = elem.attributes[splitpath[1]]
+                if len(splitpath) > 2:
+                    for x in range(len(splitpath) - 2):
+                        attribute = attribute.children[splitpath[x + 2]]
+                    attributelist.append(attribute)
+        return attributelist
+
     def event_frames(
         self,
         start_time: _time.TimeLike = "",
