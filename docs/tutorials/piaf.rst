@@ -89,7 +89,7 @@ Searching attributes based on full path
 ************************************
 
 To get the direct attribute based on the entire element/attributes path
-you can use the :any:`PIAFElement.attributes` method. You can provide a single string or list of strings with
+you can use the :any:`PIAFDatabase.search` method. You can provide a single string or list of strings with
 the full path and returns a list of attribute objects.
 
 .. code-block:: python
