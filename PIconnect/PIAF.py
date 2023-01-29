@@ -3,10 +3,11 @@
 """
 import dataclasses
 import warnings
-from typing import Any, Dict, Optional, Union, cast
+from typing import Any, Dict, Optional, Union, cast, List
 
 from PIconnect import AF, PIAFBase, PIConsts, _time
 from PIconnect._utils import InitialisationWarning
+from PIconnect import PIAFAttribute
 
 
 @dataclasses.dataclass(frozen=True)
@@ -150,7 +151,7 @@ class PIAFDatabase(object):
         """Return a descendant of the database from an exact path."""
         return PIAFElement(self.database.Elements.get_Item(path))
 
-    def attributes(self, query: Union[str, list[str]]) -> "PIAFAttribute":
+    def search(self, query: Union[str, List[str]]) -> "PIAFAttribute":
         """return a list of PIAFAttributes directly from a list of element|attribute path strings
 
             like this:
@@ -160,16 +161,16 @@ class PIAFDatabase(object):
 
         """
         attributelist = []
-
-        for path in query:
-            if "/" in path and "|" in path:
-                splitpath = path.split("|")
-                elem = self.descendant(splitpath[0])
-                attribute = elem.attributes[splitpath[1]]
-                if len(splitpath) > 2:
-                    for x in range(len(splitpath) - 2):
-                        attribute = attribute.children[splitpath[x + 2]]
-                    attributelist.append(attribute)
+        if isinstance(query, List):
+            return [y for x in query for y in self.search(x)]
+        if "|" in query:
+            splitpath = query.split("|")
+            elem = self.descendant(splitpath[0])
+            attribute = elem.attributes[splitpath[1]]
+            if len(splitpath) > 2:
+                for x in range(len(splitpath) - 2):
+                    attribute = attribute.children[splitpath[x + 2]]
+                attributelist.append(attribute)
         return attributelist
 
     def event_frames(

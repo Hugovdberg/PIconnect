@@ -1,5 +1,5 @@
 """Test communication with the PI AF system"""
-from typing import cast
+from typing import cast, List
 import pytest
 
 import PIconnect as PI
@@ -51,11 +51,11 @@ class TestDatabaseDescendants:
         assert isinstance(children, dict)
 
 
-class TestDatabaseAttributes:
+class TestDatabaseSearch:
     """Test retrieving attributes"""
 
-    def test_attributes(self):
+    def test_search(self):
         """Test that calling attributes on the database returns a list of attributes"""
         with PI.PIAFDatabase() as db:
-            attributes = db.attributes
-        assert isinstance(attributes, list)
+            attributes = db.search([r'', r''])
+        assert isinstance(attributes, List)

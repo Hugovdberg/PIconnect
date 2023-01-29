@@ -31,7 +31,6 @@ def _lookup_servers() -> Dict[str, AF.PI.PIServer]:
 
 
 def _lookup_default_server() -> Optional[AF.PI.PIServer]:
-
     default_server = None
     try:
         default_server = AF.PI.PIServers().DefaultPIServer

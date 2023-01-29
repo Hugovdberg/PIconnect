@@ -85,7 +85,7 @@ the latter element could be accessed directly as follows:
 .. _finding_attributes:
 
 ************************************
-Finding attributes based on full path
+Searching attributes based on full path
 ************************************
 
 To get the direct attribute based on the entire element/attributes path
@@ -97,7 +97,7 @@ the full path and returns a list of attribute objects.
     import PIconnect as PI
 
     with PI.PIAFDatabase() as database:
-        attributes = database.attributes(r"Plant1\Outlet|Flow|PV", r"Plant1\Outlet|Flow|SP")
+        attributes = database.search([r"Plant1\Outlet|Flow|PV", r"Plant1\Outlet|Flow|SP"])
 
 .. note:: Elements in the hierarchy are separated by a single backslash `\\`,
           use either raw strings (using the `r` prefix, as in the example

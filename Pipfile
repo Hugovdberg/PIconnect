@@ -9,7 +9,6 @@ pytz = "*"
 wrapt = "*"
 pythonnet = "*"
 piconnect = {editable = true, path = "."}
-pytest = "*"
 
 [dev-packages]
 black = "*"
