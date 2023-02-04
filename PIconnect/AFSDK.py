@@ -28,6 +28,7 @@ def __fallback():
 if (
     os.getenv("GITHUB_ACTIONS", "false").lower() == "true"
     or os.getenv("TF_BUILD", "false").lower() == "true"
+    or os.getenv("READTHEDOCS", "false").lower() == "true"
 ):
     _af, _AF_SDK_version = __fallback()
 else:
