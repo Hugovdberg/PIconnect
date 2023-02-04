@@ -8,7 +8,7 @@ pandas = "*"
 pytz = "*"
 wrapt = "*"
 pythonnet = "*"
-piconnect = {editable = true,path = "."}
+piconnect = {editable = true, path = "."}
 
 [dev-packages]
 black = "*"
