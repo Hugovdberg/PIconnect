@@ -109,7 +109,6 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
             self._credentials = None
 
         if timeout:
-
             # System.TimeSpan(hours, minutes, seconds)
             self.connection.ConnectionInfo.OperationTimeOut = System.TimeSpan(
                 0, 0, timeout
