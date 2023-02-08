@@ -4,10 +4,10 @@
 import warnings
 from typing import Any, Dict, List, Optional, Union, cast
 
-import PIconnect._typing.Generic as _dotNetGeneric
 import PIconnect.PIPoint as PIPoint_
 from PIconnect import AF, PIConsts
 from PIconnect._utils import InitialisationWarning
+from PIconnect.AFSDK import System
 
 __all__ = ["PIServer", "PIPoint"]
 
@@ -16,12 +16,11 @@ PIPoint = PIPoint_.PIPoint
 
 def _lookup_servers() -> Dict[str, AF.PI.PIServer]:
     servers: Dict[str, AF.PI.PIServer] = {}
-    from System import Exception as dotNetException  # type: ignore
 
     for server in AF.PI.PIServers():
         try:
             servers[server.Name] = server
-        except (Exception, dotNetException) as e:  # type: ignore
+        except (Exception, System.Exception) as e:  # type: ignore
             warnings.warn(
                 f"Failed loading server data for {server.Name} "
                 f"with error {type(cast(Exception, e)).__qualname__}",
@@ -97,27 +96,22 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
                 "A domain can only specified together with a username and password."
             )
         if username:
-            from System.Net import NetworkCredential  # type: ignore
-            from System.Security import SecureString  # type: ignore
-
-            secure_pass = cast(_dotNetGeneric.SecureString, SecureString())
+            secure_pass = System.Security.SecureString()
             if password is not None:
                 for c in password:
                     secure_pass.AppendChar(c)
-            cred = [username, secure_pass] + ([domain] if domain else [])
+            cred = (username, secure_pass) + ((domain,) if domain else ())
             self._credentials = (
-                cast(_dotNetGeneric.NetworkCredential, NetworkCredential(*cred)),
+                System.Net.NetworkCredential(cred[0], cred[1], *cred[2:]),
                 AF.PI.PIAuthenticationMode(int(authentication_mode)),
             )
         else:
             self._credentials = None
 
         if timeout:
-            from System import TimeSpan  # type: ignore
-
             # System.TimeSpan(hours, minutes, seconds)
-            self.connection.ConnectionInfo.OperationTimeOut = cast(
-                _dotNetGeneric.TimeSpan, TimeSpan(0, 0, timeout)
+            self.connection.ConnectionInfo.OperationTimeOut = System.TimeSpan(
+                0, 0, timeout
             )
 
     def __enter__(self):

@@ -6,13 +6,11 @@ import os
 import sys
 import typing
 
-import pythonnet
-
-__all__ = ["AF", "AF_SDK_VERSION"]
+__all__ = ["AF", "System", "AF_SDK_VERSION"]
 
 logger = logging.getLogger(__name__)
 
-pythonnet.load()  # Required for the import of System in other modules
+# pragma pylint: disable=import-outside-toplevel
 
 
 def __fallback():
@@ -20,9 +18,11 @@ def __fallback():
 
     warnings.warn("Can't import the PI AF SDK, running in test mode", ImportWarning)
 
-    from ._typing import AF, AF_SDK_VERSION
+    from ._typing import AF as _af
+    from ._typing import AF_SDK_VERSION as _AF_SDK_version
+    from ._typing import dotnet as _System
 
-    return AF, AF_SDK_VERSION
+    return _af, _System, _AF_SDK_version
 
 
 if (
@@ -30,7 +30,7 @@ if (
     or os.getenv("TF_BUILD", "false").lower() == "true"
     or os.getenv("READTHEDOCS", "false").lower() == "true"
 ):
-    _af, _AF_SDK_version = __fallback()
+    _af, _System, _AF_SDK_version = __fallback()
 else:
     import clr
 
@@ -57,7 +57,8 @@ else:
 
     clr.AddReference("OSIsoft.AFSDK")  # type: ignore ; pylint: disable=no-member
 
-    from OSIsoft import AF as _af  # type: ignore ; pylint: wrong-import-position
+    import System as _System  # type: ignore
+    from OSIsoft import AF as _af  # type: ignore
 
     _AF_SDK_version: str = _af.PISystems().Version  # type: ignore ; pylint: disable=no-member
     print("OSIsoft(r) AF SDK Version: {}".format(_AF_SDK_version))
@@ -66,7 +67,8 @@ else:
 if typing.TYPE_CHECKING:
     # This branch is separate from previous one as otherwise no typechecking takes place
     # on the main logic.
-    _af, _AF_SDK_version = __fallback()
+    _af, _System, _AF_SDK_version = __fallback()
 
 AF = _af
+System = _System
 AF_SDK_VERSION = _AF_SDK_version

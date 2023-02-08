@@ -6,8 +6,8 @@ from typing import Union
 import pytz
 
 from PIconnect import AF, PIConfig
+from PIconnect.AFSDK import System
 
-from ._typing import Time
 
 TimeLike = Union[str, datetime.datetime]
 
@@ -51,7 +51,7 @@ def to_af_time(time: TimeLike) -> AF.Time.AFTime:
     return AF.Time.AFTime(time)
 
 
-def timestamp_to_index(timestamp: Time.DateTime) -> datetime.datetime:
+def timestamp_to_index(timestamp: System.DateTime) -> datetime.datetime:
     """Convert AFTime object to datetime in local timezone.
 
     Args:

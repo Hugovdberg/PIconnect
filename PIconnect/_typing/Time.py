@@ -1,25 +1,14 @@
-from typing import Optional, Protocol
-
-
-class DateTime(Protocol):
-    """Mock for System.DateTime"""
-
-    Year: int
-    Month: int
-    Day: int
-    Hour: int
-    Minute: int
-    Second: int
-    Millisecond: int
+from typing import Optional
+from . import dotnet as System
 
 
 class AFTime:
     """Mock class of the AF.Time.AFTime class"""
 
     def __init__(self, time: str) -> None:
-        self.UtcTime: DateTime
+        self.UtcTime: System.DateTime
 
-    Now: DateTime
+    Now: System.DateTime
 
 
 class AFTimeRange:
