@@ -2,7 +2,7 @@
 import enum
 from typing import Iterable, Iterator, List, Optional, Union
 
-from . import Data, Generic, Time, _values
+from . import Data, Generic, Time, _values, dotnet as System
 
 __all__ = ["PIPoint", "PIServer", "PIServers"]
 
@@ -11,7 +11,7 @@ class PIConnectionInfo:
     """Mock class of the AF.PI.PIConnectionInfo class"""
 
     def __init__(self) -> None:
-        self.OperationTimeOut: Generic.TimeSpan
+        self.OperationTimeOut: System.TimeSpan
 
 
 class PIAuthenticationMode(enum.IntEnum):
@@ -31,7 +31,7 @@ class PIServer:
 
     def Connect(
         self,
-        retry: Union[bool, Generic.NetworkCredential],
+        retry: Union[bool, System.Net.NetworkCredential],
         authentication_mode: Optional[PIAuthenticationMode] = None,
     ) -> None:
         """Stub for connecting to test server"""

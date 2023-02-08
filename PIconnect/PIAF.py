@@ -6,6 +6,7 @@ import warnings
 from typing import Any, Dict, Optional, Union, cast, List
 
 from PIconnect import AF, PIAFBase, PIConsts, _time
+from PIconnect.AFSDK import System
 from PIconnect._utils import InitialisationWarning
 from PIconnect import PIAFAttribute
 
@@ -23,8 +24,6 @@ ServerSpec = Dict[str, Union[AF.PISystem, Dict[str, AF.AFDatabase]]]
 
 
 def _lookup_servers() -> Dict[str, ServerSpec]:
-    from System import Exception as dotNetException  # type: ignore
-
     servers: Dict[str, PIAFServer] = {}
     for s in AF.PISystems():
         try:
@@ -32,13 +31,13 @@ def _lookup_servers() -> Dict[str, ServerSpec]:
             for d in s.Databases:
                 try:
                     server.databases[d.Name] = d
-                except (Exception, dotNetException) as e:  # type: ignore
+                except (Exception, System.Exception) as e:  # type: ignore
                     warnings.warn(
                         f"Failed loading database data for {d.Name} on {s.Name} "
                         f"with error {type(cast(Exception, e)).__qualname__}",
                         InitialisationWarning,
                     )
-        except (Exception, dotNetException) as e:  # type: ignore
+        except (Exception, System.Exception) as e:  # type: ignore
             warnings.warn(
                 f"Failed loading server data for {s.Name} "
                 f"with error {type(cast(Exception, e)).__qualname__}",
@@ -151,7 +150,7 @@ class PIAFDatabase(object):
         """Return a descendant of the database from an exact path."""
         return PIAFElement(self.database.Elements.get_Item(path))
 
-    def search(self, query: Union[str, List[str]]) -> "PIAFAttribute":
+    def search(self, query: Union[str, List[str]]) -> List[PIAFAttribute.PIAFAttribute]:
         """return a list of PIAFAttributes directly from a list of element|attribute path strings
 
             like this:
@@ -160,7 +159,7 @@ class PIAFDatabase(object):
         "BaseElement/childElement/childElement|Attribute|ChildAttribute|ChildAttribute")
 
         """
-        attributelist = []
+        attributelist: List[PIAFAttribute.PIAFAttribute] = []
         if isinstance(query, List):
             return [y for x in query for y in self.search(x)]
         if "|" in query:
