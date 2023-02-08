@@ -22,7 +22,7 @@ jobs:
           '3.8'
           , '3.9'
           , '3.10'
-          # , '3.11'
+          , '3.11'
         ]
 
     steps:
@@ -38,6 +38,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install flake8 pytest wheel
           python -m pip install pytest-cov
+          python -m pip install --exists-action=w --no-cache-dir -r requirements_dev.txt
           python -m pip install .
 
       - name: Lint with flake8
