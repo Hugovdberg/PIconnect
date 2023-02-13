@@ -1,47 +1,72 @@
 """ PIconnect.test.fakes
     Fake classes to mask SDK complexity
 """
+import dataclasses
 import datetime
+from typing import Any, Dict, Generic, Iterable, List, TypeVar
 
 import pytest
 import pytz
 
-import PIconnect as PI
+import PIconnect.PI as PI
+import PIconnect._typing.AF as AF
 from PIconnect._operators import OPERATORS, add_operators
+
+
+@dataclasses.dataclass
+class _UTCTime:
+    Year: int
+    Month: int
+    Day: int
+    Hour: int
+    Minute: int
+    Second: int
+    Millisecond: int
 
 
 class FakeAFTime(object):
     """Fake AFTime to mask away SDK complexity."""
 
-    def __init__(self, timestamp):
-        self.UtcTime = lambda x: None
-        self.UtcTime.Year = timestamp.year
-        self.UtcTime.Month = timestamp.month
-        self.UtcTime.Day = timestamp.day
-        self.UtcTime.Hour = timestamp.hour
-        self.UtcTime.Minute = timestamp.minute
-        self.UtcTime.Second = timestamp.second
-        self.UtcTime.Millisecond = int(timestamp.microsecond / 1000)
+    def __init__(self, timestamp: datetime.datetime):
+        self.UtcTime = _UTCTime(
+            timestamp.year,
+            timestamp.month,
+            timestamp.day,
+            timestamp.hour,
+            timestamp.minute,
+            timestamp.second,
+            int(timestamp.microsecond / 1000),
+        )
 
 
-class FakeKeyValue(object):
+_a = TypeVar("_a")
+_b = TypeVar("_b")
+
+
+class FakeKeyValue(Generic[_a, _b]):
     """Container for fake Key:Value pairs"""
 
-    def __init__(self, key, value):
+    def __init__(self, key: _a, value: _b) -> None:
         self.Key = key
         self.Value = value
 
 
-class FakeAFValue(object):
+class FakeAFValue(Generic[_a]):
     """Fake AFValue to mask away SDK complexity."""
 
-    def __init__(self, value, timestamp):
+    def __init__(self, value: _a, timestamp: datetime.datetime):
         self.Value = value
         self.Timestamp = FakeAFTime(timestamp)
 
 
-class FakePIPoint_(object):
-    def __init__(self, tag, values, timestamps, attributes):
+class FakePIPoint_(Generic[_a]):
+    def __init__(
+        self,
+        tag: str,
+        values: Iterable[_a],
+        timestamps: Iterable[datetime.datetime],
+        attributes: Dict[str, Any],
+    ):
         self.Name = tag
         self.values = [
             FakeAFValue(value, timestamp)
@@ -56,30 +81,30 @@ class FakePIPoint_(object):
     newclassname="VirtualFakePIPoint",
     attributes=["pi_point"],
 )
-class FakePIPoint(object):
+class FakePIPoint(AF.PI.PIPoint, Generic[_a]):
     """Fake PI Point to mask away SDK complexity."""
 
-    def __init__(self, pi_point):
+    def __init__(self, pi_point: FakePIPoint_[_a]) -> None:
         self.pi_point = pi_point
         self.call_stack = ["%s created" % self.__class__.__name__]
         self.Name = pi_point.Name
 
-    def CurrentValue(self):
+    def CurrentValue(self) -> FakeAFValue[_a]:
         self.call_stack.append("CurrentValue called")
         return self.pi_point.values[-1]
 
-    def LoadAttributes(self, *args, **kwargs):
+    def LoadAttributes(self, *args: Any, **kwargs: Any) -> None:
         self.call_stack.append("LoadAttributes called")
 
-    def GetAttributes(self, *args, **kwargs):
+    def GetAttributes(self, *args: Any, **kwargs: Any) -> List[FakeKeyValue[str, Any]]:
         self.call_stack.append("GetAttributes called")
         return self.pi_point.attributes
 
-    def RecordedValues(self, *args, **kwargs):
+    def RecordedValues(self, *args: Any, **kwargs: Any) -> List[FakeAFValue[_a]]:
         self.call_stack.append("RecordedValues called")
         return self.pi_point.values
 
-    def InterpolatedValues(self, *args, **kwargs):
+    def InterpolatedValues(self, *args: Any, **kwargs: Any) -> List[FakeAFValue[_a]]:
         self.call_stack.append("InterpolatedValues called")
         return self.pi_point.values
 
@@ -113,7 +138,7 @@ class VirtualTestCase(object):
             timestamps=self.timestamps,
             attributes=self.attributes,
         )
-        self.point = PI.PI.PIPoint(FakePIPoint(pi_point))
+        self.point = PI.PIPoint(FakePIPoint(pi_point))
 
 
 @pytest.fixture

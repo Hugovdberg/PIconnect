@@ -1,11 +1,11 @@
 """Test VirtualPIPoint calculus."""
-from .fakes import pi_point  # pylint: disable=unused-import
+from .fakes import pi_point, VirtualTestCase  # pylint: disable=unused-import
 
 
 class TestVirtualAddition:
     """Test VirtualPIPoint addition."""
 
-    def test_add_integer_current_value(self, pi_point):
+    def test_add_integer_current_value(self, pi_point: VirtualTestCase):
         """Test adding an integer to a PIPoint via the current value."""
         point2 = pi_point.point + 1
         assert round(point2.current_value - (pi_point.values[-1] + 1), ndigits=7) == 0
