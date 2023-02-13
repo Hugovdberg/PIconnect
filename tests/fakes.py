@@ -74,6 +74,9 @@ class FakePIPoint_(Generic[_a]):
         ]
         self.attributes = [FakeKeyValue(*att) for att in attributes.items()]
 
+    def CurrentValue(self) -> FakeAFValue[_a]:
+        return self.values[-1]
+
 
 @add_operators(
     operators=OPERATORS,
