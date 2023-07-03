@@ -24,7 +24,7 @@ codecov==2.1.13
 
 colorama==0.4.6 ; sys_platform == 'win32'
 
-coverage==7.1.0
+coverage==7.2.7
 
 dill==0.3.6 ; python_version >= '3.7'
 
