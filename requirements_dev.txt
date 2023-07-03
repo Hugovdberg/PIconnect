@@ -96,7 +96,7 @@ pywin32-ctypes==0.2.2; sys_platform == 'win32'
 
 pyyaml==6.0
 
-readme-renderer==37.3 ; python_version >= '3.7'
+readme-renderer==40.0; python_version >= '3.7'
 
 requests==2.28.2 ; python_version >= '3.7' and python_version < '4'
 
