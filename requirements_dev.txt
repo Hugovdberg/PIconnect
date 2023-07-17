@@ -142,7 +142,7 @@ webencodings==0.5.1
 
 wrapt==1.15.0
 
-zipp==3.12.1 ; python_version >= '3.7'
+zipp==3.16.2; python_version >= '3.7'
 
 cffi==1.15.1
 
