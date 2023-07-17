@@ -2,7 +2,7 @@
 
 alabaster==0.7.13 ; python_version >= '3.6'
 
-astroid==2.11.7 ; python_full_version >= '3.6.2'
+astroid==2.15.6; python_full_version >= '3.6.2'
 
 attrs==22.2.0 ; python_version >= '3.6'
 
