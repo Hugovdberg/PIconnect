@@ -88,7 +88,7 @@ pylint==3.0.0a6
 
 pytest==7.4.0
 
-pytest-cov==4.0.0
+pytest-cov==4.1.0
 
 pytz==2023.3
 
