@@ -62,7 +62,7 @@ mccabe==0.7.0 ; python_version >= '3.6'
 
 mdurl==0.1.2 ; python_version >= '3.7'
 
-more-itertools==9.0.0 ; python_version >= '3.7'
+more-itertools==10.1.0; python_version >= '3.7'
 
 mypy-extensions==1.0.0 ; python_version >= '3.5'
 
