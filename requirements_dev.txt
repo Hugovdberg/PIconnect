@@ -6,7 +6,7 @@ astroid==2.15.6; python_full_version >= '3.6.2'
 
 attrs==23.1.0; python_version >= '3.6'
 
-babel==2.11.0 ; python_version >= '3.6'
+babel==2.12.1; python_version >= '3.6'
 
 black==23.1.0
 
