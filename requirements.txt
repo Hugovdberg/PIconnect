@@ -1,6 +1,6 @@
 -i https://pypi.org/simple
 
-cffi==1.15.1
+cffi==1.16.0
 
 clr-loader==0.2.5 ; python_version >= '3.7'
 
