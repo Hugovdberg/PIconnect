@@ -144,7 +144,7 @@ wrapt==1.15.0rc1
 
 zipp==3.12.1 ; python_version >= '3.7'
 
-cffi==1.15.1
+cffi==1.16.0
 
 clr-loader==0.2.5 ; python_version >= '3.7'
 
