@@ -140,7 +140,7 @@ urllib3==1.26.14 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 
 
 webencodings==0.5.1
 
-wrapt==1.15.0rc1
+wrapt==1.16.0rc2
 
 zipp==3.12.1 ; python_version >= '3.7'
 
