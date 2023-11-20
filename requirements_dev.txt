@@ -30,7 +30,7 @@ dill==0.3.7; python_version >= '3.7'
 
 doc8==1.1.1
 
-docutils==0.19 ; python_version >= '3.7'
+docutils==0.20.1; python_version >= '3.7'
 
 exceptiongroup==1.1.0 ; python_version < '3.11'
 
