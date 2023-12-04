@@ -10,7 +10,7 @@ babel==2.13.1; python_version >= '3.6'
 
 black==23.11.0
 
-bleach==6.0.0 ; python_version >= '3.7'
+bleach==6.1.0; python_version >= '3.7'
 
 certifi==2022.12.7 ; python_version >= '3.6'
 
