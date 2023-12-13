@@ -176,3 +176,15 @@ class PIPoint(PIData.PISeriesContainer):
         buffer_mode: AF.Data.AFBufferOption,
     ) -> None:
         return self.pi_point.UpdateValue(value, update_mode, buffer_mode)
+
+    # Added _update_recorded_values_by_count
+    def _recorded_values_by_count(
+        self,
+        startTime: AF.Time.AFTime,
+        count: int,
+        forward: bool,
+        boundaryType: AF.Data.AFBoundaryType,
+        filterExpression: str,
+        includeFilteredValues: bool
+    ) -> AF.Asset.AFValues:
+        return self.pi_point.RecordedValuesByCount(startTime, count, forward, boundaryType, filterExpression, includeFilteredValues)

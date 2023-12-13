@@ -595,3 +595,71 @@ class PISeriesContainer(abc.ABC):
         buffer_mode: AF.Data.AFBufferOption,
     ) -> None:
         pass
+
+#added recorded_values_by_count
+    def recorded_values_by_count(
+        self,
+        startTime: _time.TimeLike,
+        count: int = 1,
+        forward: bool = True,
+        boundaryType: AF.Data.AFBoundaryType = AF.Data.AFBoundaryType.Inside,
+        filterExpression: str = '',
+        includeFilteredValues: bool = False
+    ) -> PISeries:
+        """recorded_value_by_count
+
+        Return a PISeries with the specified number of compressed values beginning at the requested time
+        Args:
+            start_time (str): String containing the date, and possibly time,
+                to start the request. This is parsed, using
+                :afsdk:`AF.Time.AFTime <M_OSIsoft_AF_Time_AFTime__ctor_7.htm>`.
+            count (int): The number of compressed values to return. This value must be greater than zero.
+            forward (bool):
+                A value of true indicates to begin at the start time and move forward in time. 
+                A value of false indicates to move backward in time. 
+                    When moving backward, values will be returned in time descending order.
+            boundary_type (str, optional): Defaults to 'inside'. Key from the
+                `__boundary_types` dictionary to describe how to handle the
+                boundaries of the time range.
+            filter_expression (str):
+                Query on which to filter data to include in the results. See :ref:`filtering_values`
+                for more information on filter queries.
+            include_filtered (bool): 
+                Specify to indicate that values which fail the filter criteria are present in the returned
+                data at the times where they occurred with a value set to a "Filtered" enumeration value with bad status.
+                Repeated consecutive failures are omitted.
+        
+        Returns:
+            PISeries: A PISeries with a single row, with the corresponding time as
+                the index
+        """
+        from . import _time as time_module
+
+        _startTime = time_module.to_af_time(startTime)
+        _filterExpression = self._normalize_filter_expression(filterExpression)
+        
+        pivalues = self._recorded_values_by_count(_startTime, count,forward, boundaryType, _filterExpression, includeFilteredValues)
+
+        timestamps: List[datetime.datetime] = []
+        values: List[Any] = []
+        for value in pivalues:
+            timestamps.append(_time.timestamp_to_index(value.Timestamp.UtcTime))
+            values.append(value.Value)
+        return PISeries(  # type: ignore
+            tag=self.name,
+            timestamp=timestamps,
+            value=values,
+            uom=self.units_of_measurement,
+        )
+
+    @abc.abstractmethod
+    def _recorded_values_by_count(
+        self, 
+        startTime: AF.Time.AFTime,
+        count: int,
+        forward: bool,
+        boundaryType: AF.Data.AFBoundaryType,
+        filterExpression: str,
+        includeFilteredValues: bool
+    ) -> AF.Asset.AFValues:
+        pass

@@ -153,3 +153,14 @@ class PIPoint:
         /,
     ) -> None:
         pass
+
+    @staticmethod
+    def RecordedValuesByCount(
+        start_time: Time.AFTime,
+        count: int,
+        forward: bool,
+        boundaryType: Data.AFBoundaryType,
+        filterExpression: str,
+        includeFilteredValues: bool
+    ) -> _values.AFValues:
+        return _values.AFValues()
