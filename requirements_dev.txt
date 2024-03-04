@@ -70,7 +70,7 @@ packaging==23.2; python_version >= '3.7'
 
 pathspec==0.12.1; python_version >= '3.7'
 
-pbr==5.11.1 ; python_version >= '2.6'
+pbr==6.0.0; python_version >= '2.6'
 
 pkginfo==1.9.6 ; python_version >= '3.6'
 
