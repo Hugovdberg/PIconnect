@@ -44,7 +44,7 @@ importlib-metadata==7.0.2; python_version >= '3.7'
 
 iniconfig==2.0.0 ; python_version >= '3.7'
 
-isort==5.12.0 ; python_full_version >= '3.8.0'
+isort==5.13.2; python_full_version >= '3.8.0'
 
 jaraco.classes==3.2.3 ; python_version >= '3.7'
 
