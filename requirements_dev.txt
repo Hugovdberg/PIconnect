@@ -34,7 +34,7 @@ docutils==0.21.1; python_version >= '3.7'
 
 exceptiongroup==1.2.0; python_version < '3.11'
 
-flake8==6.0.0
+flake8==7.0.0
 
 idna==3.4 ; python_version >= '3.5'
 
