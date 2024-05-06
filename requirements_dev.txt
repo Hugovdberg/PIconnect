@@ -78,7 +78,7 @@ platformdirs==4.2.1; python_version >= '3.7'
 
 pluggy==1.5.0; python_version >= '3.6'
 
-pycodestyle==2.10.0 ; python_version >= '3.6'
+pycodestyle==2.11.1; python_version >= '3.6'
 
 pyflakes==3.0.1 ; python_version >= '3.6'
 
