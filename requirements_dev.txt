@@ -84,7 +84,7 @@ pyflakes==3.2.0; python_version >= '3.6'
 
 pygments==2.18.0; python_version >= '3.6'
 
-pylint==3.0.0a5
+pylint==3.1.0
 
 pytest==7.2.1
 
