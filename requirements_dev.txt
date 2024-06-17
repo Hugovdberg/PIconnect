@@ -26,7 +26,7 @@ colorama==0.4.6 ; sys_platform == 'win32'
 
 coverage==7.5.3
 
-dill==0.3.6 ; python_version >= '3.7'
+dill==0.3.8; python_version >= '3.7'
 
 doc8==1.1.1
 
