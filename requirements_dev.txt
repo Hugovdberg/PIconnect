@@ -128,7 +128,7 @@ sphinxcontrib-qthelp==1.0.7; python_version >= '3.5'
 
 sphinxcontrib-serializinghtml==1.1.10; python_version >= '3.5'
 
-stevedore==4.1.1 ; python_version >= '3.8'
+stevedore==5.2.0; python_version >= '3.8'
 
 tomli==2.0.1 ; python_version < '3.11'
 
