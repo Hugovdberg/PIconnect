@@ -4,7 +4,7 @@ alabaster==0.7.16; python_version >= '3.6'
 
 astroid==3.2.2; python_full_version >= '3.6.2'
 
-attrs==22.2.0 ; python_version >= '3.6'
+attrs==23.2.0; python_version >= '3.6'
 
 babel==2.11.0 ; python_version >= '3.6'
 
