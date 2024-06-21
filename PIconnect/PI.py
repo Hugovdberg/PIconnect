@@ -1,6 +1,5 @@
-""" PI
-    Core containers for connections to PI databases
-"""
+"""PI - Core containers for connections to PI databases."""
+
 import warnings
 from typing import Any, Dict, List, Optional, Union, cast
 
@@ -12,6 +11,7 @@ from PIconnect.AFSDK import System
 __all__ = ["PIServer", "PIPoint"]
 
 PIPoint = PIPoint_.PIPoint
+_DEFAULT_AUTH_MODE = PIConsts.AuthenticationMode.PI_USER_AUTHENTICATION
 
 
 def _lookup_servers() -> Dict[str, AF.PI.PIServer]:
@@ -25,6 +25,7 @@ def _lookup_servers() -> Dict[str, AF.PI.PIServer]:
                 f"Failed loading server data for {server.Name} "
                 f"with error {type(cast(Exception, e)).__qualname__}",
                 InitialisationWarning,
+                stacklevel=2,
             )
     return servers
 
@@ -34,14 +35,15 @@ def _lookup_default_server() -> Optional[AF.PI.PIServer]:
     try:
         default_server = AF.PI.PIServers().DefaultPIServer
     except Exception:
-        warnings.warn("Could not load the default PI Server", ResourceWarning)
+        warnings.warn("Could not load the default PI Server", ResourceWarning, stacklevel=2)
     return default_server
 
 
 class PIServer(object):  # pylint: disable=useless-object-inheritance
-    """PIServer is a connection to an OSIsoft PI Server
+    """PIServer is a connection to an OSIsoft PI Server.
 
-    Args:
+    Parameters
+    ----------
         server (str, optional): Name of the server to connect to, defaults to None
         username (str, optional): can be used only with password as well
         password (str, optional): -//-
@@ -67,14 +69,12 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         username: Optional[str] = None,
         password: Optional[str] = None,
         domain: Optional[str] = None,
-        authentication_mode: PIConsts.AuthenticationMode = PIConsts.AuthenticationMode.PI_USER_AUTHENTICATION,
+        authentication_mode: PIConsts.AuthenticationMode = _DEFAULT_AUTH_MODE,
         timeout: Optional[int] = None,
     ) -> None:
         if server is None:
             if self.default_server is None:
-                raise ValueError(
-                    "No server was specified and no default server was found."
-                )
+                raise ValueError("No server was specified and no default server was found.")
             self.connection = self.default_server
         elif server not in self.servers:
             if self.default_server is None:
@@ -82,7 +82,9 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
                     f"Server '{server}' not found and no default server was found."
                 )
             message = 'Server "{server}" not found, using the default server.'
-            warnings.warn(message=message.format(server=server), category=UserWarning)
+            warnings.warn(
+                message=message.format(server=server), category=UserWarning, stacklevel=1
+            )
             self.connection = self.default_server
         else:
             self.connection = self.servers[server]
@@ -110,11 +112,10 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
 
         if timeout:
             # System.TimeSpan(hours, minutes, seconds)
-            self.connection.ConnectionInfo.OperationTimeOut = System.TimeSpan(
-                0, 0, timeout
-            )
+            self.connection.ConnectionInfo.OperationTimeOut = System.TimeSpan(0, 0, timeout)
 
     def __enter__(self):
+        """Open connection context with the PI Server."""
         if self._credentials:
             self.connection.Connect(*self._credentials)
         else:
@@ -124,31 +125,30 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         return self
 
     def __exit__(self, *args: Any):
+        """Close connection context with the PI Server."""
         self.connection.Disconnect()
 
     def __repr__(self) -> str:
-        return "%s(\\\\%s)" % (self.__class__.__name__, self.server_name)
+        """Representation of the PIServer object."""
+        return f"{self.__class__.__qualname__}(\\\\{self.server_name})"
 
     @property
     def server_name(self):
-        """server_name
-
-        Name of the connected server
-        """
+        """Name of the connected server."""
         return self.connection.Name
 
     def search(
         self, query: Union[str, List[str]], source: Optional[str] = None
     ) -> List[PIPoint_.PIPoint]:
-        """search
+        """Search PIPoints on the PIServer.
 
-        Search PIPoints on the PIServer
-
-        Args:
+        Parameters
+        ----------
             query (str or [str]): String or list of strings with queries
             source (str, optional): Defaults to None. Point source to limit the results
 
-        Returns:
+        Returns
+        -------
             list: A list of :class:`PIPoint` objects as a result of the query
 
         .. todo::

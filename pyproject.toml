@@ -6,6 +6,10 @@ build-backend = "setuptools.build_meta:__legacy__"
 minversion = "6.0"
 addopts = "-ra --durations=0 --cov-report xml:coverage.xml --cov PIconnect"
 
+[tool.ruff]
+line-length = 95
+exclude = ["build", "dist", "docs", "venv"]
+
 [tool.ruff.lint]
 # See: https://docs.astral.sh/ruff/rules/
 select = [

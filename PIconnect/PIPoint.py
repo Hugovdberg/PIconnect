@@ -1,7 +1,9 @@
-from typing import Any, Dict, List, Optional, Union, cast
+"""PIPoint."""
+
+from typing import Any, Dict, Optional
 
 import PIconnect._typing.AF as _AFtyping
-from PIconnect import AF, PIConsts, PIData, _time
+from PIconnect import AF, PIData, _time
 from PIconnect._operators import OPERATORS, add_operators  # type: ignore
 
 
@@ -12,11 +14,10 @@ from PIconnect._operators import OPERATORS, add_operators  # type: ignore
     attributes=["pi_point"],
 )
 class PIPoint(PIData.PISeriesContainer):
-    """PIPoint
+    """Reference to a PI Point to get data and corresponding metadata from the server.
 
-    Reference to a PI Point to get data and corresponding metadata from the server.
-
-    Args:
+    Parameters
+    ----------
         pi_point (AF.PI.PIPoint): Reference to a PIPoint as returned by the SDK
     """
 
@@ -30,12 +31,10 @@ class PIPoint(PIData.PISeriesContainer):
         self.__raw_attributes = {}
 
     def __repr__(self):
-        return "%s(%s, %s; Current Value: %s %s)" % (
-            self.__class__.__name__,
-            self.tag,
-            self.description,
-            self.current_value,
-            self.units_of_measurement,
+        """Return the string representation of the PI Point."""
+        return (
+            f"{self.__class__.__qualname__}({self.tag}, {self.description}; "
+            f"Current Value: {self.current_value} {self.units_of_measurement}"
         )
 
     @property
@@ -60,6 +59,7 @@ class PIPoint(PIData.PISeriesContainer):
 
     @property
     def name(self) -> str:
+        """Return the name of the PI Point."""
         return self.tag
 
     @property
@@ -74,13 +74,11 @@ class PIPoint(PIData.PISeriesContainer):
         return self.raw_attributes["engunits"]
 
     def __load_attributes(self) -> None:
-        """Load the raw attributes of the PI Point from the server"""
+        """Load the raw attributes of the PI Point from the server."""
         if not self.__attributes_loaded:
             self.pi_point.LoadAttributes([])
             self.__attributes_loaded = True
-        self.__raw_attributes = {
-            att.Key: att.Value for att in self.pi_point.GetAttributes([])
-        }
+        self.__raw_attributes = {att.Key: att.Value for att in self.pi_point.GetAttributes([])}
 
     def _current_value(self) -> Any:
         """Return the last recorded value for this PI Point (internal use only)."""
@@ -109,7 +107,7 @@ class PIPoint(PIData.PISeriesContainer):
         )
 
     def _interpolated_value(self, time: AF.Time.AFTime) -> AF.Asset.AFValue:
-        """Return a single value for this PI Point"""
+        """Return a single value for this PI Point."""
         return self.pi_point.InterpolatedValue(time)
 
     def _interpolated_values(
@@ -118,7 +116,6 @@ class PIPoint(PIData.PISeriesContainer):
         interval: AF.Time.AFTimeSpan,
         filter_expression: str,
     ) -> AF.Asset.AFValues:
-        """Internal function to actually query the pi point"""
         include_filtered_values = False
         return self.pi_point.InterpolatedValues(
             time_range, interval, filter_expression, include_filtered_values
@@ -130,10 +127,8 @@ class PIPoint(PIData.PISeriesContainer):
     def _recorded_value(
         self, time: AF.Time.AFTime, retrieval_mode: AF.Data.AFRetrievalMode
     ) -> AF.Asset.AFValue:
-        """Return a single value for this PI Point"""
-        return self.pi_point.RecordedValue(
-            time, AF.Data.AFRetrievalMode(int(retrieval_mode))
-        )
+        """Return a single recorded value for this PI Point."""
+        return self.pi_point.RecordedValue(time, AF.Data.AFRetrievalMode(int(retrieval_mode)))
 
     def _recorded_values(
         self,
@@ -153,9 +148,7 @@ class PIPoint(PIData.PISeriesContainer):
         calculation_basis: AF.Data.AFCalculationBasis,
         time_type: AF.Data.AFTimestampCalculation,
     ) -> _AFtyping.Data.SummaryDict:
-        return self.pi_point.Summary(
-            time_range, summary_types, calculation_basis, time_type
-        )
+        return self.pi_point.Summary(time_range, summary_types, calculation_basis, time_type)
 
     def _summaries(
         self,

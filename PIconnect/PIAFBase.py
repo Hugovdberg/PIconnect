@@ -1,3 +1,5 @@
+"""Base element class for PI AF elements."""
+
 from typing import Dict, Generic, TypeVar
 
 import PIconnect.PIAFAttribute as PIattr
@@ -15,7 +17,8 @@ class PIAFBaseElement(Generic[ElementType]):
         self.element = element
 
     def __repr__(self) -> str:
-        return "%s(%s)" % (self.__class__.__name__, self.name)
+        """Return the string representation of the element."""
+        return f"{self.__class__.__qualname__}({self.name})"
 
     @property
     def name(self) -> str:
@@ -25,15 +28,14 @@ class PIAFBaseElement(Generic[ElementType]):
     @property
     def attributes(self) -> Dict[str, PIattr.PIAFAttribute]:
         """Return a dictionary of the attributes of the current element."""
-        return {
-            a.Name: PIattr.PIAFAttribute(self.element, a)
-            for a in self.element.Attributes
-        }
+        return {a.Name: PIattr.PIAFAttribute(self.element, a) for a in self.element.Attributes}
 
     @property
     def categories(self) -> AF.AFCategories:
+        """Return the categories of the current element."""
         return self.element.Categories
 
     @property
     def description(self) -> str:
+        """Return the description of the current element."""
         return self.element.Description

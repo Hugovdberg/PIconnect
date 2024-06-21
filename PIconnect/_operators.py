@@ -1,4 +1,5 @@
-"""helpers to define numeric operators in batch on classes"""
+"""Helpers to define numeric operators in batch on classes."""
+
 from collections import namedtuple
 
 import wrapt
@@ -101,9 +102,7 @@ def add_operators(operators, members, newclassname, attributes):
 Operator = namedtuple("Operator", ["method", "operator", "docstring"])
 OPERATORS = [
     Operator("__add__", lambda x, y: x + y, """Add value(s) to PIPoint"""),
-    Operator(
-        "__radd__", lambda x, y: y + x, """Add PIPoint to value(s) (reverse order)"""
-    ),
+    Operator("__radd__", lambda x, y: y + x, """Add PIPoint to value(s) (reverse order)"""),
     Operator("__sub__", lambda x, y: x - y, """Subtract value(s) from PIPoint"""),
     Operator(
         "__rsub__",
@@ -119,27 +118,21 @@ OPERATORS = [
     Operator("__matmul__", lambda x, y: x @ y, """Matrix multiply"""),
     Operator("__rmatmul__", lambda x, y: y @ x, """Matrix multiply (reverse order)"""),
     Operator("__div__", lambda x, y: x / y, """Divide PIPoint by value(s)"""),
-    Operator(
-        "__rdiv__", lambda x, y: y / x, """Divide value(s) by PIPoint (reverse order)"""
-    ),
+    Operator("__rdiv__", lambda x, y: y / x, """Divide value(s) by PIPoint (reverse order)"""),
     Operator("__truediv__", lambda x, y: x / y, """Divide PIPoint by value(s)"""),
     Operator(
         "__rtruediv__",
         lambda x, y: y / x,
         """Divide value(s) by PIPoint (reverse order)""",
     ),
-    Operator(
-        "__floordiv__", lambda x, y: x // y, """Floordivide PIPoint by value(s)"""
-    ),
+    Operator("__floordiv__", lambda x, y: x // y, """Floordivide PIPoint by value(s)"""),
     Operator(
         "__rfloordiv__",
         lambda x, y: y // x,
         """Floordivide value(s) by PIPoint (reverse order)""",
     ),
     Operator("__mod__", lambda x, y: x % y, """Modulo PIPoint by value(s)"""),
-    Operator(
-        "__rmod__", lambda x, y: y % x, """Modulo value(s) by PIPoint (reverse order)"""
-    ),
+    Operator("__rmod__", lambda x, y: y % x, """Modulo value(s) by PIPoint (reverse order)"""),
     Operator(
         "__divmod__",
         divmod,  # This is already a function of x and y
