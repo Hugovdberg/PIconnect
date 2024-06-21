@@ -41,9 +41,7 @@ convention = "numpy"
 
 [tool.bumpversion]
 current_version = "0.10.6"
-tag = true
-tag_name = "v{new_version}"
-tag_message = "Release v{new_version}"
+tag = false
 commit = true
 message = "chore: Bump version: {current_version} → {new_version}"
 
