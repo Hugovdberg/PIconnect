@@ -2,8 +2,9 @@
 
 from typing import List, Optional, Union
 
-from . import AF, Data, Generic, dotnet as System
+from . import AF, Data, Generic
 from . import UnitsOfMeasure as UOM
+from . import dotnet as System
 from ._values import AFValue, AFValues
 
 __all__ = [
