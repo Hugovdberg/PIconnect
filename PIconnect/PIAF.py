@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Union, cast
 
 import pandas as pd
 
-from PIconnect import AF, PIAFBase, PIConsts, _time
+from PIconnect import AF, PIAFAttribute, PIAFBase, PIConsts, _time
 from PIconnect._utils import InitialisationWarning
 from PIconnect.AFSDK import System
 
@@ -255,11 +255,14 @@ class PIAFEventFrame(PIAFBase.PIAFBaseElement[AF.EventFrame.AFEventFrame]):
 
 
 class PIAFTable:
+    """Container for PI AF Tables in the database."""
+
     def __init__(self, table: AF.Asset.AFTable) -> None:
         self._table = table
 
     @property
     def columns(self) -> List[str]:
+        """Return the names of the columns in the table."""
         return [col.ColumnName for col in self._table.Table.Columns]
 
     @property
@@ -268,12 +271,15 @@ class PIAFTable:
 
     @property
     def name(self) -> str:
+        """Return the name of the table."""
         return self._table.Name
 
     @property
     def shape(self) -> tuple[int, int]:
+        """Return the shape of the table."""
         return (len(self._rows), len(self.columns))
 
     @property
     def data(self) -> pd.DataFrame:
+        """Return the data in the table as a pandas DataFrame."""
         return pd.DataFrame([{col: row[col] for col in self.columns} for row in self._rows])
