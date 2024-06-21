@@ -12,7 +12,7 @@ pythonnet = "*"
 piconnect = {editable = true, path = "."}
 
 [dev-packages]
-black = "*"
+ruff = "*"
 # coverage = "*"
 # mypy = "*"
 codecov = "*"
@@ -22,8 +22,8 @@ pytest = "*"
 pytest-cov = "*"
 Sphinx = "*"
 PyYAML = "*"
-"doc8" = "*"
-"flake8" = "*"
+# "doc8" = "*"
+# "flake8" = "*"
 twine = "*"
 coverage = ">=6.0b1"
 
