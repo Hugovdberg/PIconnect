@@ -204,7 +204,7 @@ class EventFrameSearchMode(enum.IntEnum):
     :afsdk:`AF.EventFrame.AFEventFrameSearchMode <T_OSIsoft_AF_EventFrame_AFEventFrameSearchMode.htm>`.
     including a graphical display of event frames that are returned for a given search
     mode.
-    """ # noqa: E501
+    """  # noqa: E501
 
     #: Uninitialized
     NONE = 0
