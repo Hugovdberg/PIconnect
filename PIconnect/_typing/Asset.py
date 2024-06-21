@@ -4,6 +4,7 @@ from typing import List, Optional, Union
 
 from . import AF, Data, Generic
 from . import UnitsOfMeasure as UOM
+from . import dotnet as System
 from ._values import AFValue, AFValues
 
 __all__ = [
@@ -13,6 +14,8 @@ __all__ = [
     "AFElement",
     "AFElements",
     "AFElementTemplate",
+    "AFTable",
+    "AFTables",
     "AFValue",
     "AFValues",
 ]
@@ -79,6 +82,18 @@ class AFDataReference:
         self.Attribute = attribute
         self.Name = name
         self.PIPoint = pi_point
+
+
+class AFTable:
+    def __init__(self, name: str) -> None:
+        self.Name = name
+        self.Table: System.Data.DataTable
+
+
+class AFTables(List[AFTable]):
+    def __init__(self, elements: List[AFTable]) -> None:
+        self.Count: int
+        self._values = elements
 
 
 AttributeDict = Generic.Dictionary[str, AFAttribute]

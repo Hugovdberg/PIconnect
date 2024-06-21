@@ -34,6 +34,7 @@ class AFDatabase:
     def __init__(self, name: str) -> None:
         self.Name = name
         self.Elements = Asset.AFElements([Asset.AFElement("TestElement")])
+        self.Tables = Asset.AFTables([Asset.AFTable("TestTable")])
 
 
 class PISystem:

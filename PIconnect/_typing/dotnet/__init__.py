@@ -2,9 +2,15 @@
 
 from typing import Protocol
 
-from . import Net, Security
+from . import Data, Net, Security
 
-__all__ = ["Net", "Security", "Exception", "TimeSpan"]
+__all__ = [
+    "Data",
+    "Exception",
+    "Net",
+    "Security",
+    "TimeSpan",
+]
 
 
 class Exception:
