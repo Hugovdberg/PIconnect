@@ -1,7 +1,16 @@
-from typing import Protocol
-from . import Net, Security
+"""Mock for System.* classes."""
 
-__all__ = ["Net", "Security", "Exception", "TimeSpan"]
+from typing import Protocol
+
+from . import Data, Net, Security
+
+__all__ = [
+    "Data",
+    "Exception",
+    "Net",
+    "Security",
+    "TimeSpan",
+]
 
 
 class Exception:
@@ -16,7 +25,7 @@ class TimeSpan:
 
 
 class DateTime(Protocol):
-    """Mock for System.DateTime"""
+    """Mock for System.DateTime."""
 
     Year: int
     Month: int

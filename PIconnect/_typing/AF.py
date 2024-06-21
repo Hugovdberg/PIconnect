@@ -1,4 +1,5 @@
-"""Mock classes for the AF namespace of the OSIsoft PI-AF SDK"""
+"""Mock classes for the AF namespace of the OSIsoft PI-AF SDK."""
+
 from typing import Iterator, List
 
 from . import PI, Asset, Data, EventFrame, Time, UnitsOfMeasure
@@ -18,7 +19,7 @@ __all__ = [
 
 
 class AFCategory:
-    """Mock class of the AF.AFCategory class"""
+    """Mock class of the AF.AFCategory class."""
 
 
 class AFCategories(List[AFCategory]):
@@ -28,18 +29,19 @@ class AFCategories(List[AFCategory]):
 
 
 class AFDatabase:
-    """Mock class of the AF.AFDatabase class"""
+    """Mock class of the AF.AFDatabase class."""
 
     def __init__(self, name: str) -> None:
         self.Name = name
         self.Elements = Asset.AFElements([Asset.AFElement("TestElement")])
+        self.Tables = Asset.AFTables([Asset.AFTable("TestTable")])
 
 
 class PISystem:
-    """Mock class of the AF.PISystem class"""
+    """Mock class of the AF.PISystem class."""
 
     class InternalDatabases:
-        """Mock class for the AF.PISystem.Databases property"""
+        """Mock class for the AF.PISystem.Databases property."""
 
         def __init__(self) -> None:
             self.DefaultDatabase = AFDatabase("TestDatabase")
@@ -53,16 +55,16 @@ class PISystem:
         self._connected = False
 
     def Connect(self) -> None:
-        """Stub to connect to the testing system"""
+        """Stub to connect to the testing system."""
         self._connected = True
 
     def Disconnect(self) -> None:
-        """Stub to disconnect from the testing system"""
+        """Stub to disconnect from the testing system."""
         self._connected = False
 
 
 class PISystems:
-    """Mock class of the AF.PISystems class"""
+    """Mock class of the AF.PISystems class."""
 
     Version = "0.0.0.0"
 

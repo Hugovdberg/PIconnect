@@ -1,6 +1,5 @@
-""" PIconnect.test.fakes
-    Fake classes to mask SDK complexity
-"""
+"""Fake classes to mask SDK complexity."""
+
 import dataclasses
 import datetime
 from typing import Any, Dict, Generic, Iterable, List, TypeVar
@@ -8,9 +7,8 @@ from typing import Any, Dict, Generic, Iterable, List, TypeVar
 import pytest
 import pytz
 
-import PIconnect.PI as PI
 import PIconnect._typing.AF as AF
-from PIconnect._operators import OPERATORS, add_operators
+import PIconnect.PI as PI
 
 
 @dataclasses.dataclass
@@ -44,14 +42,14 @@ _b = TypeVar("_b")
 
 
 class FakeKeyValue(Generic[_a, _b]):
-    """Container for fake Key:Value pairs"""
+    """Container for fake Key:Value pairs."""
 
     def __init__(self, key: _a, value: _b) -> None:
         self.Key = key
         self.Value = value
 
 
-class FakeAFValue(Generic[_a]):
+class FakeAFValue(AF.Asset.AFValue, Generic[_a]):
     """Fake AFValue to mask away SDK complexity."""
 
     def __init__(self, value: _a, timestamp: datetime.datetime):
@@ -59,7 +57,17 @@ class FakeAFValue(Generic[_a]):
         self.Timestamp = FakeAFTime(timestamp)
 
 
+class FakeAFValues(AF.Asset.AFValues, Generic[_a]):
+    """Fake AFValues to mask away SDK complexity."""
+
+    def __init__(self, values: Iterable[FakeAFValue[_a]]):
+        self.Value = list(values)
+        self.Count = len(self.Value)
+
+
 class FakePIPoint_(Generic[_a]):
+    """Fake PI Point to mask away SDK complexity."""
+
     def __init__(
         self,
         tag: str,
@@ -69,18 +77,11 @@ class FakePIPoint_(Generic[_a]):
     ):
         self.Name = tag
         self.values = [
-            FakeAFValue(value, timestamp)
-            for value, timestamp in zip(values, timestamps)
+            FakeAFValue(value, timestamp) for value, timestamp in zip(values, timestamps)
         ]
         self.attributes = [FakeKeyValue(*att) for att in attributes.items()]
 
 
-@add_operators(
-    operators=OPERATORS,
-    members=["_current_value", "sampled_data"],
-    newclassname="VirtualFakePIPoint",
-    attributes=["pi_point"],
-)
 class FakePIPoint(AF.PI.PIPoint, Generic[_a]):
     """Fake PI Point to mask away SDK complexity."""
 
@@ -90,21 +91,26 @@ class FakePIPoint(AF.PI.PIPoint, Generic[_a]):
         self.Name = pi_point.Name
 
     def CurrentValue(self) -> FakeAFValue[_a]:
+        """Return the current value of the PI Point."""
         self.call_stack.append("CurrentValue called")
         return self.pi_point.values[-1]
 
     def LoadAttributes(self, *args: Any, **kwargs: Any) -> None:
+        """Load the attributes of the PI Point."""
         self.call_stack.append("LoadAttributes called")
 
     def GetAttributes(self, *args: Any, **kwargs: Any) -> List[FakeKeyValue[str, Any]]:
+        """Return the attributes of the PI Point."""
         self.call_stack.append("GetAttributes called")
         return self.pi_point.attributes
 
     def RecordedValues(self, *args: Any, **kwargs: Any) -> List[FakeAFValue[_a]]:
+        """Return the recorded values of the PI Point."""
         self.call_stack.append("RecordedValues called")
         return self.pi_point.values
 
     def InterpolatedValues(self, *args: Any, **kwargs: Any) -> List[FakeAFValue[_a]]:
+        """Return the interpolated values of the PI Point."""
         self.call_stack.append("InterpolatedValues called")
         return self.pi_point.values
 
@@ -128,8 +134,7 @@ class VirtualTestCase(object):
             1502732545.013,
         ]
         self.timestamps = [
-            datetime.datetime.fromtimestamp(x, tz=pytz.utc)
-            for x in self.timestamp_numbers
+            datetime.datetime.fromtimestamp(x, tz=pytz.utc) for x in self.timestamp_numbers
         ]
         self.attributes = {"engunits": "m3/h", "descriptor": "Flow"}
         pi_point = FakePIPoint_(
@@ -141,6 +146,7 @@ class VirtualTestCase(object):
         self.point = PI.PIPoint(FakePIPoint(pi_point))
 
 
-@pytest.fixture
-def pi_point():
+@pytest.fixture()
+def pi_point() -> VirtualTestCase:
+    """Return a VirtualTestCase object."""
     return VirtualTestCase()

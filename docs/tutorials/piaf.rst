@@ -147,3 +147,25 @@ given server you can use the following code:
 
     import PIconnect as PI
     print(list(PI.PIAFDatabase.servers["ServerName"]["databases"].keys()))
+
+
+.. _piaf_tables:
+
+*********************************
+Accessing tables in the PI AF SDK
+*********************************
+
+It is possible to define custom SQL like tables in the PI AF SDK.
+These tables can be accessed using the :any:`PIAFDatabase.tables` attribute.
+This attribute is a dictionary of {name: table} pairs.
+The table can be loaded into a :any:`pandas.DataFrame` using the
+:any:`PIAFTable.data` property:
+
+.. code-block:: python
+
+    import PIconnect as PI
+
+    with PI.PIAFDatabase() as database:
+        table = database.tables["MyTable"]
+        df = table.data
+        print(df)
