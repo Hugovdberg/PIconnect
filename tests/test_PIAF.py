@@ -1,4 +1,4 @@
-"""Test communication with the PI AF system"""
+"""Test communication with the PI AF system."""
 
 from typing import cast
 
@@ -9,10 +9,10 @@ from PIconnect._typing import AF
 
 
 class TestAFDatabase:
-    """Test connecting to the AF database"""
+    """Test connecting to the AF database."""
 
     def test_connection(self):
-        """Test that creating a PI.PIAFDatabase object without arguments raises no exception"""
+        """Test creating a PI.PIAFDatabase object without arguments raises no exception."""
         PI.PIAFDatabase()
 
     def test_server_name(self):
@@ -26,9 +26,7 @@ class TestAFDatabase:
 
     def test_unknown_server_name(self):
         """Test that the server reports a warning for an unknown server."""
-        AFserver_name = "__".join(
-            [name for name in PI.PIAFDatabase.servers] + ["UnkownServerName"]
-        )
+        AFserver_name = "__".join(list(PI.PIAFDatabase.servers) + ["UnkownServerName"])
         with pytest.warns(UserWarning):
             PI.PIAFDatabase(server=AFserver_name)
 
@@ -42,20 +40,20 @@ class TestAFDatabase:
 
 
 class TestDatabaseDescendants:
-    """Test retrieving child elements"""
+    """Test retrieving child elements."""
 
     def test_children(self):
-        """Test that calling children on the database returns a dict of child elements"""
+        """Test that calling children on the database returns a dict of child elements."""
         with PI.PIAFDatabase() as db:
             children = db.children
         assert isinstance(children, dict)
 
 
 class TestDatabaseSearch:
-    """Test retrieving attributes"""
+    """Test retrieving attributes."""
 
     def test_search(self):
-        """Test that calling attributes on the database returns a list of attributes"""
+        """Test that calling attributes on the database returns a list of attributes."""
         with PI.PIAFDatabase() as db:
             attributes = db.search([r"", r""])
         assert isinstance(attributes, list)

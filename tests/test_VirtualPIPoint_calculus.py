@@ -1,6 +1,6 @@
 """Test VirtualPIPoint calculus."""
 
-from .fakes import VirtualTestCase  # pylint: disable=unused-import
+from .fakes import VirtualTestCase
 
 
 class TestVirtualAddition:
