@@ -1,7 +1,10 @@
+"""Mock classes for the AF module."""
+
 from typing import List, Optional, Union
 
 from . import AF, Data, Generic
 from . import UnitsOfMeasure as UOM
+from . import dotnet as System
 from ._values import AFValue, AFValues
 
 __all__ = [
@@ -11,6 +14,8 @@ __all__ = [
     "AFElement",
     "AFElements",
     "AFElementTemplate",
+    "AFTable",
+    "AFTables",
     "AFValue",
     "AFValues",
 ]
@@ -28,7 +33,7 @@ class AFAttribute:
 
     @staticmethod
     def GetValue() -> AFValue:
-        """Stub for getting a value"""
+        """Stub for getting a value."""
         return AFValue(0)
 
 
@@ -49,7 +54,7 @@ class AFBaseElement:
 
 
 class AFElement(AFBaseElement):
-    """Mock class of the AF.AFElement class"""
+    """Mock class of the AF.AFElement class."""
 
 
 class AFElements(List[AFElement]):
@@ -58,14 +63,14 @@ class AFElements(List[AFElement]):
         self._values = elements
 
     def get_Item(self, name: Union[str, int]) -> AFElement:
-        """Stub for the indexer"""
+        """Stub for the indexer."""
         if isinstance(name, int):
             return self._values[name]
         return AFElement(name)
 
 
 class AFElementTemplate:
-    """Mock class of the AF.Asset.AFElementTemplate class"""
+    """Mock class of the AF.Asset.AFElementTemplate class."""
 
 
 class AFDataReference:
@@ -77,6 +82,18 @@ class AFDataReference:
         self.Attribute = attribute
         self.Name = name
         self.PIPoint = pi_point
+
+
+class AFTable:
+    def __init__(self, name: str) -> None:
+        self.Name = name
+        self.Table: System.Data.DataTable
+
+
+class AFTables(List[AFTable]):
+    def __init__(self, elements: List[AFTable]) -> None:
+        self.Count: int
+        self._values = elements
 
 
 AttributeDict = Generic.Dictionary[str, AFAttribute]

@@ -1,28 +1,30 @@
-"""Mock classes of the AF.PI namespace of the OSIsoft PI-AF SDK"""
+"""Mock classes of the AF.PI namespace of the OSIsoft PI-AF SDK."""
+
 import enum
 from typing import Iterable, Iterator, List, Optional, Union
 
 from . import Data, Generic, Time, _values
+from . import dotnet as System
 
 __all__ = ["PIPoint", "PIServer", "PIServers"]
 
 
 class PIConnectionInfo:
-    """Mock class of the AF.PI.PIConnectionInfo class"""
+    """Mock class of the AF.PI.PIConnectionInfo class."""
 
     def __init__(self) -> None:
-        self.OperationTimeOut: Generic.TimeSpan
+        self.OperationTimeOut: System.TimeSpan
 
 
 class PIAuthenticationMode(enum.IntEnum):
-    """Mock class of the AF.PI.PIAuthenticationMode class"""
+    """Mock class of the AF.PI.PIAuthenticationMode class."""
 
     WindowsAuthentication = 0
     PIUserAuthentication = 1
 
 
 class PIServer:
-    """Mock class of the AF.PI.PIServer class"""
+    """Mock class of the AF.PI.PIServer class."""
 
     def __init__(self, name: str) -> None:
         self.ConnectionInfo = PIConnectionInfo()
@@ -31,19 +33,19 @@ class PIServer:
 
     def Connect(
         self,
-        retry: Union[bool, Generic.NetworkCredential],
+        retry: Union[bool, System.Net.NetworkCredential],
         authentication_mode: Optional[PIAuthenticationMode] = None,
     ) -> None:
-        """Stub for connecting to test server"""
+        """Stub for connecting to test server."""
         self._connected = True
 
     def Disconnect(self) -> None:
-        """Stub for disconnecting from test server"""
+        """Stub for disconnecting from test server."""
         self._connected = False
 
 
 class PIServers:
-    """Mock class of the AF.PI.PIServers class"""
+    """Mock class of the AF.PI.PIServers class."""
 
     def __init__(self) -> None:
         self.DefaultPIServer = PIServer("Testing")
@@ -53,7 +55,7 @@ class PIServers:
 
 
 class PIPoint:
-    """Mock class of the AF.PI.PIPoint class"""
+    """Mock class of the AF.PI.PIPoint class."""
 
     Name: str = "TestPIPoint"
     """This property identifies the name of the PIPoint"""
@@ -83,7 +85,7 @@ class PIPoint:
         source: Optional[str],
         attribute_names: Optional[Iterable[str]],
     ) -> Iterable["PIPoint"]:
-        """Stub to mock querying PIPoints"""
+        """Stub to mock querying PIPoints."""
         return []
 
     @staticmethod

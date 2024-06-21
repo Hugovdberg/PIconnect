@@ -1,10 +1,11 @@
+"""Module for the PIAFAttribute class."""
+
 import dataclasses
 import datetime
 from typing import Any, Dict, Optional
 
-from PIconnect import AF, PIPoint, PIData, _time
+from PIconnect import AF, PIData, PIPoint, _time
 
-from ._operators import OPERATORS, add_operators  # type: ignore
 from ._typing import AF as _AFtyping
 
 __all__ = ["PIAFAttribute"]
@@ -25,12 +26,6 @@ class AFDataReference:
             return PIPoint.PIPoint(self.data_reference.PIPoint)
 
 
-@add_operators(
-    operators=OPERATORS,
-    members=["_current_value", "interpolated_values"],
-    newclassname="VirtualPIAFAttribute",
-    attributes=["element", "attribute"],
-)
 class PIAFAttribute(PIData.PISeriesContainer):
     """Container for attributes of PI AF elements in the database."""
 
@@ -44,12 +39,10 @@ class PIAFAttribute(PIData.PISeriesContainer):
         self.attribute = attribute
 
     def __repr__(self):
-        return "%s(%s, %s; Current Value: %s %s)" % (
-            self.__class__.__name__,
-            self.name,
-            self.description,
-            self.current_value,
-            self.units_of_measurement,
+        """Return the string representation of the current attribute."""
+        return (
+            f"{self.__class__.__qualname__}({self.name}, {self.description}; "
+            f"Current Value: {self.current_value} {self.units_of_measurement}"
         )
 
     @property
@@ -72,9 +65,7 @@ class PIAFAttribute(PIData.PISeriesContainer):
     @property
     def children(self) -> Dict[str, "PIAFAttribute"]:
         """Return a dictionary of the direct child attributes of the current attribute."""
-        return {
-            a.Name: self.__class__(self.element, a) for a in self.attribute.Attributes
-        }
+        return {a.Name: self.__class__(self.element, a) for a in self.attribute.Attributes}
 
     @property
     def description(self) -> str:
@@ -117,13 +108,13 @@ class PIAFAttribute(PIData.PISeriesContainer):
         )
 
     def _interpolated_value(self, time: AF.Time.AFTime):
-        """Return a single value for this PI Point"""
+        """Return a single value for this PI Point."""
         return self.attribute.Data.InterpolatedValue(time, self.attribute.DefaultUOM)
 
     def _recorded_value(
         self, time: AF.Time.AFTime, retrieval_mode: AF.Data.AFRetrievalMode
     ) -> AF.Asset.AFValue:
-        """Return a single value for this PI Point"""
+        """Return a single value for this PI Point."""
         return self.attribute.Data.RecordedValue(
             time, retrieval_mode, self.attribute.DefaultUOM
         )
@@ -149,7 +140,7 @@ class PIAFAttribute(PIData.PISeriesContainer):
         interval: AF.Time.AFTimeSpan,
         filter_expression: str,
     ) -> AF.Asset.AFValues:
-        """Internal function to actually query the pi point"""
+        """Query the pi af attribute, internal implementation."""
         include_filtered_values = False
         return self.attribute.Data.InterpolatedValues(
             time_range,
