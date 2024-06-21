@@ -1,3 +1,6 @@
+"""Mock classes for the System.Security module."""
+
+
 class SecureString:
     def __init__(self) -> None:
         self.Value = ""

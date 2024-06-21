@@ -1,6 +1,5 @@
-""" AFSDK
-    Loads the .NET libraries from the OSIsoft AF SDK
-"""
+"""AFSDK - Loads the .NET libraries from the OSIsoft AF SDK."""
+
 import logging
 import os
 import sys
@@ -16,7 +15,11 @@ logger = logging.getLogger(__name__)
 def __fallback():
     import warnings
 
-    warnings.warn("Can't import the PI AF SDK, running in test mode", ImportWarning)
+    warnings.warn(
+        "Can't import the PI AF SDK, running in test mode",
+        ImportWarning,
+        stacklevel=2,
+    )
 
     from ._typing import AF as _af
     from ._typing import AF_SDK_VERSION as _AF_SDK_version
@@ -32,7 +35,7 @@ if (
 ):
     _af, _System, _AF_SDK_version = __fallback()
 else:
-    import clr
+    import clr  # type: ignore
 
     # Get the installation directory from the environment variable or fall back
     # to the Windows default installation path
@@ -60,7 +63,7 @@ else:
     import System as _System  # type: ignore
     from OSIsoft import AF as _af  # type: ignore
 
-    _AF_SDK_version: str = _af.PISystems().Version  # type: ignore ; pylint: disable=no-member
+    _AF_SDK_version = typing.cast(str, _af.PISystems().Version)  # type: ignore ; pylint: disable=no-member
     print("OSIsoft(r) AF SDK Version: {}".format(_AF_SDK_version))
 
 

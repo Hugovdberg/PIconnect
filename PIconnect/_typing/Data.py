@@ -1,12 +1,17 @@
+"""Type hints for the AF.Data module.
+
+Contains various enumerations and classes for data retrieval.
+"""
+
 import enum
 
-from . import Time, Generic
+from . import Generic, Time
 from . import UnitsOfMeasure as UOM
 from ._values import AFValue, AFValues
 
 
 class AFBoundaryType(enum.IntEnum):
-    """Mock class of the AF.Data.AFBoundaryType enumeration"""
+    """Mock class of the AF.Data.AFBoundaryType enumeration."""
 
     Inside = 0
     Outside = 1
@@ -14,7 +19,7 @@ class AFBoundaryType(enum.IntEnum):
 
 
 class AFBufferOption(enum.IntEnum):
-    """Mock class of the AF.Data.AFBufferOption enumeration"""
+    """Mock class of the AF.Data.AFBufferOption enumeration."""
 
     DoNotBuffer = 0
     BufferIfPossible = 1
@@ -22,7 +27,7 @@ class AFBufferOption(enum.IntEnum):
 
 
 class AFCalculationBasis(enum.IntEnum):
-    """Mock class of the AF.Data.AFCalculationBasis enumeration"""
+    """Mock class of the AF.Data.AFCalculationBasis enumeration."""
 
     TimeWeighted = 0
     EventWeighted = 1
@@ -43,14 +48,14 @@ class AFRetrievalMode(enum.IntEnum):
 
 
 class AFSampleType(enum.IntEnum):
-    """Mock class of the AF.Data.AFSampleType enumeration"""
+    """Mock class of the AF.Data.AFSampleType enumeration."""
 
     ExpressionRecordedValues = 0
     Interval = 1
 
 
 class AFSummaryTypes(enum.IntEnum):
-    """Mock class of the AF.Data.AFSummaryTypes enumeration"""
+    """Mock class of the AF.Data.AFSummaryTypes enumeration."""
 
     None_ = 0
     Total = 1
@@ -68,7 +73,7 @@ class AFSummaryTypes(enum.IntEnum):
 
 
 class AFTimestampCalculation(enum.IntEnum):
-    """Mock class of the AF.Data.AFTimestampCalculation enumeration"""
+    """Mock class of the AF.Data.AFTimestampCalculation enumeration."""
 
     Auto = 0
     EarliestTime = 1
@@ -76,7 +81,7 @@ class AFTimestampCalculation(enum.IntEnum):
 
 
 class AFUpdateOption(enum.IntEnum):
-    """Mock class of the AF.Data.AFUpdateOption enumeration"""
+    """Mock class of the AF.Data.AFUpdateOption enumeration."""
 
     Replace = 0
     Insert = 4
@@ -91,7 +96,7 @@ SummaryDict = Generic.Dictionary[AFSummaryTypes, AFValue]
 
 
 class AFData:
-    """Mock class of the AF.Data.AFData class"""
+    """Mock class of the AF.Data.AFData class."""
 
     @staticmethod
     def FilteredSummaries(

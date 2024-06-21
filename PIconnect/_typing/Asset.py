@@ -1,3 +1,5 @@
+"""Mock classes for the AF module."""
+
 from typing import List, Optional, Union
 
 from . import AF, Data, Generic
@@ -28,7 +30,7 @@ class AFAttribute:
 
     @staticmethod
     def GetValue() -> AFValue:
-        """Stub for getting a value"""
+        """Stub for getting a value."""
         return AFValue(0)
 
 
@@ -49,7 +51,7 @@ class AFBaseElement:
 
 
 class AFElement(AFBaseElement):
-    """Mock class of the AF.AFElement class"""
+    """Mock class of the AF.AFElement class."""
 
 
 class AFElements(List[AFElement]):
@@ -58,14 +60,14 @@ class AFElements(List[AFElement]):
         self._values = elements
 
     def get_Item(self, name: Union[str, int]) -> AFElement:
-        """Stub for the indexer"""
+        """Stub for the indexer."""
         if isinstance(name, int):
             return self._values[name]
         return AFElement(name)
 
 
 class AFElementTemplate:
-    """Mock class of the AF.Asset.AFElementTemplate class"""
+    """Mock class of the AF.Asset.AFElementTemplate class."""
 
 
 class AFDataReference:

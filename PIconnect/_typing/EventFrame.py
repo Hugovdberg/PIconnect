@@ -1,10 +1,9 @@
-"""Mock classes for the AF.EventFrame namespace of the OSIsoft PI-AF SDK"""
-
+"""Mock classes for the AF.EventFrame namespace of the OSIsoft PI-AF SDK."""
 
 import enum
 from typing import Iterable, List, Optional
 
-from . import AF, Asset, Time  # pylint: disable=unused-import
+from . import AF, Asset, Time
 
 
 class AFEventFrameSearchMode(enum.IntEnum):
@@ -18,7 +17,7 @@ class AFEventFrameSearchMode(enum.IntEnum):
 
 
 class AFEventFrame(Asset.AFBaseElement):
-    """Mock class of the AF.EventFrame.AFEventFrame class"""
+    """Mock class of the AF.EventFrame.AFEventFrame class."""
 
     def __init__(self, name: str, parent: Optional["AFEventFrame"] = None) -> None:
         self.Name = name

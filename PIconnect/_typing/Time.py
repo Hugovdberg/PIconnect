@@ -1,9 +1,12 @@
+"""Mock classes for the AF.Time module."""
+
 from typing import Optional
+
 from . import dotnet as System
 
 
 class AFTime:
-    """Mock class of the AF.Time.AFTime class"""
+    """Mock class of the AF.Time.AFTime class."""
 
     def __init__(self, time: str) -> None:
         self.UtcTime: System.DateTime
@@ -12,7 +15,7 @@ class AFTime:
 
 
 class AFTimeRange:
-    """Mock class of the AF.Time.AFTimeRange class"""
+    """Mock class of the AF.Time.AFTimeRange class."""
 
     def __init__(self, start_time: str, end_time: str):
         pass
@@ -23,12 +26,12 @@ class AFTimeRange:
 
 
 class AFTimeSpan:
-    """Mock class of the AF.Time.AFTimeSpan class"""
+    """Mock class of the AF.Time.AFTimeSpan class."""
 
     def __init__(self):
         pass
 
     @staticmethod
     def Parse(interval: Optional[str], /) -> "AFTimeSpan":
-        """Stub for parsing strings that should return a AFTimeSpan"""
+        """Stub for parsing strings that should return a AFTimeSpan."""
         return AFTimeSpan()
