@@ -5,6 +5,7 @@ import dataclasses
 import warnings
 from typing import Any, Dict, Optional, Union, cast, List
 
+import pandas as pd
 from PIconnect import AF, PIAFBase, PIConsts, _time
 from PIconnect.AFSDK import System
 from PIconnect._utils import InitialisationWarning
@@ -62,13 +63,13 @@ def _lookup_default_server() -> Optional[ServerSpec]:
         return None
 
 
-class PIAFDatabase(object):
+class PIAFDatabase:
     """PIAFDatabase
 
     Context manager for connections to the PI Asset Framework database.
     """
 
-    version = "0.2.0"
+    version = "0.3.0"
 
     servers: Dict[str, ServerSpec] = _lookup_servers()
     default_server: Optional[ServerSpec] = _lookup_default_server()
@@ -145,6 +146,11 @@ class PIAFDatabase(object):
     def children(self) -> Dict[str, "PIAFElement"]:
         """Return a dictionary of the direct child elements of the database."""
         return {c.Name: PIAFElement(c) for c in self.database.Elements}
+
+    @property
+    def tables(self) -> Dict[str, "PIAFTable"]:
+        """Return a dictionary of the tables in the database."""
+        return {t.Name: PIAFTable(t) for t in self.database.Tables}
 
     def descendant(self, path: str) -> "PIAFElement":
         """Return a descendant of the database from an exact path."""
@@ -242,3 +248,30 @@ class PIAFEventFrame(PIAFBase.PIAFBaseElement[AF.EventFrame.AFEventFrame]):
     def children(self) -> Dict[str, "PIAFEventFrame"]:
         """Return a dictionary of the direct child event frames of the current event frame."""
         return {c.Name: self.__class__(c) for c in self.element.EventFrames}
+
+
+class PIAFTable:
+    def __init__(self, table: AF.Asset.AFTable) -> None:
+        self._table = table
+
+    @property
+    def columns(self) -> List[str]:
+        return [col.ColumnName for col in self._table.Table.Columns]
+
+    @property
+    def _rows(self) -> List[System.Data.DataRow]:
+        return self._table.Table.Rows
+
+    @property
+    def name(self) -> str:
+        return self._table.Name
+
+    @property
+    def shape(self) -> tuple[int, int]:
+        return (len(self._rows), len(self.columns))
+
+    @property
+    def data(self) -> pd.DataFrame:
+        return pd.DataFrame(
+            [{col: row[col] for col in self.columns} for row in self._rows]
+        )
