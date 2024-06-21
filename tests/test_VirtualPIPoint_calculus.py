@@ -1,6 +1,8 @@
 """Test VirtualPIPoint calculus."""
 
-from .fakes import VirtualTestCase
+from .fakes import VirtualTestCase, pi_point
+
+__all__ = ["TestVirtualAddition", "TestVirtualMultiplication", "pi_point"]
 
 
 class TestVirtualAddition:
