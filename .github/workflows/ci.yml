@@ -13,7 +13,7 @@ on:
     - cron: "27 19 * * 3"
 
 jobs:
-  build:
+  run_tests:
     runs-on: windows-latest
     strategy:
       fail-fast: false
@@ -36,20 +36,16 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install ruff pytest wheel
+          python -m pip install pytest wheel
           python -m pip install pytest-cov
           python -m pip install --exists-action=w --no-cache-dir -r requirements_dev.txt
           python -m pip install .
-
-      - name: Lint with ruff
-        run: |
-          ruff check .
 
       - name: Test with pytest
         run: |
           pytest
 
-  check_format:
+  lint_and_check_format:
     runs-on: windows-latest
 
     steps:
@@ -64,6 +60,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install ruff
+
+      - name: Lint with ruff
+        run: |
+          ruff check .
 
       - name: Check formatting with ruff
         run: |
