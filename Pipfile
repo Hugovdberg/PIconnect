@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 numpy = "<2"
 pandas = "*"
-pytz = "*"
 wrapt = "*"
 pythonnet = "*"
 piconnect = {editable = true, path = "."}
@@ -27,6 +26,7 @@ PyYAML = "*"
 # "flake8" = "*"
 twine = "*"
 coverage = ">=6.0b1"
+pydata-sphinx-theme = "*"
 
 [requires]
 python_version = "3.10"
