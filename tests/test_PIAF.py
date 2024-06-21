@@ -1,5 +1,7 @@
 """Test communication with the PI AF system"""
-from typing import cast, List
+
+from typing import cast
+
 import pytest
 
 import PIconnect as PI
@@ -20,9 +22,7 @@ class TestAFDatabase:
         server = PI.PIAFDatabase(AFserver, database)
         assert server.server_name == AFserver
         assert server.database_name == database
-        assert repr(server) == "PIAFDatabase(\\\\{s}\\{d})".format(
-            s=AFserver, d=database
-        )
+        assert repr(server) == "PIAFDatabase(\\\\{s}\\{d})".format(s=AFserver, d=database)
 
     def test_unknown_server_name(self):
         """Test that the server reports a warning for an unknown server."""
@@ -34,7 +34,7 @@ class TestAFDatabase:
 
     def test_unknown_database_name(self):
         """Test that the server reports a warning for an unknown database."""
-        server = cast(AF.PISystem, PI.PIAFDatabase.default_server["server"]) # type: ignore
+        server = cast(AF.PISystem, PI.PIAFDatabase.default_server["server"])  # type: ignore
         databases = [db.Name for db in server.Databases]
         AFdatabase_name = "__".join(databases + ["UnkownDatabaseName"])
         with pytest.warns(UserWarning):
@@ -57,5 +57,5 @@ class TestDatabaseSearch:
     def test_search(self):
         """Test that calling attributes on the database returns a list of attributes"""
         with PI.PIAFDatabase() as db:
-            attributes = db.search([r'', r''])
+            attributes = db.search([r"", r""])
         assert isinstance(attributes, list)

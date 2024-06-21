@@ -3,11 +3,9 @@
 
 """Tests for `PIconnect` package."""
 
-import pytest
 
 # from click.testing import CliRunner
 
-import PIconnect
 
 # from PIconnect import cli
 

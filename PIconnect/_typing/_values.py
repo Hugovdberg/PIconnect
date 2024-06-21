@@ -19,4 +19,4 @@ class AFValue:
 class AFValues(List[AFValue]):
     def __init__(self):
         self.Count: int
-        self.Value: AFValue
+        self.Value: List[AFValue]
