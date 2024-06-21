@@ -1,7 +1,5 @@
-"""
-PIData contains a number of auxiliary classes that define common functionality
-among :class:`PIPoint` and :class:`PIAFAttribute` objects.
-"""
+"""Auxiliary classes for PI Point and PIAFAttribute objects."""
+
 import abc
 import datetime
 from typing import Any, List, Optional
@@ -16,13 +14,15 @@ __all__ = [
     "PISeriesContainer",
 ]
 
+_DEFAULT_CALCULATION_BASIS = PIConsts.CalculationBasis.TIME_WEIGHTED
+_DEFAULT_FILTER_EVALUATION = PIConsts.ExpressionSampleType.EXPRESSION_RECORDED_VALUES
+
 
 class PISeries(pd.Series):  # type: ignore
-    """PISeries
+    """Create a timeseries, derived from :class:`pandas.Series`.
 
-    Create a timeseries, derived from :class:`pandas.Series`
-
-    Args:
+    Parameters
+    ----------
         tag (str): Name of the new series
         timestamp (List[datetime]): List of datetime objects to
             create the new index
@@ -48,16 +48,13 @@ class PISeries(pd.Series):  # type: ignore
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        pd.Series.__init__(self, data=value, index=timestamp, name=tag, *args, **kwargs)  # type: ignore
+        pd.Series.__init__(self, *args, data=value, index=timestamp, name=tag, **kwargs)  # type: ignore
         self.tag = tag
         self.uom = uom
 
 
 class PISeriesContainer(abc.ABC):
-    """PISeriesContainer
-
-    With the ABC class we represent a general behaviour with PI Point object
-    (General class for objects that return :class:`PISeries` objects).
+    """Generic behaviour for PI Series returning objects.
 
     .. todo::
 
@@ -74,9 +71,7 @@ class PISeriesContainer(abc.ABC):
 
     @property
     def current_value(self) -> Any:
-        """current_value
-
-        Return the current value of the attribute."""
+        """Return the current value of the attribute."""
         return self._current_value()
 
     @abc.abstractmethod
@@ -90,16 +85,15 @@ class PISeriesContainer(abc.ABC):
         interval: str,
         filter_expression: str,
         summary_types: PIConsts.SummaryType,
-        calculation_basis: PIConsts.CalculationBasis = PIConsts.CalculationBasis.TIME_WEIGHTED,
-        filter_evaluation: PIConsts.ExpressionSampleType = PIConsts.ExpressionSampleType.EXPRESSION_RECORDED_VALUES,
+        calculation_basis: PIConsts.CalculationBasis = _DEFAULT_CALCULATION_BASIS,
+        filter_evaluation: PIConsts.ExpressionSampleType = _DEFAULT_FILTER_EVALUATION,
         filter_interval: Optional[str] = None,
         time_type: PIConsts.TimestampCalculation = PIConsts.TimestampCalculation.AUTO,
     ) -> pd.DataFrame:
-        """filtered_summaries
+        """Return one or more summary values for each interval within a time range.
 
-        Return one or more summary values for each interval within a time range
-
-        Args:
+        Parameters
+        ----------
             start_time (str or datetime): String containing the date, and possibly time,
                 from which to retrieve the values. This is parsed, together
                 with `end_time`, using
@@ -133,7 +127,8 @@ class PISeriesContainer(abc.ABC):
                 :ref:`summary_timestamps` and :any:`TimestampCalculation` for
                 more information. Defaults to TimestampCalculation.AUTO.
 
-        Returns:
+        Returns
+        -------
             pandas.DataFrame: Dataframe with the unique timestamps as row index
                 and the summary name as column name.
         """
@@ -184,16 +179,20 @@ class PISeriesContainer(abc.ABC):
         pass
 
     def interpolated_value(self, time: _time.TimeLike) -> PISeries:
-        """interpolated_value
+        """Return a PISeries with an interpolated value at the given time.
 
-        Return a PISeries with an interpolated value at the given time
-
-        Args:
+        Parameters
+        ----------
+        ----------eters
+        ----------
+        ----------eters
+        ----------
             time (str, datetime): String containing the date, and possibly time,
                 for which to retrieve the value. This is parsed, using
                 :afsdk:`AF.Time.AFTime <M_OSIsoft_AF_Time_AFTime__ctor_7.htm>`.
 
-        Returns:
+        Returns
+        -------
             PISeries: A PISeries with a single row, with the corresponding time as
                 the index
         """
@@ -219,9 +218,7 @@ class PISeriesContainer(abc.ABC):
         interval: str,
         filter_expression: str = "",
     ) -> PISeries:
-        """interpolated_values
-
-        Return a PISeries of interpolated data.
+        """Return a PISeries of interpolated data.
 
         Data is returned between *start_time* and *end_time* at a fixed
         *interval*. All three values are parsed by AF.Time and the first two
@@ -235,7 +232,8 @@ class PISeriesContainer(abc.ABC):
         values marked as such. At this point PIconnect does not support this
         and filtered values are always left out entirely.
 
-        Args:
+        Parameters
+        ----------
             start_time (str or datetime): Containing the date, and possibly time,
                 from which to retrieve the values. This is parsed, together
                 with `end_time`, using
@@ -251,7 +249,8 @@ class PISeriesContainer(abc.ABC):
                 data to include in the results. See :ref:`filtering_values`
                 for more information on filter queries.
 
-        Returns:
+        Returns
+        -------
             PISeries: Timeseries of the values returned by the SDK
         """
         time_range = _time.to_af_time_range(start_time, end_time)
@@ -283,6 +282,7 @@ class PISeriesContainer(abc.ABC):
     @property
     @abc.abstractmethod
     def name(self) -> str:
+        """Return the name of the current object."""
         pass
 
     def _normalize_filter_expression(self, filter_expression: str) -> str:
@@ -293,11 +293,10 @@ class PISeriesContainer(abc.ABC):
         time: _time.TimeLike,
         retrieval_mode: PIConsts.RetrievalMode = PIConsts.RetrievalMode.AUTO,
     ) -> PISeries:
-        """recorded_value
+        """Return a PISeries with the recorded value at or close to the given time.
 
-        Return a PISeries with the recorded value at or close to the given time
-
-        Args:
+        Parameters
+        ----------
             time (str): String containing the date, and possibly time,
                 for which to retrieve the value. This is parsed, using
                 :afsdk:`AF.Time.AFTime <M_OSIsoft_AF_Time_AFTime__ctor_7.htm>`.
@@ -305,7 +304,8 @@ class PISeriesContainer(abc.ABC):
                 which value to return if no value available at the exact requested
                 time.
 
-        Returns:
+        Returns
+        -------
             PISeries: A PISeries with a single row, with the corresponding time as
                 the index
         """
@@ -334,9 +334,7 @@ class PISeriesContainer(abc.ABC):
         boundary_type: str = "inside",
         filter_expression: str = "",
     ):
-        """recorded_values
-
-        Return a PISeries of recorded data.
+        """Return a PISeries of recorded data.
 
         Data is returned between the given *start_time* and *end_time*,
         inclusion of the boundaries is determined by the *boundary_type*
@@ -357,7 +355,8 @@ class PISeriesContainer(abc.ABC):
         marked as such. At this point PIconnect does not support this and
         filtered values are always left out entirely.
 
-        Args:
+        Parameters
+        ----------
             start_time (str or datetime): Containing the date, and possibly time,
                 from which to retrieve the values. This is parsed, together
                 with `end_time`, using
@@ -373,14 +372,15 @@ class PISeriesContainer(abc.ABC):
                 data to include in the results. See :ref:`filtering_values`
                 for more information on filter queries.
 
-        Returns:
+        Returns
+        -------
             PISeries: Timeseries of the values returned by the SDK
 
-        Raises:
+        Raises
+        ------
             ValueError: If the provided `boundary_type` is not a valid key a
                 `ValueError` is raised.
         """
-
         time_range = _time.to_af_time_range(start_time, end_time)
         _boundary_type = self.__boundary_types.get(boundary_type.lower())
         if _boundary_type is None:
@@ -411,7 +411,7 @@ class PISeriesContainer(abc.ABC):
         boundary_type: AF.Data.AFBoundaryType,
         filter_expression: str,
     ) -> AF.Asset.AFValues:
-        """Abstract implementation for recorded values
+        """Abstract implementation for recorded values.
 
         The internals for retrieving recorded values from PI and PI-AF are
         different and should therefore be implemented by the respective data
@@ -427,17 +427,18 @@ class PISeriesContainer(abc.ABC):
         calculation_basis: PIConsts.CalculationBasis = PIConsts.CalculationBasis.TIME_WEIGHTED,
         time_type: PIConsts.TimestampCalculation = PIConsts.TimestampCalculation.AUTO,
     ) -> pd.DataFrame:
-        """summary
+        """Return one or more summary values over a single time range.
 
-        Return one or more summary values over a single time range.
-
-        Args:
+        Parameters
+        ----------
             start_time (str or datetime): Containing the date, and possibly time,
                 from which to retrieve the values. This is parsed, together
-                with `end_time`, using :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
+                with `end_time`, using
+                :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
             end_time (str or datetime): Containing the date, and possibly time,
                 until which to retrieve values. This is parsed, together
-                with `start_time`, using :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
+                with `start_time`, using
+                :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`.
             summary_types (int or PIConsts.SummaryType): Type(s) of summaries
                 of the data within the requested time range.
             calculation_basis (int or PIConsts.CalculationBasis, optional):
@@ -449,7 +450,8 @@ class PISeriesContainer(abc.ABC):
                 :ref:`summary_timestamps` and :any:`TimestampCalculation` for
                 more information. Defaults to TimestampCalculation.AUTO.
 
-        Returns:
+        Returns
+        -------
             pandas.DataFrame: Dataframe with the unique timestamps as row index
                 and the summary name as column name.
         """
@@ -457,9 +459,7 @@ class PISeriesContainer(abc.ABC):
         _summary_types = AF.Data.AFSummaryTypes(int(summary_types))
         _calculation_basis = AF.Data.AFCalculationBasis(int(calculation_basis))
         _time_type = AF.Data.AFTimestampCalculation(int(time_type))
-        pivalues = self._summary(
-            time_range, _summary_types, _calculation_basis, _time_type
-        )
+        pivalues = self._summary(time_range, _summary_types, _calculation_basis, _time_type)
         df = pd.DataFrame()
         for summary in pivalues:
             key = PIConsts.SummaryType(int(summary.Key)).name
@@ -490,11 +490,10 @@ class PISeriesContainer(abc.ABC):
         calculation_basis: PIConsts.CalculationBasis = PIConsts.CalculationBasis.TIME_WEIGHTED,
         time_type: PIConsts.TimestampCalculation = PIConsts.TimestampCalculation.AUTO,
     ) -> pd.DataFrame:
-        """summaries
+        """Return one or more summary values for each interval within a time range.
 
-        Return one or more summary values for each interval within a time range
-
-        Args:
+        Parameters
+        ----------
             start_time (str or datetime): Containing the date, and possibly time,
                 from which to retrieve the values. This is parsed, together
                 with `end_time`, using
@@ -517,7 +516,8 @@ class PISeriesContainer(abc.ABC):
                 :ref:`summary_timestamps` and :any:`TimestampCalculation` for
                 more information. Defaults to TimestampCalculation.AUTO.
 
-        Returns:
+        Returns
+        -------
             pandas.DataFrame: Dataframe with the unique timestamps as row index
                 and the summary name as column name.
         """
@@ -557,6 +557,7 @@ class PISeriesContainer(abc.ABC):
     @property
     @abc.abstractmethod
     def units_of_measurement(self) -> Optional[str]:
+        """Return the units of measurment of the values in the current object."""
         pass
 
     def update_value(
@@ -568,7 +569,8 @@ class PISeriesContainer(abc.ABC):
     ) -> None:
         """Update value for existing PI object.
 
-        Args:
+        Parameters
+        ----------
             value: value type should be in cohesion with PI object or
                 it will raise PIException: [-10702] STATE Not Found
             time (datetime, optional): it is not possible to set future value,

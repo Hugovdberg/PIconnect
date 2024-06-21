@@ -1,3 +1,5 @@
+"""Mock classes for the System.Data module."""
+
 from typing import Any, Dict, Iterator, List
 
 __all__ = [

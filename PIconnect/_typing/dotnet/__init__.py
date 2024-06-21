@@ -1,3 +1,5 @@
+"""Mock for System.* classes."""
+
 from typing import Protocol
 
 from . import Data, Net, Security
@@ -23,7 +25,7 @@ class TimeSpan:
 
 
 class DateTime(Protocol):
-    """Mock for System.DateTime"""
+    """Mock for System.DateTime."""
 
     Year: int
     Month: int

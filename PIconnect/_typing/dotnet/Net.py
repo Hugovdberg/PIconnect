@@ -1,3 +1,5 @@
+"""Mock classes for the System.Net module."""
+
 from typing import Optional
 
 from .Security import SecureString

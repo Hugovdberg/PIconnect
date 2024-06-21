@@ -1,6 +1,5 @@
-""" PIconnect
-    Connector to the OSISoft PI and PI-AF databases.
-"""
+"""PIconnect - Connector to the OSISoft PI and PI-AF databases."""
+
 # pragma pylint: disable=unused-import
 from PIconnect.AFSDK import AF, AF_SDK_VERSION
 from PIconnect.config import PIConfig
