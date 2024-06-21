@@ -4,15 +4,8 @@ from typing import Any, Dict, Optional
 
 import PIconnect._typing.AF as _AFtyping
 from PIconnect import AF, PIData, _time
-from PIconnect._operators import OPERATORS, add_operators  # type: ignore
 
 
-@add_operators(
-    operators=OPERATORS,
-    members=["_current_value", "interpolated_values"],
-    newclassname="VirtualPIPoint",
-    attributes=["pi_point"],
-)
 class PIPoint(PIData.PISeriesContainer):
     """Reference to a PI Point to get data and corresponding metadata from the server.
 

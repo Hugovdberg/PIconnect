@@ -6,7 +6,6 @@ from typing import Any, Dict, Optional
 
 from PIconnect import AF, PIData, PIPoint, _time
 
-from ._operators import OPERATORS, add_operators  # type: ignore
 from ._typing import AF as _AFtyping
 
 __all__ = ["PIAFAttribute"]
@@ -27,12 +26,6 @@ class AFDataReference:
             return PIPoint.PIPoint(self.data_reference.PIPoint)
 
 
-@add_operators(
-    operators=OPERATORS,
-    members=["_current_value", "interpolated_values"],
-    newclassname="VirtualPIAFAttribute",
-    attributes=["element", "attribute"],
-)
 class PIAFAttribute(PIData.PISeriesContainer):
     """Container for attributes of PI AF elements in the database."""
 

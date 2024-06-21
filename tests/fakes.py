@@ -9,7 +9,6 @@ import pytz
 
 import PIconnect._typing.AF as AF
 import PIconnect.PI as PI
-from PIconnect._operators import OPERATORS, add_operators
 
 
 @dataclasses.dataclass
@@ -83,12 +82,6 @@ class FakePIPoint_(Generic[_a]):
         self.attributes = [FakeKeyValue(*att) for att in attributes.items()]
 
 
-@add_operators(
-    operators=OPERATORS,
-    members=["_current_value", "sampled_data"],
-    newclassname="VirtualFakePIPoint",
-    attributes=["pi_point"],
-)
 class FakePIPoint(AF.PI.PIPoint, Generic[_a]):
     """Fake PI Point to mask away SDK complexity."""
 
