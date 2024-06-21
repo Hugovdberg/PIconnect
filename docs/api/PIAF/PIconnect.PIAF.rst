@@ -25,3 +25,9 @@ PIconnect.PIAF module
     :undoc-members:
     :inherited-members:
     :show-inheritance:
+
+.. autoclass:: PIconnect.PIAF.PIAFTable
+    :members:
+    :undoc-members:
+    :inherited-members:
+    :show-inheritance:
