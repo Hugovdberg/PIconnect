@@ -1,3 +1,8 @@
+"""Mocking the Generic types from System.Collections.Generic namespace.
+
+TODO: Migrate to the `_typing.dotnet` module.
+"""
+
 from typing import Any, Generic, Iterable, Iterator, Optional, Tuple, TypeVar
 
 _KT = TypeVar("_KT")
