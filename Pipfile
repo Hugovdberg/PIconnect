@@ -15,6 +15,7 @@ piconnect = {editable = true, path = "."}
 ruff = "*"
 # coverage = "*"
 # mypy = "*"
+bump-my-version = "*"
 codecov = "*"
 codacy-coverage = "*"
 pylint = "*"

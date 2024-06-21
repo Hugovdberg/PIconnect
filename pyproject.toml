@@ -37,3 +37,17 @@ select = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
+
+
+[tool.bumpversion]
+current_version = "0.10.6"
+tag = true
+tag_name = "v{new_version}"
+tag_message = "Release v{new_version}"
+commit = true
+message = "chore: Bump version: {current_version} → {new_version}"
+
+[[tool.bumpversion.files]]
+search = "__version__ = \"{current_version}\""
+replace = "__version__ = \"{new_version}\""
+filename = "PIconnect/__init__.py"
