@@ -34,7 +34,7 @@ class PIPoint(PIData.PISeriesContainer):
         """Return the string representation of the PI Point."""
         return (
             f"{self.__class__.__qualname__}({self.tag}, {self.description}; "
-            f"Current Value: {self.current_value} {self.units_of_measurement}"
+            f"Current Value: {self.current_value} {self.units_of_measurement})"
         )
 
     @property
