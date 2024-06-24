@@ -23,7 +23,7 @@ def __fallback():
 
     from ._typing import AF as _af
     from ._typing import AF_SDK_VERSION as _AF_SDK_version
-    from ._typing import dotnet as _System
+    from ._typing import System as _System
 
     return _af, _System, _AF_SDK_version
 
