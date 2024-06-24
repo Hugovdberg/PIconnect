@@ -11,39 +11,8 @@ on:
     - cron: "27 19 * * 3"
 
 jobs:
-  run_tests:
-    runs-on: windows-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: [
-          '3.9'
-          , '3.10'
-          , '3.11'
-          , '3.12'
-        ]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install pytest wheel
-          python -m pip install pytest-cov
-          python -m pip install --exists-action=w --no-cache-dir -r requirements_dev.txt
-          python -m pip install .
-
-      - name: Test with pytest
-        run: |
-          pytest
-
   lint_and_check_format:
+    name: Lint and Check Formatting
     runs-on: windows-latest
 
     steps:
@@ -66,6 +35,38 @@ jobs:
       - name: Check formatting with ruff
         run: |
           ruff format --check
+
+  run_tests:
+    name: Test with Python ${{ matrix.python-version }}
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [
+          '3.10'
+          , '3.11'
+          , '3.12'
+        ]
+    needs: lint_and_check_format
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest wheel
+          python -m pip install pytest-cov
+          python -m pip install --exists-action=w --no-cache-dir -r requirements_dev.txt
+          python -m pip install .
+
+      - name: Test with pytest
+        run: |
+          pytest
 
   # codacy-security-scan:
   #   name: Codacy Security Scan
