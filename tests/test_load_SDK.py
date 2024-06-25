@@ -6,7 +6,6 @@ import pathlib
 import pytest
 
 import PIconnect as PI
-from PIconnect import AFSDK
 
 
 def on_CI() -> bool:
@@ -32,13 +31,13 @@ def test_load_SDK_without_arguments_raises_no_exception() -> None:
 
 def test_load_SDK_returns_PIconnect_object() -> None:
     """Test that loading the SDK object returns a PIConnector."""
-    assert isinstance(PI.get_PI_connector(), AFSDK.PIConnector)
+    assert isinstance(PI.get_PI_connector(), PI.PIConnector)
 
 
 def test_load_SDK_with_a_valid_path_returns_SDK_object() -> None:
     """Test that loading the SDK object with a path returns a PIConnector."""
     assembly_path = "c:\\Program Files (x86)\\PIPC\\AF\\PublicAssemblies\\4.0\\"
-    assert isinstance(PI.get_PI_connector(assembly_path), AFSDK.PIConnector)
+    assert isinstance(PI.get_PI_connector(assembly_path), PI.PIConnector)
 
 
 def test_load_SDK_with_a_valid_path_stores_path_in_connector() -> None:
