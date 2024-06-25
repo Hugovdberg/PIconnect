@@ -1,8 +1,8 @@
 """PIconnect - Connector to the OSISoft PI and PI-AF databases."""
 
-from PIconnect.config import PIConfig  # noqa: I001
 from PIconnect.AF import AFDatabase, PIAFDatabase
 from PIconnect.AFSDK import AF, AF_SDK_VERSION
+from PIconnect.config import PIConfig  # noqa: I001
 from PIconnect.PI import PIServer
 
 from . import _version
