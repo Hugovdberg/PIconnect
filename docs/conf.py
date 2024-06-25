@@ -85,11 +85,11 @@ author = "Hugo Lapré; Stijn de Jong"
 # built documents.
 #
 # The short X.Y version.
-version = PIconnect.__version__
+version = '.'.join(PIconnect.__version__.split('.')[:2])
 # The full version, including alpha/beta/rc tags.
 release = PIconnect.__version__
 
-extlinks = {"afsdk": ("https://docs.osisoft.com/bundle/af-sdk/page/html/%s", "")}
+extlinks = {"afsdk": ("https://docs.aveva.com/bundle/af-sdk/page/html/%s", "")}
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3.10", None),
