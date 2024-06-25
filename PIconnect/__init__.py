@@ -1,6 +1,6 @@
 """PIconnect - Connector to the OSISoft PI and PI-AF databases."""
 
-from PIconnect.AFSDK import AF, AF_SDK_VERSION
+from PIconnect.AFSDK import AF, AF_SDK_VERSION, get_PI_connector
 from PIconnect.config import PIConfig
 from PIconnect.PI import PIServer
 from PIconnect.PIAF import PIAFDatabase
@@ -16,5 +16,6 @@ __all__ = [
     "PIAFDatabase",
     "PIConfig",
     "PIServer",
+    "get_PI_connector",
     "__sdk_version",
 ]
