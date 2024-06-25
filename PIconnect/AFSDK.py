@@ -12,12 +12,31 @@ __all__ = ["AF", "System", "AF_SDK_VERSION"]
 
 logger = logging.getLogger(__name__)
 
+if TYPE_CHECKING:
+    from ._typing import AFType, SystemType
+else:
+    AFType = ModuleType
+    SystemType = ModuleType
+
 
 @dataclasses.dataclass(kw_only=True)
 class PIConnector:
     assembly_path: pathlib.Path
-    AF: ModuleType
-    System: ModuleType
+    AF: AFType
+    System: SystemType
+
+    # def PIAFSystems(self) -> dict[str, "PIAFSystem"]:
+    #     return {srv.Name: PIAFSystem(srv) for srv in self.AF.PISystems}
+
+    # def PIServers(self) -> dict[str, "PIServer"]:
+    #     return {srv.Name: PIServer(srv) for srv in self.AF.PI.PIServers}
+
+    # @property
+    # def version(self) -> str:
+    #     return self.AF.PISystems().Version
+
+    # def __str__(self) -> str:
+    #     return f"PIConnector({self.assembly_path}, AF SDK version: {self.version})"
 
 
 StrPath = Union[str, pathlib.Path]
