@@ -7,7 +7,4 @@
         "dist/*",
         ".tox/*"
     ],
-    "ignore": [
-        "PIconnect/_operators.py"
-    ]
 }
