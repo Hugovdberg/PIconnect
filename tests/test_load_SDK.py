@@ -1,24 +1,15 @@
 """Test the loading of the SDK connector."""
 
-import os
 import pathlib
 
 import pytest
 
 import PIconnect as PI
 
-
-def on_CI() -> bool:
-    """Return True if the tests are running on a CI environment."""
-    return (
-        os.getenv("GITHUB_ACTIONS", "false").lower() == "true"
-        or os.getenv("TF_BUILD", "false").lower() == "true"
-        or os.getenv("READTHEDOCS", "false").lower() == "true"
-    )
-
+from .common import skip_if_on_CI
 
 # Skip this test module on CI as it requires the real SDK to be installed
-pytestmark = pytest.mark.skipif(on_CI(), reason="Real SDK not available on CI")
+pytestmark = skip_if_on_CI
 
 
 def test_load_SDK_without_arguments_raises_no_exception() -> None:
