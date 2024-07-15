@@ -58,7 +58,7 @@ rich-click==1.8.3; python_version >= '3.7'
 ruff==0.5.2; python_version >= '3.7'
 snowballstemmer==2.2.0
 soupsieve==2.5; python_version >= '3.8'
-sphinx==7.3.7; python_version >= '3.9'
+sphinx==7.4.3; python_version >= '3.9'
 sphinxcontrib-applehelp==1.0.8; python_version >= '3.9'
 sphinxcontrib-devhelp==1.0.6; python_version >= '3.9'
 sphinxcontrib-htmlhelp==2.0.5; python_version >= '3.9'
