@@ -40,7 +40,7 @@ convention = "numpy"
 
 
 [tool.bumpversion]
-current_version = "0.12.0"
+current_version = "0.12.1"
 tag = false
 commit = true
 message = "chore: Bump version: {current_version} → {new_version}"
