@@ -2,7 +2,7 @@
 
 import dataclasses
 import warnings
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, Optional, Union, cast
 
 import pandas as pd
 
@@ -18,18 +18,18 @@ class PIAFServer:
     """Reference to a PI AF server and its databases."""
 
     server: AF.PISystem
-    databases: Dict[str, AF.AFDatabase] = dataclasses.field(default_factory=dict)
+    databases: dict[str, AF.AFDatabase] = dataclasses.field(default_factory=dict)
 
-    def __getitem__(self, attr: str) -> Union[AF.PISystem, Dict[str, AF.AFDatabase]]:
+    def __getitem__(self, attr: str) -> Union[AF.PISystem, dict[str, AF.AFDatabase]]:
         """Allow access to attributes as if they were dictionary items."""
         return getattr(self, attr)
 
 
-ServerSpec = Dict[str, Union[AF.PISystem, Dict[str, AF.AFDatabase]]]
+ServerSpec = dict[str, Union[AF.PISystem, dict[str, AF.AFDatabase]]]
 
 
-def _lookup_servers() -> Dict[str, ServerSpec]:
-    servers: Dict[str, PIAFServer] = {}
+def _lookup_servers() -> dict[str, ServerSpec]:
+    servers: dict[str, PIAFServer] = {}
     for s in AF.PISystems():
         try:
             servers[s.Name] = server = PIAFServer(s)
@@ -74,7 +74,7 @@ class PIAFDatabase(object):
 
     version = "0.3.0"
 
-    servers: Dict[str, ServerSpec] = _lookup_servers()
+    servers: dict[str, ServerSpec] = _lookup_servers()
     default_server: Optional[ServerSpec] = _lookup_default_server()
 
     def __init__(self, server: Optional[str] = None, database: Optional[str] = None) -> None:
@@ -106,7 +106,7 @@ class PIAFDatabase(object):
         if database is None:
             return default_db
 
-        databases = cast(Dict[str, AF.AFDatabase], server["databases"])
+        databases = cast(dict[str, AF.AFDatabase], server["databases"])
         if database not in databases:
             message = 'Database "{database}" not found, using the default database.'
             warnings.warn(
@@ -143,12 +143,12 @@ class PIAFDatabase(object):
         return self.database.Name
 
     @property
-    def children(self) -> Dict[str, "PIAFElement"]:
+    def children(self) -> dict[str, "PIAFElement"]:
         """Return a dictionary of the direct child elements of the database."""
         return {c.Name: PIAFElement(c) for c in self.database.Elements}
 
     @property
-    def tables(self) -> Dict[str, "PIAFTable"]:
+    def tables(self) -> dict[str, "PIAFTable"]:
         """Return a dictionary of the tables in the database."""
         return {t.Name: PIAFTable(t) for t in self.database.Tables}
 
@@ -156,7 +156,7 @@ class PIAFDatabase(object):
         """Return a descendant of the database from an exact path."""
         return PIAFElement(self.database.Elements.get_Item(path))
 
-    def search(self, query: Union[str, List[str]]) -> List[PIAFAttribute.PIAFAttribute]:
+    def search(self, query: Union[str, list[str]]) -> list[PIAFAttribute.PIAFAttribute]:
         """Search PIAFAttributes by element|attribute path strings.
 
         Return a list of PIAFAttributes directly from a list of element|attribute path strings
@@ -167,8 +167,8 @@ class PIAFDatabase(object):
         "BaseElement/childElement/childElement|Attribute|ChildAttribute|ChildAttribute")
 
         """
-        attributelist: List[PIAFAttribute.PIAFAttribute] = []
-        if isinstance(query, List):
+        attributelist: list[PIAFAttribute.PIAFAttribute] = []
+        if isinstance(query, list):
             return [y for x in query for y in self.search(x)]
         if "|" in query:
             splitpath = query.split("|")
@@ -177,7 +177,7 @@ class PIAFDatabase(object):
             if len(splitpath) > 2:
                 for x in range(len(splitpath) - 2):
                     attribute = attribute.children[splitpath[x + 2]]
-                attributelist.append(attribute)
+            attributelist.append(attribute)
         return attributelist
 
     def event_frames(
@@ -187,7 +187,7 @@ class PIAFDatabase(object):
         max_count: int = 1000,
         search_mode: PIConsts.EventFrameSearchMode = _DEFAULT_EVENTFRAME_SEARCH_MODE,
         search_full_hierarchy: bool = False,
-    ) -> Dict[str, "PIAFEventFrame"]:
+    ) -> dict[str, "PIAFEventFrame"]:
         """Search for event frames in the database."""
         _start_time = _time.to_af_time(start_time)
         _search_mode = AF.EventFrame.AFEventFrameSearchMode(int(search_mode))
@@ -222,7 +222,7 @@ class PIAFElement(PIAFBase.PIAFBaseElement[AF.Asset.AFElement]):
         return self.__class__(self.element.Parent)
 
     @property
-    def children(self) -> Dict[str, "PIAFElement"]:
+    def children(self) -> dict[str, "PIAFElement"]:
         """Return a dictionary of the direct child elements of the current element."""
         return {c.Name: self.__class__(c) for c in self.element.Elements}
 
@@ -249,7 +249,7 @@ class PIAFEventFrame(PIAFBase.PIAFBaseElement[AF.EventFrame.AFEventFrame]):
         return self.__class__(self.element.Parent)
 
     @property
-    def children(self) -> Dict[str, "PIAFEventFrame"]:
+    def children(self) -> dict[str, "PIAFEventFrame"]:
         """Return a dictionary of the direct child event frames of the current event frame."""
         return {c.Name: self.__class__(c) for c in self.element.EventFrames}
 
@@ -261,12 +261,12 @@ class PIAFTable:
         self._table = table
 
     @property
-    def columns(self) -> List[str]:
+    def columns(self) -> list[str]:
         """Return the names of the columns in the table."""
         return [col.ColumnName for col in self._table.Table.Columns]
 
     @property
-    def _rows(self) -> List[System.Data.DataRow]:
+    def _rows(self) -> list[System.Data.DataRow]:
         return self._table.Table.Rows
 
     @property
