@@ -1,6 +1,7 @@
 """Mock classes for the AF module."""
 
-from typing import List, Optional, Union
+from collections.abc import Iterator
+from typing import Optional, Union, cast
 
 from . import AF, Data, Generic
 from . import UnitsOfMeasure as UOM
@@ -22,14 +23,21 @@ __all__ = [
 
 
 class AFAttribute:
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, parent: Optional["AFAttribute"] = None) -> None:
         self.Attributes: AFAttributes
+        if parent is None:
+            self.Attributes = AFAttributes(
+                [
+                    AFAttribute("Attribute1", parent=self),
+                    AFAttribute("Attribute2", parent=self),
+                ]
+            )
         self.Data: Data.AFData
         self.DataReference: AFDataReference
-        self.Description: str
-        self.DefaultUOM: UOM.UOM
+        self.Description: str = f"Description of {name}"
+        self.DefaultUOM = UOM.UOM()
         self.Name = name
-        self.Parent: Optional[AFAttribute]
+        self.Parent = parent
 
     @staticmethod
     def GetValue() -> AFValue:
@@ -37,18 +45,34 @@ class AFAttribute:
         return AFValue(0)
 
 
-class AFAttributes(List[AFAttribute]):
-    def __init__(self, elements: List[AFAttribute]) -> None:
+class AFAttributes(list[AFAttribute]):
+    def __init__(self, elements: list[AFAttribute]) -> None:
         self.Count: int
         self._values = elements
+
+    def __iter__(self) -> Iterator[AFAttribute]:
+        yield from self._values
 
 
 class AFBaseElement:
     def __init__(self, name: str, parent: Optional["AFElement"] = None) -> None:
-        self.Attributes: AFAttributes
+        self.Attributes = AFAttributes(
+            [
+                AFAttribute("Attribute1"),
+                AFAttribute("Attribute2"),
+            ]
+        )
         self.Categories: AF.AFCategories
         self.Description: str
         self.Elements: AFElements
+        if parent is None:
+            self.Elements = AFElements(
+                [
+                    AFElement("Element1", parent=cast(AFElement, self)),
+                    AFElement("Element2", parent=cast(AFElement, self)),
+                    AFElement("BaseElement", parent=cast(AFElement, self)),
+                ]
+            )
         self.Name = name
         self.Parent = parent
 
@@ -57,8 +81,8 @@ class AFElement(AFBaseElement):
     """Mock class of the AF.AFElement class."""
 
 
-class AFElements(List[AFElement]):
-    def __init__(self, elements: List[AFElement]) -> None:
+class AFElements(list[AFElement]):
+    def __init__(self, elements: list[AFElement]) -> None:
         self.Count: int
         self._values = elements
 
@@ -67,6 +91,9 @@ class AFElements(List[AFElement]):
         if isinstance(name, int):
             return self._values[name]
         return AFElement(name)
+
+    def __iter__(self) -> Iterator[AFElement]:
+        yield from self._values
 
 
 class AFElementTemplate:
@@ -90,8 +117,8 @@ class AFTable:
         self.Table: System.Data.DataTable
 
 
-class AFTables(List[AFTable]):
-    def __init__(self, elements: List[AFTable]) -> None:
+class AFTables(list[AFTable]):
+    def __init__(self, elements: list[AFTable]) -> None:
         self.Count: int
         self._values = elements
 
