@@ -71,7 +71,7 @@ typing-extensions==4.12.2; python_version >= '3.8'
 urllib3==2.2.2; python_version >= '3.8'
 wcmatch==9.0; python_version >= '3.8'
 wcwidth==0.2.13
-zipp==3.19.2; python_version >= '3.8'
+zipp==3.20.1; python_version >= '3.8'
 cffi==1.17.0; python_version >= '3.8'
 clr-loader==0.2.6; python_version >= '3.7'
 numpy==2.1.0; python_version >= '3.9'
