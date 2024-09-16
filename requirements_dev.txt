@@ -74,7 +74,7 @@ wcwidth==0.2.13
 zipp==3.19.2; python_version >= '3.8'
 cffi==1.17.1; python_version >= '3.8'
 clr-loader==0.2.6; python_version >= '3.7'
-numpy==1.26.4; python_version >= '3.9'
+numpy==2.1.1; python_version >= '3.9'
 pandas==2.2.2; python_version >= '3.9'
 -e . ; python_version >= '3.9'
 pycparser==2.22; python_version >= '3.8'
