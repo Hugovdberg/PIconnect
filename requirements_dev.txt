@@ -30,7 +30,7 @@ markdown-it-py==3.0.0; python_version >= '3.8'
 markupsafe==3.0.2; python_version >= '3.7'
 mccabe==0.7.0; python_version >= '3.6'
 mdurl==0.1.2; python_version >= '3.7'
-more-itertools==10.3.0; python_version >= '3.8'
+more-itertools==10.5.0; python_version >= '3.8'
 nh3==0.2.17
 packaging==24.1; python_version >= '3.8'
 pkginfo==1.11.1; python_version >= '3.8'
