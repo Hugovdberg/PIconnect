@@ -146,7 +146,7 @@ class VirtualTestCase(object):
         self.point = PI.PIPoint(FakePIPoint(pi_point))
 
 
-@pytest.fixture()
+@pytest.fixture
 def pi_point() -> VirtualTestCase:
     """Return a VirtualTestCase object."""
     return VirtualTestCase()
