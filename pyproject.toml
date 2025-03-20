@@ -1,6 +1,56 @@
+[project]
+name = "PIconnect"
+authors = [{ name = "Hugo Lapre", email = "dev@tbdwebdesign.nl" }]
+readme = "README.rst"
+license = "MIT"
+requires-python = ">=3.11"
+keywords = ["OSIsoft", "AVEVA", "PI", "Process Information", "PIconnect"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Topic :: Database",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dynamic = ["version", "description"]
+dependencies = ["pandas>=2,<3", "numpy>=2,<3", "wrapt>=1.17,<2"]
+
+[project.urls]
+Homepage = "https://github.com/Hugovdberg/PIconnect"
+Repository = "https://github.com/Hugovdberg/PIconnect.git"
+Issues = "https://github.com/Hugovdberg/PIconnect/issues"
+Documentation = "https://piconnect.readthedocs.io/en/stable/"
+
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta:__legacy__"
+requires = ["flit_core >=3.11,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.pixi.project]
+name = "PIconnect"
+channels = ["conda-forge"]
+platforms = ["win-64"]
+
+[tool.pixi.pypi-dependencies]
+PIconnect = { path = ".", editable = true }
+
+[tool.pixi.tasks]
+
+[tool.pixi.feature.build.dependencies]
+python = "*"
+
+[tool.pixi.feature.build.pypi-dependencies]
+flit = ">=3.11,<4"
+
+[tool.pixi.feature.build.tasks]
+build = "flit build"
+
+[tool.pixi.environments]
+build = ["build"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
@@ -13,14 +63,14 @@ exclude = ["build", "dist", "docs", "venv"]
 [tool.ruff.lint]
 # See: https://docs.astral.sh/ruff/rules/
 select = [
-    "C4",  # flake8-comprehensions
-    "E",   # pycodestyle
-    "F",   # pyflakes
-    "I",   # isort
-    "PT",  # pytest-style
-    "D",   # pydocstyle
-    "B",   # flake8-bugbear
-    "NPY", # numpy
+  "C4",  # flake8-comprehensions
+  "E",   # pycodestyle
+  "F",   # pyflakes
+  "I",   # isort
+  "PT",  # pytest-style
+  "D",   # pydocstyle
+  "B",   # flake8-bugbear
+  "NPY", # numpy
 ]
 # ignore = [
 #     "D100",  # Missing docstring in public module
