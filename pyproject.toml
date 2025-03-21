@@ -49,8 +49,25 @@ flit = ">=3.11,<4"
 [tool.pixi.feature.build.tasks]
 build = "flit build"
 
+[tool.pixi.feature.lint.dependencies]
+ruff = "*"
+
+[tool.pixi.feature.test.dependencies]
+pytest = "*"
+pytest-cov = "*"
+codacy-coverage = "*"
+codecov = "*"
+coverage = "*"
+
+[tool.pixi.feature.docs.dependencies]
+Sphinx = "*"
+pydata-sphinx-theme = "*"
+
 [tool.pixi.environments]
-build = ["build"]
+build = { features = ["build"], no-default-feature = true }
+test = { features = ["test"], solve-group = "default" }
+lint = ["lint"]
+docs = ["docs"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
