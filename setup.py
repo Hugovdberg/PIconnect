@@ -1,3 +1,5 @@
+"""Setup script for the package."""
+
 import setuptools
 import versioneer
 
