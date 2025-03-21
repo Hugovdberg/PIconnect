@@ -27,6 +27,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/d1/d6/3965ed04c63042e047cb6a3e6ed1a63a35087b6a609aa3a15ed8ac56c221/colorama-0.4.6-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/88/ef/eb23f262cca3c0c4eb7ab1933c3b1f03d021f2c48f54763065b6f0e321be/packaging-24.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bd/24/12818598c362d7f300f18e74db45963dbcb85150324092410c8b49405e42/pyproject_hooks-1.2.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/b0/79/f0f1ca286b78f6f33c521a36b5cbd5bd697c0d66217d8856f443aeb9dd77/versioneer-0.29-py3-none-any.whl
   default:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
@@ -1249,8 +1250,8 @@ packages:
   requires_python: '>=3.9'
 - pypi: .
   name: piconnect
-  version: 0.12.1
-  sha256: 0a0d57acab6ec6901b10447fff8f9a83fc4a0c810a07181a603930244423da63
+  version: 0.12.1+10.g0d6967d.dirty
+  sha256: 03748d8d76e62852230aeb0a15e3e223c194fce3ef0bf3659c57235cbbac9741
   requires_dist:
   - pandas>=2,<3
   - numpy>=2,<3
@@ -1816,6 +1817,13 @@ packages:
   purls: []
   size: 751362
   timestamp: 1741043402335
+- pypi: https://files.pythonhosted.org/packages/b0/79/f0f1ca286b78f6f33c521a36b5cbd5bd697c0d66217d8856f443aeb9dd77/versioneer-0.29-py3-none-any.whl
+  name: versioneer
+  version: '0.29'
+  sha256: 0f1a137bb5d6811e96a79bb0486798aeae9b9c6efc24b389659cebb0ee396cb9
+  requires_dist:
+  - tomli ; python_full_version < '3.11' and extra == 'toml'
+  requires_python: '>=3.7'
 - conda: https://conda.anaconda.org/conda-forge/noarch/wheel-0.45.1-pyhd8ed1ab_1.conda
   sha256: 1b34021e815ff89a4d902d879c3bd2040bc1bd6169b32e9427497fa05c55f1ce
   md5: 75cb7132eb58d97896e173ef12ac9986

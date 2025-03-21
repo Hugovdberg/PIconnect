@@ -1,5 +1,6 @@
 [project]
 name = "PIconnect"
+description = "PIconnect - Connector to the OSISoft PI and PI-AF databases."
 authors = [{ name = "Hugo Lapre", email = "dev@tbdwebdesign.nl" }]
 readme = "README.rst"
 license = "MIT"
@@ -16,7 +17,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
 ]
-dynamic = ["version", "description"]
+dynamic = ["version"]
 requires-python = ">=3.11"
 dependencies = ["pandas>=2,<3", "numpy>=2,<3", "pythonnet>=3", "wrapt>=1.17,<2"]
 
@@ -27,7 +28,7 @@ Issues = "https://github.com/Hugovdberg/PIconnect/issues"
 Documentation = "https://piconnect.readthedocs.io/en/stable/"
 
 [build-system]
-requires = ["setuptools", "versioneer[toml]"]
+requires = ["setuptools>=77", "versioneer[toml]>=0.28"]
 build-backend = "setuptools.build_meta"
 
 [tool.pixi.project]
@@ -45,6 +46,7 @@ python = "*"
 
 [tool.pixi.feature.build.pypi-dependencies]
 build = "*"
+versioneer = { version = ">=0.28", extras = ["toml"] }
 
 [tool.pixi.feature.build.tasks]
 build = "python -m build --outdir ./dist"
