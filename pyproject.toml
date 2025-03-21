@@ -72,6 +72,9 @@ test = "pytest"
 Sphinx = "*"
 pydata-sphinx-theme = "*"
 
+[tool.pixi.feature.docs.tasks]
+build-docs = "sphinx-build -T -b html docs docs/_build/html"
+
 [tool.pixi.feature.py311.dependencies]
 python = "3.11.*"
 

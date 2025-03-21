@@ -1250,8 +1250,8 @@ packages:
   requires_python: '>=3.9'
 - pypi: .
   name: piconnect
-  version: 0.12.1+12.gc972792.dirty
-  sha256: b529ee38209446cf3a35968363b7d25b1c460be7fd3139d6994663643b54bf6c
+  version: 0.12.1+15.g61afefb.dirty
+  sha256: 664b125f37369daaeeb1a3a24f9a8693bc45342de0e4b246c06889315671fc04
   requires_dist:
   - pandas>=2,<3
   - numpy>=2,<3
