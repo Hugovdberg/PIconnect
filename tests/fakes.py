@@ -77,7 +77,8 @@ class FakePIPoint_(Generic[_a]):
     ):
         self.Name = tag
         self.values = [
-            FakeAFValue(value, timestamp) for value, timestamp in zip(values, timestamps)
+            FakeAFValue(value, timestamp)
+            for value, timestamp in zip(values, timestamps, strict=True)
         ]
         self.attributes = [FakeKeyValue(*att) for att in attributes.items()]
 
