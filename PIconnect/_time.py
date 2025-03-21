@@ -2,9 +2,8 @@
 
 # pyright: strict
 import datetime
-from typing import Union
-
 import zoneinfo
+from typing import Union
 
 from PIconnect import AF, PIConfig
 from PIconnect.AFSDK import System
