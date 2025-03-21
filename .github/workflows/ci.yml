@@ -18,79 +18,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v5
+      - name: Set up environment
+        uses: prefix-dev/setup-pixi@v0.8.3
         with:
-          python-version: '3.10'
+            environments: >-
+                lint
+                test
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install ruff
-
-      - name: Lint with ruff
-        run: |
-          ruff check .
-
-      - name: Check formatting with ruff
-        run: |
-          ruff format --check
+      - name: Run checks
+        run: pixi run format
 
   run_tests:
-    name: Test with Python ${{ matrix.python-version }}
+    name: Test with Python ${{ matrix.environment }}
     runs-on: windows-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: [
-          '3.11'
-          , '3.12'
-          , '3.13'
-        ]
+        environment: [py311, py312, py313]
     needs: lint_and_check_format
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Set up environment ${{ matrix.environment }}
+        uses: prefix-dev/setup-pixi@v0.8.3
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install pytest wheel
-          python -m pip install pytest-cov
-          python -m pip install --exists-action=w --no-cache-dir -r requirements_dev.txt
-          python -m pip install .
+            environments: ${{ matrix.environment }}
 
       - name: Test with pytest
-        run: |
-          pytest
-
-  # codacy-security-scan:
-  #   name: Codacy Security Scan
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-
-  #     - name: Run Codacy Analysis CLI
-  #       uses: codacy/codacy-analysis-cli-action@master
-  #       with:
-  #         output: results.sarif
-  #         format: sarif
-  #         # Adjust severity of non-security issues
-  #         gh-code-scanning-compat: true
-  #         # Force 0 exit code to allow SARIF file generation
-  #         # This will hand over control about PR rejection to the GitHub side
-  #         max-allowed-issues: 2147483647
-  #         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-  #         # or
-  #         # api-token: ${{ secrets.CODACY_API_TOKEN }}
-  #         upload: true
-  #     # Upload the SARIF file generated in the previous step
-  #     - name: Upload SARIF results file
-  #       uses: github/codeql-action/upload-sarif@main
-  #       with:
-  #         sarif_file: results.sarif
+        run: pixi run -e ${{ matrix.environment }} test
