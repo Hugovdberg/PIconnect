@@ -11,6 +11,7 @@ build:
       - asdf install pixi latest
       - asdf global pixi latest
       - pixi install -e docs
+      - pixi shell -e docs
     build:
       html:
         - pixi run build-docs $READTHEDOCS_OUTPUT/html/
