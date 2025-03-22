@@ -7,9 +7,10 @@ build:
     - asdf plugin add pixi
     - asdf install pixi latest
     - asdf global pixi latest
-    - pixi run build-docs
+    - pixi install -e docs
     - mkdir -p $READTHEDOCS_OUTPUT/html/
-    - cp -r docs/_build/html/** $READTHEDOCS_OUTPUT/html/
+    - pixi task ls
+    - pixi run build-docs $READTHEDOCS_OUTPUT/html/
 
 formats: all
 
