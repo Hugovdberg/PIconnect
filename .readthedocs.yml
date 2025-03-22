@@ -2,19 +2,14 @@
 version: 2
 
 build:
-  os: ubuntu-lts-latest
-  tools:
-    python: "3.13"
-  jobs:
-    create_environment:
-      - asdf plugin add pixi
-      - asdf install pixi latest
-      - asdf global pixi latest
-      - pixi install -e docs
-      - pixi shell -e docs
-    build:
-      html:
-        - pixi run build-docs $READTHEDOCS_OUTPUT/html/
+  os: windows-latest
+  commands:
+    - asdf plugin add pixi
+    - asdf install pixi latest
+    - asdf global pixi latest
+    - pixi install -e docs
+    - mkdir -p $READTHEDOCS_OUTPUT/html/
+    - pixi run build-docs $READTHEDOCS_OUTPUT/html/
 
 formats: all
 
