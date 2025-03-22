@@ -8,7 +8,7 @@ from PIconnect.PIAF import PIAFDatabase
 
 # pragma pylint: enable=unused-import
 
-__version__ = "0.11.2"
+__version__ = "0.11.3"
 __sdk_version = tuple(int(x) for x in AF.PISystems().Version.split("."))
 
 __all__ = [
