@@ -2,7 +2,7 @@
 
 import dataclasses
 import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from PIconnect import AF, PIData, PIPoint, _time
 
@@ -21,7 +21,7 @@ class AFDataReference:
         return self.data_reference.Name
 
     @property
-    def pi_point(self) -> Optional[PIPoint.PIPoint]:
+    def pi_point(self) -> PIPoint.PIPoint | None:
         if self.data_reference.PIPoint is not None:
             return PIPoint.PIPoint(self.data_reference.PIPoint)
 
@@ -56,14 +56,14 @@ class PIAFAttribute(PIData.PISeriesContainer):
         return self.attribute.Name
 
     @property
-    def parent(self) -> Optional["PIAFAttribute"]:
+    def parent(self) -> "PIAFAttribute | None":
         """Return the parent attribute of the current attribute, or None if it has none."""
         if not self.attribute.Parent:
             return None
         return self.__class__(self.element, self.attribute.Parent)
 
     @property
-    def children(self) -> Dict[str, "PIAFAttribute"]:
+    def children(self) -> dict[str, "PIAFAttribute"]:
         """Return a dictionary of the direct child attributes of the current attribute."""
         return {a.Name: self.__class__(self.element, a) for a in self.attribute.Attributes}
 

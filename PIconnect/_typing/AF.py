@@ -1,6 +1,6 @@
 """Mock classes for the AF namespace of the OSIsoft PI-AF SDK."""
 
-from typing import Iterator, List
+from collections.abc import Iterator
 
 from . import PI, Asset, Data, EventFrame, Time, UnitsOfMeasure
 
@@ -22,8 +22,8 @@ class AFCategory:
     """Mock class of the AF.AFCategory class."""
 
 
-class AFCategories(List[AFCategory]):
-    def __init__(self, elements: List[AFCategory]) -> None:
+class AFCategories(list[AFCategory]):
+    def __init__(self, elements: list[AFCategory]) -> None:
         self.Count: int
         self._values = elements
 
@@ -33,7 +33,9 @@ class AFDatabase:
 
     def __init__(self, name: str) -> None:
         self.Name = name
-        self.Elements = Asset.AFElements([Asset.AFElement("TestElement")])
+        self.Elements = Asset.AFElements(
+            [Asset.AFElement("TestElement"), Asset.AFElement("BaseElement")]
+        )
         self.Tables = Asset.AFTables([Asset.AFTable("TestTable")])
 
 

@@ -3,12 +3,11 @@
 # pyright: strict
 import datetime
 import zoneinfo
-from typing import Union
 
 from PIconnect import AF, PIConfig
 from PIconnect.AFSDK import System
 
-TimeLike = Union[str, datetime.datetime]
+TimeLike = str | datetime.datetime
 
 
 def to_af_time_range(start_time: TimeLike, end_time: TimeLike) -> AF.Time.AFTimeRange:
