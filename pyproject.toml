@@ -40,6 +40,7 @@ platforms = ["win-64", "linux-64"]
 PIconnect = { path = ".", editable = true }
 
 [tool.pixi.tasks]
+test = { depends-on = ["test311", "test312", "test313", "format"] }
 
 [tool.pixi.feature.build.dependencies]
 python = "*"
@@ -66,7 +67,6 @@ codecov = "*"
 coverage = "*"
 
 [tool.pixi.feature.test.tasks]
-test = "pytest"
 
 [tool.pixi.feature.docs]
 platforms = ["linux-64", "win-64"]
@@ -81,11 +81,20 @@ build-docs = "sphinx-build -T -b html docs"
 [tool.pixi.feature.py311.dependencies]
 python = "3.11.*"
 
+[tool.pixi.feature.py311.tasks]
+test311 = "pytest"
+
 [tool.pixi.feature.py312.dependencies]
 python = "3.12.*"
 
+[tool.pixi.feature.py312.tasks]
+test312 = "pytest"
+
 [tool.pixi.feature.py313.dependencies]
 python = "3.13.*"
+
+[tool.pixi.feature.py313.tasks]
+test313 = "pytest"
 
 [tool.pixi.environments]
 build = { features = ["build"], no-default-feature = true }
