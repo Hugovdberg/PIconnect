@@ -1,4 +1,4 @@
-"""Auxiliary classes for PI Point and PIAFAttribute objects."""
+"""Auxipublish-to-pypiliary classes for PI Point and PIAFAttribute objects."""
 
 import abc
 import datetime
@@ -157,7 +157,8 @@ class PISeriesContainer(abc.ABC):
                 *[
                     (_time.timestamp_to_index(value.Timestamp.UtcTime), value.Value)
                     for value in summary.Value
-                ]
+                ],
+                strict=True,
             )
             df = df.join(  # type: ignore
                 pd.DataFrame(data={key: values}, index=timestamps), how="outer"
@@ -536,7 +537,8 @@ class PISeriesContainer(abc.ABC):
                 *[
                     (_time.timestamp_to_index(value.Timestamp.UtcTime), value.Value)
                     for value in summary.Value
-                ]
+                ],
+                strict=True,
             )
             df = df.join(  # type: ignore
                 pd.DataFrame(data={key: values}, index=timestamps), how="outer"

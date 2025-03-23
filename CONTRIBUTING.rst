@@ -64,12 +64,11 @@ Ready to contribute? Here's how to set up `PIconnect` for local development.
 
     $ git clone git@github.com:your_name_here/PIconnect.git
 
-3. Install your local copy into a virtualenv. Assuming you have pipenv
+3. Install your local copy into a virtualenv. Assuming you have `pixi <https://pixi.sh>`_
 installed, this is how you set up your fork for local development::
 
     $ cd PIconnect/
-    $ pipenv sync -d
-    $ pipenv install -e .
+    $ pixi install
 
 4. Create a branch for local development::
 
@@ -77,21 +76,15 @@ installed, this is how you set up your fork for local development::
 
    Now you can make your changes locally.
 
-5. When you're done making changes, format the code with black, check that your changes
-pass pylint and the tests, including testing other Python versions with tox::
+5. When you're done making changes, check formatting and lint errors and run the tests::
 
-    $ black PIconnect
-    $ pylint PIconnect tests
-    $ python setup.py test or py.test
-    $ tox
-
-   Pylint and tox will be installed automatically by pipenv.
+    $ pixi run test
 
 6. Commit your changes and push your branch to GitHub::
 
     $ git add .
     $ git commit -m "Your detailed description of your changes."
-    $ git push origin name-of-your-bugfix-or-feature
+    $ git push -u origin name-of-your-bugfix-or-feature
 
 7. Submit a pull request through the GitHub website.
 
@@ -104,7 +97,7 @@ Before you submit a pull request, check that it meets these guidelines:
 2. If the pull request adds functionality, the docs should be updated. Put
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
-3. The pull request should work for Python 3.6, 3.7, 3.8 and 3.9. Testing is automated
+3. The pull request should work for Python 3.11, 3.12, and 3.13. Testing is automated
    through GitHub Actions, so you get feedback on your pull request where things are not
    up to standards.
 
@@ -113,4 +106,8 @@ Tips
 
 To run a subset of tests::
 
-$ py.test tests.test_piconnect
+$ pixi run -e test pytest tests.test_piconnect
+
+To run it with a specific Python version::
+
+$ pixi run -e py311 pytest tests.test_piconnect

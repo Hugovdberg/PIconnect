@@ -77,7 +77,8 @@ class FakePIPoint_(Generic[_a]):
     ):
         self.Name = tag
         self.values = [
-            FakeAFValue(value, timestamp) for value, timestamp in zip(values, timestamps)
+            FakeAFValue(value, timestamp)
+            for value, timestamp in zip(values, timestamps, strict=True)
         ]
         self.attributes = [FakeKeyValue(*att) for att in attributes.items()]
 
@@ -146,7 +147,7 @@ class VirtualTestCase(object):
         self.point = PI.PIPoint(FakePIPoint(pi_point))
 
 
-@pytest.fixture()
+@pytest.fixture
 def pi_point() -> VirtualTestCase:
     """Return a VirtualTestCase object."""
     return VirtualTestCase()

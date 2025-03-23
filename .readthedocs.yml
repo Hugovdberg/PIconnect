@@ -3,8 +3,14 @@ version: 2
 
 build:
   os: ubuntu-lts-latest
-  tools:
-    python: "3.12"
+  commands:
+    - asdf plugin add pixi
+    - asdf install pixi latest
+    - asdf global pixi latest
+    - pixi install -e docs
+    - mkdir -p $READTHEDOCS_OUTPUT/html/
+    - pixi task ls
+    - pixi run build-docs $READTHEDOCS_OUTPUT/html/
 
 formats: all
 
@@ -12,7 +18,3 @@ sphinx:
   builder: html
   configuration: docs/conf.py
   fail_on_warning: false
-
-python:
-  install:
-    - requirements: requirements_dev.txt
