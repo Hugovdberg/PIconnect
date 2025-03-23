@@ -102,9 +102,14 @@ class PIAFDatabase(object):
     def _initialise_database(
         self, server: ServerSpec, database: Optional[str]
     ) -> AF.AFDatabase:
-        default_db = self.server.Databases.DefaultDatabase
+        def default_db():
+            default = self.server.Databases.DefaultDatabase
+            if default is None:
+                raise ValueError("No database specified and no default database found.")
+            return default
+
         if database is None:
-            return default_db
+            return default_db()
 
         databases = cast(dict[str, AF.AFDatabase], server["databases"])
         if database not in databases:
@@ -112,7 +117,7 @@ class PIAFDatabase(object):
             warnings.warn(
                 message=message.format(database=database), category=UserWarning, stacklevel=2
             )
-            return default_db
+            return default_db()
 
         return databases[database]
 
