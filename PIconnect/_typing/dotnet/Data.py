@@ -1,6 +1,7 @@
 """Mock classes for the System.Data module."""
 
-from typing import Any, Dict, Iterator, List
+from collections.abc import Iterator
+from typing import Any
 
 __all__ = [
     "DataRow",
@@ -12,14 +13,14 @@ __all__ = [
 
 
 class DataRow:
-    __fields: Dict[str, Any]
+    __fields: dict[str, Any]
 
     def __getitem__(self, key: str) -> Any:
         return self.__fields[key]
 
 
 class DataRowCollection:
-    rows: List[DataRow]
+    rows: list[DataRow]
 
     def __iter__(self) -> Iterator[DataRow]:
         yield from self.rows
@@ -31,7 +32,7 @@ class DataColumn:
 
 
 class DataColumnCollection:
-    columns: List[DataColumn]
+    columns: list[DataColumn]
 
     def __iter__(self) -> Iterator[DataColumn]:
         yield from self.columns
@@ -39,5 +40,5 @@ class DataColumnCollection:
 
 class DataTable:
     Name: str
-    Rows: List[DataRow]
-    Columns: List[DataColumn]
+    Rows: list[DataRow]
+    Columns: list[DataColumn]

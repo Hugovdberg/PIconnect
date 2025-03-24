@@ -1,7 +1,7 @@
 """Mock classes for the AF module."""
 
 from collections.abc import Iterator
-from typing import Optional, Union, cast
+from typing import cast
 
 from . import AF, Data, Generic
 from . import UnitsOfMeasure as UOM
@@ -23,7 +23,7 @@ __all__ = [
 
 
 class AFAttribute:
-    def __init__(self, name: str, parent: Optional["AFAttribute"] = None) -> None:
+    def __init__(self, name: str, parent: "AFAttribute | None" = None) -> None:
         self.Attributes: AFAttributes
         if parent is None:
             self.Attributes = AFAttributes(
@@ -55,7 +55,7 @@ class AFAttributes(list[AFAttribute]):
 
 
 class AFBaseElement:
-    def __init__(self, name: str, parent: Optional["AFElement"] = None) -> None:
+    def __init__(self, name: str, parent: "AFElement | None" = None) -> None:
         self.Attributes = AFAttributes(
             [
                 AFAttribute("Attribute1"),
@@ -86,7 +86,7 @@ class AFElements(list[AFElement]):
         self.Count: int
         self._values = elements
 
-    def get_Item(self, name: Union[str, int]) -> AFElement:
+    def get_Item(self, name: str | int) -> AFElement:
         """Stub for the indexer."""
         if isinstance(name, int):
             return self._values[name]
@@ -104,7 +104,7 @@ class AFDataReference:
     from . import PI
 
     def __init__(
-        self, name: str, attribute: AFAttribute, pi_point: Optional[PI.PIPoint] = None
+        self, name: str, attribute: AFAttribute, pi_point: PI.PIPoint | None = None
     ) -> None:
         self.Attribute = attribute
         self.Name = name

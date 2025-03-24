@@ -5,9 +5,11 @@
         "*.egg-info/*",
         "build/*",
         "dist/*",
-        ".tox/*"
+        ".tox/*",
+        "PIconnect/_versions.py"
     ],
     "ignore": [
-        "PIconnect/_operators.py"
-    ]
+    ],
+    "pythonVersion": "3.10",
+    "deprecateTypingAliases": true
 }

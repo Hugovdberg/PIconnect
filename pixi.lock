@@ -2454,8 +2454,8 @@ packages:
   timestamp: 1726879653675
 - pypi: .
   name: piconnect
-  version: 0.12.1+32.g454b892.dirty
-  sha256: 72d6e0a9b6f6cdf06448bd9c79f6bb9ce2dd1afe6aeec3e6fa9aa787ea9462e6
+  version: 0.12.3+5.g8fa1ff4.dirty
+  sha256: 223321229fde6ca63b82ad450dcb1291f5603baa47a47ee1b5f9832fbce20817
   requires_dist:
   - pandas>=2,<3
   - numpy>=2,<3
