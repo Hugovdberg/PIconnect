@@ -28,7 +28,7 @@ Issues = "https://github.com/Hugovdberg/PIconnect/issues"
 Documentation = "https://piconnect.readthedocs.io/en/stable/"
 
 [build-system]
-requires = ["setuptools>=77", "versioneer[toml]>=0.28"]
+requires = ["setuptools>=75", "versioneer[toml]>=0.28"]
 build-backend = "setuptools.build_meta"
 
 [tool.pixi.project]
