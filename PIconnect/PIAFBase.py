@@ -1,6 +1,6 @@
 """Base element class for PI AF elements."""
 
-from typing import Dict, Generic, TypeVar
+from typing import Generic, TypeVar
 
 import PIconnect.PIAFAttribute as PIattr
 from PIconnect import AF
@@ -26,7 +26,7 @@ class PIAFBaseElement(Generic[ElementType]):
         return self.element.Name
 
     @property
-    def attributes(self) -> Dict[str, PIattr.PIAFAttribute]:
+    def attributes(self) -> dict[str, PIattr.PIAFAttribute]:
         """Return a dictionary of the attributes of the current element."""
         return {a.Name: PIattr.PIAFAttribute(self.element, a) for a in self.element.Attributes}
 

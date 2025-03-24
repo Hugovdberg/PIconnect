@@ -1,6 +1,6 @@
 """PIPoint."""
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 import PIconnect._typing.AF as _AFtyping
 from PIconnect import AF, PIData, _time
@@ -56,13 +56,13 @@ class PIPoint(PIData.PISeriesContainer):
         return self.tag
 
     @property
-    def raw_attributes(self) -> Dict[str, Any]:
+    def raw_attributes(self) -> dict[str, Any]:
         """Return a dictionary of the raw attributes of the PI Point."""
         self.__load_attributes()
         return self.__raw_attributes
 
     @property
-    def units_of_measurement(self) -> Optional[str]:
+    def units_of_measurement(self) -> str | None:
         """Return the units of measument in which values for this PI Point are reported."""
         return self.raw_attributes["engunits"]
 

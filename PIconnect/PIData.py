@@ -2,7 +2,7 @@
 
 import abc
 import datetime
-from typing import Any, List, Optional
+from typing import Any
 
 import pandas as pd
 
@@ -24,9 +24,9 @@ class PISeries(pd.Series):  # type: ignore
     Parameters
     ----------
         tag (str): Name of the new series
-        timestamp (List[datetime]): List of datetime objects to
+        timestamp (list[datetime]): List of datetime objects to
             create the new index
-        value (List): List of values for the timeseries, should be equally long
+        value (list): List of values for the timeseries, should be equally long
             as the `timestamp` argument
         uom (str, optional): Defaults to None. Unit of measurement for the
             series
@@ -42,9 +42,9 @@ class PISeries(pd.Series):  # type: ignore
     def __init__(
         self,
         tag: str,
-        timestamp: List[datetime.datetime],
-        value: List[Any],
-        uom: Optional[str] = None,
+        timestamp: list[datetime.datetime],
+        value: list[Any],
+        uom: str | None = None,
         *args: Any,
         **kwargs: Any,
     ) -> None:
@@ -87,7 +87,7 @@ class PISeriesContainer(abc.ABC):
         summary_types: PIConsts.SummaryType,
         calculation_basis: PIConsts.CalculationBasis = _DEFAULT_CALCULATION_BASIS,
         filter_evaluation: PIConsts.ExpressionSampleType = _DEFAULT_FILTER_EVALUATION,
-        filter_interval: Optional[str] = None,
+        filter_interval: str | None = None,
         time_type: PIConsts.TimestampCalculation = PIConsts.TimestampCalculation.AUTO,
     ) -> pd.DataFrame:
         """Return one or more summary values for each interval within a time range.
@@ -259,8 +259,8 @@ class PISeriesContainer(abc.ABC):
         _filter_expression = self._normalize_filter_expression(filter_expression)
         pivalues = self._interpolated_values(time_range, _interval, _filter_expression)
 
-        timestamps: List[datetime.datetime] = []
-        values: List[Any] = []
+        timestamps: list[datetime.datetime] = []
+        values: list[Any] = []
         for value in pivalues:
             timestamps.append(_time.timestamp_to_index(value.Timestamp.UtcTime))
             values.append(value.Value)
@@ -393,8 +393,8 @@ class PISeriesContainer(abc.ABC):
 
         pivalues = self._recorded_values(time_range, _boundary_type, _filter_expression)
 
-        timestamps: List[datetime.datetime] = []
-        values: List[Any] = []
+        timestamps: list[datetime.datetime] = []
+        values: list[Any] = []
         for value in pivalues:
             timestamps.append(_time.timestamp_to_index(value.Timestamp.UtcTime))
             values.append(value.Value)
@@ -558,14 +558,14 @@ class PISeriesContainer(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def units_of_measurement(self) -> Optional[str]:
+    def units_of_measurement(self) -> str | None:
         """Return the units of measurment of the values in the current object."""
         pass
 
     def update_value(
         self,
         value: Any,
-        time: Optional[_time.TimeLike] = None,
+        time: _time.TimeLike | None = None,
         update_mode: PIConsts.UpdateMode = PIConsts.UpdateMode.NO_REPLACE,
         buffer_mode: PIConsts.BufferMode = PIConsts.BufferMode.BUFFER_IF_POSSIBLE,
     ) -> None:

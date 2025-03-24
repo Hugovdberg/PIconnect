@@ -1,7 +1,7 @@
 """Mock classes of the AF.PI namespace of the OSIsoft PI-AF SDK."""
 
 import enum
-from typing import Iterable, Iterator, List, Optional, Union
+from collections.abc import Iterable, Iterator
 
 from . import Data, Generic, Time, _values
 from . import dotnet as System
@@ -33,8 +33,8 @@ class PIServer:
 
     def Connect(
         self,
-        retry: Union[bool, System.Net.NetworkCredential],
-        authentication_mode: Optional[PIAuthenticationMode] = None,
+        retry: bool | System.Net.NetworkCredential,
+        authentication_mode: PIAuthenticationMode | None = None,
     ) -> None:
         """Stub for connecting to test server."""
         self._connected = True
@@ -82,14 +82,14 @@ class PIPoint:
     def FindPIPoints(
         connection: PIServer,
         query: str,
-        source: Optional[str],
-        attribute_names: Optional[Iterable[str]],
+        source: str | None,
+        attribute_names: Iterable[str] | None,
     ) -> Iterable["PIPoint"]:
         """Stub to mock querying PIPoints."""
         return []
 
     @staticmethod
-    def GetAttributes(names: List[str], /) -> Generic.PropertyDict:
+    def GetAttributes(names: list[str], /) -> Generic.PropertyDict:
         return Generic.PropertyDict([])
 
     @staticmethod
@@ -107,7 +107,7 @@ class PIPoint:
         return _values.AFValues()
 
     @staticmethod
-    def LoadAttributes(params: List[str], /) -> None:
+    def LoadAttributes(params: list[str], /) -> None:
         pass
 
     @staticmethod

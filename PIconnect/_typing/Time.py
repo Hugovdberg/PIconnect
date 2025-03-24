@@ -1,7 +1,5 @@
 """Mock classes for the AF.Time module."""
 
-from typing import Optional
-
 from . import dotnet as System
 
 
@@ -32,6 +30,6 @@ class AFTimeSpan:
         pass
 
     @staticmethod
-    def Parse(interval: Optional[str], /) -> "AFTimeSpan":
+    def Parse(interval: str | None, /) -> "AFTimeSpan":
         """Stub for parsing strings that should return a AFTimeSpan."""
         return AFTimeSpan()

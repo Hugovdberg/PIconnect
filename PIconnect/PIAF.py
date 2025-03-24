@@ -2,7 +2,7 @@
 
 import dataclasses
 import warnings
-from typing import Any, Optional, Union, cast
+from typing import Any, cast
 
 import pandas as pd
 
@@ -20,12 +20,12 @@ class PIAFServer:
     server: AF.PISystem
     databases: dict[str, AF.AFDatabase] = dataclasses.field(default_factory=dict)
 
-    def __getitem__(self, attr: str) -> Union[AF.PISystem, dict[str, AF.AFDatabase]]:
+    def __getitem__(self, attr: str) -> AF.PISystem | dict[str, AF.AFDatabase]:
         """Allow access to attributes as if they were dictionary items."""
         return getattr(self, attr)
 
 
-ServerSpec = dict[str, Union[AF.PISystem, dict[str, AF.AFDatabase]]]
+ServerSpec = dict[str, AF.PISystem | dict[str, AF.AFDatabase]]
 
 
 def _lookup_servers() -> dict[str, ServerSpec]:
@@ -59,7 +59,7 @@ def _lookup_servers() -> dict[str, ServerSpec]:
     }
 
 
-def _lookup_default_server() -> Optional[ServerSpec]:
+def _lookup_default_server() -> ServerSpec | None:
     servers = _lookup_servers()
     if AF.PISystems().DefaultPISystem:
         return servers[AF.PISystems().DefaultPISystem.Name]
@@ -75,14 +75,14 @@ class PIAFDatabase(object):
     version = "0.3.0"
 
     servers: dict[str, ServerSpec] = _lookup_servers()
-    default_server: Optional[ServerSpec] = _lookup_default_server()
+    default_server: ServerSpec | None = _lookup_default_server()
 
-    def __init__(self, server: Optional[str] = None, database: Optional[str] = None) -> None:
+    def __init__(self, server: str | None = None, database: str | None = None) -> None:
         server_spec = self._initialise_server(server)
         self.server: AF.PISystem = server_spec["server"]  # type: ignore
         self.database: AF.AFDatabase = self._initialise_database(server_spec, database)
 
-    def _initialise_server(self, server: Optional[str]) -> ServerSpec:
+    def _initialise_server(self, server: str | None) -> ServerSpec:
         if server is None:
             if self.default_server is None:
                 raise ValueError("No server specified and no default server found.")
@@ -99,9 +99,7 @@ class PIAFDatabase(object):
 
         return self.servers[server]
 
-    def _initialise_database(
-        self, server: ServerSpec, database: Optional[str]
-    ) -> AF.AFDatabase:
+    def _initialise_database(self, server: ServerSpec, database: str | None) -> AF.AFDatabase:
         def default_db():
             default = self.server.Databases.DefaultDatabase
             if default is None:
@@ -161,7 +159,7 @@ class PIAFDatabase(object):
         """Return a descendant of the database from an exact path."""
         return PIAFElement(self.database.Elements.get_Item(path))
 
-    def search(self, query: Union[str, list[str]]) -> list[PIAFAttribute.PIAFAttribute]:
+    def search(self, query: str | list[str]) -> list[PIAFAttribute.PIAFAttribute]:
         """Search PIAFAttributes by element|attribute path strings.
 
         Return a list of PIAFAttributes directly from a list of element|attribute path strings
@@ -220,7 +218,7 @@ class PIAFElement(PIAFBase.PIAFBaseElement[AF.Asset.AFElement]):
     version = "0.1.0"
 
     @property
-    def parent(self) -> Optional["PIAFElement"]:
+    def parent(self) -> "PIAFElement | None":
         """Return the parent element of the current element, or None if it has none."""
         if not self.element.Parent:
             return None
@@ -247,7 +245,7 @@ class PIAFEventFrame(PIAFBase.PIAFBaseElement[AF.EventFrame.AFEventFrame]):
         return self.element
 
     @property
-    def parent(self) -> Optional["PIAFEventFrame"]:
+    def parent(self) -> "PIAFEventFrame | None":
         """Return the parent element of the current event frame, or None if it has none."""
         if not self.element.Parent:
             return None
