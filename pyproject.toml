@@ -3,7 +3,7 @@ name = "PIconnect"
 description = "PIconnect - Connector to the OSISoft PI and PI-AF databases."
 authors = [{ name = "Hugo Lapre", email = "dev@tbdwebdesign.nl" }]
 readme = "README.rst"
-license = "MIT"
+license = { text = "MIT" }
 keywords = ["OSIsoft", "AVEVA", "PI", "Process Information", "PIconnect"]
 classifiers = [
   "Development Status :: 4 - Beta",
