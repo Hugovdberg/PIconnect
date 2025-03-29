@@ -6,7 +6,7 @@ import os
 import pathlib
 import sys
 from types import ModuleType
-from typing import TYPE_CHECKING, Optional, Union, cast
+from typing import TYPE_CHECKING, cast
 
 __all__ = ["AF", "System", "AF_SDK_VERSION"]
 
@@ -39,10 +39,10 @@ class PIConnector:
     #     return f"PIConnector({self.assembly_path}, AF SDK version: {self.version})"
 
 
-StrPath = Union[str, pathlib.Path]
+StrPath = str | pathlib.Path
 
 
-def get_PI_connector(assembly_path: Optional[StrPath] = None) -> PIConnector:
+def get_PI_connector(assembly_path: StrPath | None = None) -> PIConnector:
     """Return a new instance of the PI connector."""
     full_path = _get_SDK_path(assembly_path)
     if full_path is None:
@@ -88,7 +88,7 @@ def __fallback():
     return _af, _System, _AF_SDK_version
 
 
-def _get_SDK_path(full_path: Optional[StrPath] = None) -> Optional[pathlib.Path]:
+def _get_SDK_path(full_path: StrPath | None = None) -> pathlib.Path | None:
     if full_path:
         assembly_directories = [pathlib.Path(full_path)]
     else:
