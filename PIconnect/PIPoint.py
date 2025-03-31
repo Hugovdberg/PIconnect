@@ -3,7 +3,7 @@
 from typing import Any
 
 import PIconnect._typing.AF as _AFtyping
-from PIconnect import AF, PIData, _time
+from PIconnect import AF, PIData, Time
 
 
 class PIPoint(PIData.PISeriesContainer):
@@ -33,7 +33,7 @@ class PIPoint(PIData.PISeriesContainer):
     @property
     def created(self):
         """Return the creation datetime of a point."""
-        return _time.timestamp_to_index(self.raw_attributes["creationdate"])
+        return Time.timestamp_to_index(self.raw_attributes["creationdate"])
 
     @property
     def description(self):
@@ -48,7 +48,7 @@ class PIPoint(PIData.PISeriesContainer):
     @property
     def last_update(self):
         """Return the time at which the last value for this PI Point was recorded."""
-        return _time.timestamp_to_index(self.pi_point.CurrentValue().Timestamp.UtcTime)
+        return Time.timestamp_to_index(self.pi_point.CurrentValue().Timestamp.UtcTime)
 
     @property
     def name(self) -> str:

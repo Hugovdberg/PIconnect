@@ -4,7 +4,7 @@ import dataclasses
 import datetime
 from typing import Any
 
-from PIconnect import AF, PIData, PIPoint, _time
+from PIconnect import AF, PIData, PIPoint, Time
 
 from ._typing import AF as _AFtyping
 
@@ -75,7 +75,7 @@ class PIAFAttribute(PIData.PISeriesContainer):
     @property
     def last_update(self) -> datetime.datetime:
         """Return the time at which the current_value was last updated."""
-        return _time.timestamp_to_index(self.attribute.GetValue().Timestamp.UtcTime)
+        return Time.timestamp_to_index(self.attribute.GetValue().Timestamp.UtcTime)
 
     @property
     def units_of_measurement(self) -> str:

@@ -8,7 +8,7 @@ from PIconnect.PIAF import PIAFDatabase
 from . import _version
 
 __version__ = _version.get_versions()["version"]
-__sdk_version = tuple(int(x) for x in AF.PISystems().Version.split("."))
+__sdk_version = tuple(int(x) for x in AF_SDK_VERSION.split("."))
 
 __all__ = [
     "AF",

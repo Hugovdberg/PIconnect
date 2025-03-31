@@ -6,7 +6,8 @@ from typing import Any, cast
 
 import pandas as pd
 
-from PIconnect import AF, PIAFAttribute, PIAFBase, PIConsts, _time
+import PIconnect.AFSDK as SDK
+from PIconnect import PIAFBase, PIConsts, Search, Time
 from PIconnect._utils import InitialisationWarning
 from PIconnect.AFSDK import System
 
@@ -17,20 +18,20 @@ _DEFAULT_EVENTFRAME_SEARCH_MODE = PIConsts.EventFrameSearchMode.STARTING_AFTER
 class PIAFServer:
     """Reference to a PI AF server and its databases."""
 
-    server: AF.PISystem
-    databases: dict[str, AF.AFDatabase] = dataclasses.field(default_factory=dict)
+    server: SDK.AF.PISystem
+    databases: dict[str, SDK.AF.AFDatabase] = dataclasses.field(default_factory=dict)
 
-    def __getitem__(self, attr: str) -> AF.PISystem | dict[str, AF.AFDatabase]:
+    def __getitem__(self, attr: str) -> SDK.AF.PISystem | dict[str, SDK.AF.AFDatabase]:
         """Allow access to attributes as if they were dictionary items."""
         return getattr(self, attr)
 
 
-ServerSpec = dict[str, AF.PISystem | dict[str, AF.AFDatabase]]
+ServerSpec = dict[str, SDK.AF.PISystem | dict[str, SDK.AF.AFDatabase]]
 
 
 def _lookup_servers() -> dict[str, ServerSpec]:
     servers: dict[str, PIAFServer] = {}
-    for s in AF.PISystems():
+    for s in SDK.AF.PISystems():
         try:
             servers[s.Name] = server = PIAFServer(s)
             for d in s.Databases:
@@ -61,15 +62,15 @@ def _lookup_servers() -> dict[str, ServerSpec]:
 
 def _lookup_default_server() -> ServerSpec | None:
     servers = _lookup_servers()
-    if AF.PISystems().DefaultPISystem:
-        return servers[AF.PISystems().DefaultPISystem.Name]
+    if SDK.AF.PISystems().DefaultPISystem:
+        return servers[SDK.AF.PISystems().DefaultPISystem.Name]
     elif len(servers) > 0:
         return servers[list(_lookup_servers())[0]]
     else:
         return None
 
 
-class PIAFDatabase(object):
+class PIAFDatabase:
     """Context manager for connections to the PI Asset Framework database."""
 
     version = "0.3.0"
@@ -79,8 +80,9 @@ class PIAFDatabase(object):
 
     def __init__(self, server: str | None = None, database: str | None = None) -> None:
         server_spec = self._initialise_server(server)
-        self.server: AF.PISystem = server_spec["server"]  # type: ignore
-        self.database: AF.AFDatabase = self._initialise_database(server_spec, database)
+        self.server: SDK.AF.PISystem = server_spec["server"]  # type: ignore
+        self.database: SDK.AF.AFDatabase = self._initialise_database(server_spec, database)
+        self.search = Search.Search(self.database)
 
     def _initialise_server(self, server: str | None) -> ServerSpec:
         if server is None:
@@ -99,7 +101,9 @@ class PIAFDatabase(object):
 
         return self.servers[server]
 
-    def _initialise_database(self, server: ServerSpec, database: str | None) -> AF.AFDatabase:
+    def _initialise_database(
+        self, server: ServerSpec, database: str | None
+    ) -> SDK.AF.AFDatabase:
         def default_db():
             default = self.server.Databases.DefaultDatabase
             if default is None:
@@ -109,7 +113,7 @@ class PIAFDatabase(object):
         if database is None:
             return default_db()
 
-        databases = cast(dict[str, AF.AFDatabase], server["databases"])
+        databases = cast(dict[str, SDK.AF.AFDatabase], server["databases"])
         if database not in databases:
             message = 'Database "{database}" not found, using the default database.'
             warnings.warn(
@@ -185,18 +189,18 @@ class PIAFDatabase(object):
 
     def event_frames(
         self,
-        start_time: _time.TimeLike = "",
+        start_time: Time.TimeLike = "",
         start_index: int = 0,
         max_count: int = 1000,
         search_mode: PIConsts.EventFrameSearchMode = _DEFAULT_EVENTFRAME_SEARCH_MODE,
         search_full_hierarchy: bool = False,
     ) -> dict[str, "PIAFEventFrame"]:
         """Search for event frames in the database."""
-        _start_time = _time.to_af_time(start_time)
-        _search_mode = AF.EventFrame.AFEventFrameSearchMode(int(search_mode))
+        _start_time = Time.to_af_time(start_time)
+        _search_mode = SDK.AF.EventFrame.AFEventFrameSearchMode(int(search_mode))
         return {
             frame.Name: PIAFEventFrame(frame)
-            for frame in AF.EventFrame.AFEventFrame.FindEventFrames(
+            for frame in SDK.AF.EventFrame.AFEventFrame.FindEventFrames(
                 self.database,
                 None,
                 _start_time,

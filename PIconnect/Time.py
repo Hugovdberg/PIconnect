@@ -1,13 +1,15 @@
 """Time related functions and classes."""
 
-# pyright: strict
 import datetime
 import zoneinfo
+
+import pandas as pd  # type: ignore
 
 from PIconnect import AF, PIConfig
 from PIconnect.AFSDK import System
 
 TimeLike = str | datetime.datetime
+IntervalLike = str | datetime.timedelta | pd.Timedelta
 
 
 def to_af_time_range(start_time: TimeLike, end_time: TimeLike) -> AF.Time.AFTimeRange:
@@ -27,7 +29,7 @@ def to_af_time_range(start_time: TimeLike, end_time: TimeLike) -> AF.Time.AFTime
 
     Returns
     -------
-        :afsdk:`AF.Time.AFTimeRange <M_OSIsoft_AF_Time_AFTimeRange__ctor_1.htm>`:
+        :afsdk:`AF.Time.AFTimeRange <T_OSIsoft_AF_Time_AFTimeRange.htm>`:
             Time range covered by the start and end time.
     """
     if isinstance(start_time, datetime.datetime):
@@ -47,13 +49,31 @@ def to_af_time(time: TimeLike) -> AF.Time.AFTime:
 
     Returns
     -------
-        :afsdk:`AF.Time.AFTime <M_OSIsoft_AF_Time_AFTime__ctor_7.htm>`:
+        :afsdk:`AF.Time.AFTime <T_OSIsoft_AF_Time_AFTime.htm>`:
             AFTime version of time.
     """
     if isinstance(time, datetime.datetime):
         time = time.isoformat()
 
     return AF.Time.AFTime(time)
+
+
+def to_af_time_span(interval: IntervalLike) -> AF.Time.AFTimeSpan:
+    """Convert a time interval to a AFTimeSpan value.
+
+    Parameters
+    ----------
+        interval (str | datetime.timedelta | pd.Timedelta): Interval to convert to AFTimeSpan.
+
+    Returns
+    -------
+        :afsdk:`AF.Time.AFTimeSpan <T_OSIsoft_AF_Time_AFTimeSpan.htm>`:
+            AFTimeSpan version of interval.
+    """
+    if isinstance(interval, (datetime.timedelta, pd.Timedelta)):
+        interval = f"{interval.total_seconds()}s"
+
+    return AF.Time.AFTimeSpan.Parse(interval)
 
 
 def timestamp_to_index(timestamp: System.DateTime) -> datetime.datetime:

@@ -2,10 +2,10 @@
 
 from typing import Generic, TypeVar
 
+import PIconnect.AFSDK as SDK
 import PIconnect.PIAFAttribute as PIattr
-from PIconnect import AF
 
-ElementType = TypeVar("ElementType", bound=AF.Asset.AFBaseElement)
+ElementType = TypeVar("ElementType", bound=SDK.AF.Asset.AFBaseElement)
 
 
 class PIAFBaseElement(Generic[ElementType]):
@@ -31,7 +31,7 @@ class PIAFBaseElement(Generic[ElementType]):
         return {a.Name: PIattr.PIAFAttribute(self.element, a) for a in self.element.Attributes}
 
     @property
-    def categories(self) -> AF.AFCategories:
+    def categories(self) -> SDK.AF.AFCategories:
         """Return the categories of the current element."""
         return self.element.Categories
 
