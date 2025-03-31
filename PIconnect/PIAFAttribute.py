@@ -2,7 +2,8 @@
 
 import dataclasses
 import datetime
-from typing import Any
+from collections.abc import Iterator, Sequence
+from typing import Any, overload
 
 from PIconnect import AF, PIData, PIPoint, Time
 
@@ -31,11 +32,9 @@ class PIAFAttribute(PIData.PISeriesContainer):
 
     version = "0.1.0"
 
-    def __init__(
-        self, element: AF.Asset.AFBaseElement, attribute: AF.Asset.AFAttribute
-    ) -> None:
+    def __init__(self, attribute: AF.Asset.AFAttribute) -> None:
         super().__init__()
-        self.element = element
+        self.element = attribute.Element
         self.attribute = attribute
 
     def __repr__(self):
@@ -60,12 +59,12 @@ class PIAFAttribute(PIData.PISeriesContainer):
         """Return the parent attribute of the current attribute, or None if it has none."""
         if not self.attribute.Parent:
             return None
-        return self.__class__(self.element, self.attribute.Parent)
+        return self.__class__(self.attribute.Parent)
 
     @property
     def children(self) -> dict[str, "PIAFAttribute"]:
         """Return a dictionary of the direct child attributes of the current attribute."""
-        return {a.Name: self.__class__(self.element, a) for a in self.attribute.Attributes}
+        return {a.Name: self.__class__(a) for a in self.attribute.Attributes}
 
     @property
     def description(self) -> str:
@@ -184,3 +183,42 @@ class PIAFAttribute(PIData.PISeriesContainer):
             update_mode,
             buffer_mode,
         )
+
+
+class PIAFAttributeList(Sequence[PIAFAttribute]):
+    def __init__(self, attributes: Sequence[PIAFAttribute]) -> None:
+        self._attributes = attributes
+
+    @overload
+    def __getitem__(self, index: int | str) -> PIAFAttribute: ...
+    @overload
+    def __getitem__(self, index: slice) -> "PIAFAttributeList": ...
+    def __getitem__(self, index: int | str | slice) -> "PIAFAttribute | PIAFAttributeList":
+        """Return the attribute at the given index or the attribute with the given name."""
+        match index:
+            case int():
+                return self._attributes[index]
+            case str():
+                for attr in self._attributes:
+                    if attr.name == index:
+                        return attr
+                raise KeyError(f"Attribute {index} not found.")
+            case slice():
+                return PIAFAttributeList(self._attributes[index])
+            case _:
+                raise TypeError("Index must be an int or a string.")
+
+    def __len__(self) -> int:
+        """Return the number of attributes in the list."""
+        return len(self._attributes)
+
+    def __iter__(self) -> Iterator[PIAFAttribute]:
+        """Return an iterator over the attributes in the list."""
+        return iter(self._attributes)
+
+    def __reversed__(self) -> Iterator[PIAFAttribute]:
+        return reversed(self._attributes)
+
+    def __repr__(self) -> str:
+        """Return the string representation of the attribute list."""
+        return f"{self.__class__.__qualname__}({len(self._attributes)} attributes)"

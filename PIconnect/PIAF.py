@@ -4,8 +4,6 @@ import dataclasses
 import warnings
 from typing import Any, cast
 
-import pandas as pd
-
 import PIconnect.AFSDK as SDK
 from PIconnect import PIAFBase, PIConsts, Search, Time
 from PIconnect._utils import InitialisationWarning
@@ -150,42 +148,18 @@ class PIAFDatabase:
         return self.database.Name
 
     @property
-    def children(self) -> dict[str, "PIAFElement"]:
+    def children(self) -> dict[str, PIAFBase.PIAFElement]:
         """Return a dictionary of the direct child elements of the database."""
-        return {c.Name: PIAFElement(c) for c in self.database.Elements}
+        return {c.Name: PIAFBase.PIAFElement(c) for c in self.database.Elements}
 
     @property
-    def tables(self) -> dict[str, "PIAFTable"]:
+    def tables(self) -> dict[str, PIAFBase.PIAFTable]:
         """Return a dictionary of the tables in the database."""
-        return {t.Name: PIAFTable(t) for t in self.database.Tables}
+        return {t.Name: PIAFBase.PIAFTable(t) for t in self.database.Tables}
 
-    def descendant(self, path: str) -> "PIAFElement":
+    def descendant(self, path: str) -> PIAFBase.PIAFElement:
         """Return a descendant of the database from an exact path."""
-        return PIAFElement(self.database.Elements.get_Item(path))
-
-    def search(self, query: str | list[str]) -> list[PIAFAttribute.PIAFAttribute]:
-        """Search PIAFAttributes by element|attribute path strings.
-
-        Return a list of PIAFAttributes directly from a list of element|attribute path strings
-
-            like this:
-
-        list("BaseElement/childElement/childElement|Attribute|ChildAttribute|ChildAttribute",
-        "BaseElement/childElement/childElement|Attribute|ChildAttribute|ChildAttribute")
-
-        """
-        attributelist: list[PIAFAttribute.PIAFAttribute] = []
-        if isinstance(query, list):
-            return [y for x in query for y in self.search(x)]
-        if "|" in query:
-            splitpath = query.split("|")
-            elem = self.descendant(splitpath[0])
-            attribute = elem.attributes[splitpath[1]]
-            if len(splitpath) > 2:
-                for x in range(len(splitpath) - 2):
-                    attribute = attribute.children[splitpath[x + 2]]
-            attributelist.append(attribute)
-        return attributelist
+        return PIAFBase.PIAFElement(self.database.Elements.get_Item(path))
 
     def event_frames(
         self,
@@ -194,12 +168,12 @@ class PIAFDatabase:
         max_count: int = 1000,
         search_mode: PIConsts.EventFrameSearchMode = _DEFAULT_EVENTFRAME_SEARCH_MODE,
         search_full_hierarchy: bool = False,
-    ) -> dict[str, "PIAFEventFrame"]:
+    ) -> dict[str, PIAFBase.PIAFEventFrame]:
         """Search for event frames in the database."""
         _start_time = Time.to_af_time(start_time)
         _search_mode = SDK.AF.EventFrame.AFEventFrameSearchMode(int(search_mode))
         return {
-            frame.Name: PIAFEventFrame(frame)
+            frame.Name: PIAFBase.PIAFEventFrame(frame)
             for frame in SDK.AF.EventFrame.AFEventFrame.FindEventFrames(
                 self.database,
                 None,
@@ -214,79 +188,3 @@ class PIAFDatabase:
                 search_full_hierarchy,
             )
         }
-
-
-class PIAFElement(PIAFBase.PIAFBaseElement[AF.Asset.AFElement]):
-    """Container for PI AF elements in the database."""
-
-    version = "0.1.0"
-
-    @property
-    def parent(self) -> "PIAFElement | None":
-        """Return the parent element of the current element, or None if it has none."""
-        if not self.element.Parent:
-            return None
-        return self.__class__(self.element.Parent)
-
-    @property
-    def children(self) -> dict[str, "PIAFElement"]:
-        """Return a dictionary of the direct child elements of the current element."""
-        return {c.Name: self.__class__(c) for c in self.element.Elements}
-
-    def descendant(self, path: str) -> "PIAFElement":
-        """Return a descendant of the current element from an exact path."""
-        return self.__class__(self.element.Elements.get_Item(path))
-
-
-class PIAFEventFrame(PIAFBase.PIAFBaseElement[AF.EventFrame.AFEventFrame]):
-    """Container for PI AF Event Frames in the database."""
-
-    version = "0.1.0"
-
-    @property
-    def event_frame(self) -> AF.EventFrame.AFEventFrame:
-        """Return the underlying AF Event Frame object."""
-        return self.element
-
-    @property
-    def parent(self) -> "PIAFEventFrame | None":
-        """Return the parent element of the current event frame, or None if it has none."""
-        if not self.element.Parent:
-            return None
-        return self.__class__(self.element.Parent)
-
-    @property
-    def children(self) -> dict[str, "PIAFEventFrame"]:
-        """Return a dictionary of the direct child event frames of the current event frame."""
-        return {c.Name: self.__class__(c) for c in self.element.EventFrames}
-
-
-class PIAFTable:
-    """Container for PI AF Tables in the database."""
-
-    def __init__(self, table: AF.Asset.AFTable) -> None:
-        self._table = table
-
-    @property
-    def columns(self) -> list[str]:
-        """Return the names of the columns in the table."""
-        return [col.ColumnName for col in self._table.Table.Columns]
-
-    @property
-    def _rows(self) -> list[System.Data.DataRow]:
-        return self._table.Table.Rows
-
-    @property
-    def name(self) -> str:
-        """Return the name of the table."""
-        return self._table.Name
-
-    @property
-    def shape(self) -> tuple[int, int]:
-        """Return the shape of the table."""
-        return (len(self._rows), len(self.columns))
-
-    @property
-    def data(self) -> pd.DataFrame:
-        """Return the data in the table as a pandas DataFrame."""
-        return pd.DataFrame([{col: row[col] for col in self.columns} for row in self._rows])

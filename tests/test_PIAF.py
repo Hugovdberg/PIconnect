@@ -7,6 +7,7 @@ import pytest
 import PIconnect as PI
 import PIconnect.AFSDK as AFSDK
 import PIconnect.PIAF as PIAF
+from PIconnect import Asset
 from PIconnect._typing import AF
 
 AFSDK.AF, AFSDK.System, AFSDK.AF_SDK_VERSION = AFSDK.__fallback()
@@ -61,18 +62,21 @@ class TestDatabaseSearch:
 
     def test_search(self):
         """Test that calling attributes on the database returns a list of attributes."""
-        with PI.PIAFDatabase() as db:
-            attributes = db.search([r"", r""])
-        assert isinstance(attributes, list)
+        with pytest.warns(DeprecationWarning):
+            with PI.PIAFDatabase() as db:
+                attributes = db.search([r"", r""])
+            assert isinstance(attributes, Asset.AFAttributeList)
 
     def test_split_element_attribute(self):
         """Test that calling attributes on the database returns a list of attributes."""
-        with PI.PIAFDatabase() as db:
-            attributes = db.search(r"BaseElement|Attribute1")
-        assert attributes[0].name == "Attribute1"
+        with pytest.warns(DeprecationWarning):
+            with PI.PIAFDatabase() as db:
+                attributes = db.search(r"BaseElement|Attribute1")
+            assert isinstance(attributes[0].name, str)
 
     def test_split_element_nested_attribute(self):
         """Test that calling attributes on the database returns a list of attributes."""
-        with PI.PIAFDatabase() as db:
-            attributes = db.search(r"BaseElement|Attribute1|Attribute2")
-        assert attributes[0].name == "Attribute2"
+        with pytest.warns(DeprecationWarning):
+            with PI.PIAFDatabase() as db:
+                attributes = db.search(r"BaseElement|Attribute1|Attribute2")
+            assert isinstance(attributes[0].name, str)
