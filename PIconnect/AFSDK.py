@@ -1,13 +1,73 @@
 """AFSDK - Loads the .NET libraries from the OSIsoft AF SDK."""
 
+import dataclasses
 import logging
 import os
+import pathlib
 import sys
-import typing
+from types import ModuleType
+from typing import TYPE_CHECKING, cast
 
 __all__ = ["AF", "System", "AF_SDK_VERSION"]
 
 logger = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+    from ._typing import AFType, SystemType
+else:
+    AFType = ModuleType
+    SystemType = ModuleType
+
+
+@dataclasses.dataclass(kw_only=True)
+class PIConnector:
+    assembly_path: pathlib.Path
+    AF: AFType
+    System: SystemType
+
+    # def PIAFSystems(self) -> dict[str, "PIAFSystem"]:
+    #     return {srv.Name: PIAFSystem(srv) for srv in self.AF.PISystems}
+
+    # def PIServers(self) -> dict[str, "PIServer"]:
+    #     return {srv.Name: PIServer(srv) for srv in self.AF.PI.PIServers}
+
+    # @property
+    # def version(self) -> str:
+    #     return self.AF.PISystems().Version
+
+    # def __str__(self) -> str:
+    #     return f"PIConnector({self.assembly_path}, AF SDK version: {self.version})"
+
+
+StrPath = str | pathlib.Path
+
+
+def get_PI_connector(assembly_path: StrPath | None = None) -> PIConnector:
+    """Return a new instance of the PI connector."""
+    full_path = _get_SDK_path(assembly_path)
+    if full_path is None:
+        if assembly_path:
+            raise ImportError(f"PIAF SDK not found at '{assembly_path}'")
+        raise ImportError(
+            "PIAF SDK not found, check installation "
+            "or pass valid path to directory containing SDK assembly."
+        )
+    dotnetSDK = _get_dotnet_SDK(full_path)
+    return PIConnector(assembly_path=full_path, **dotnetSDK)
+
+
+def _get_dotnet_SDK(full_path: pathlib.Path) -> dict[str, ModuleType]:
+    import clr  # type: ignore
+
+    sys.path.append(str(full_path))
+    clr.AddReference("OSIsoft.AFSDK")  # type: ignore ; pylint: disable=no-member
+    import System  # type: ignore
+    from OSIsoft import AF  # type: ignore
+
+    _AF = cast(ModuleType, AF)
+    _System = cast(ModuleType, System)
+    return {"AF": _AF, "System": _System}
+
 
 # pragma pylint: disable=import-outside-toplevel
 
@@ -28,6 +88,26 @@ def __fallback():
     return _af, _System, _AF_SDK_version
 
 
+def _get_SDK_path(full_path: StrPath | None = None) -> pathlib.Path | None:
+    if full_path:
+        assembly_directories = [pathlib.Path(full_path)]
+    else:
+        installation_directories = {
+            os.getenv("PIHOME"),
+            "C:\\Program Files\\PIPC",
+            "C:\\Program Files (x86)\\PIPC",
+        }
+        assembly_directories = (
+            pathlib.Path(path) / "AF\\PublicAssemblies\\4.0\\"
+            for path in installation_directories
+            if path is not None
+        )
+    for AF_dir in assembly_directories:
+        logging.debug("Full path to potential SDK location: '%s'", AF_dir)
+        if AF_dir.is_dir():
+            return AF_dir
+
+
 if (
     os.getenv("GITHUB_ACTIONS", "false").lower() == "true"
     or os.getenv("TF_BUILD", "false").lower() == "true"
@@ -39,35 +119,22 @@ else:
 
     # Get the installation directory from the environment variable or fall back
     # to the Windows default installation path
-    installation_directories = [
-        os.getenv("PIHOME"),
-        "C:\\Program Files\\PIPC",
-        "C:\\Program Files (x86)\\PIPC",
-    ]
-    for directory in installation_directories:
-        logging.debug("Trying installation directory '%s'", directory)
-        if not directory:
-            continue
-        AF_dir = os.path.join(directory, "AF\\PublicAssemblies\\4.0\\")
-        logging.debug("Full path to potential SDK location: '%s'", AF_dir)
-        if os.path.isdir(AF_dir):
-            PIAF_SDK = AF_dir
-            break
-    else:
+    PIAF_SDK = _get_SDK_path()
+    if PIAF_SDK is None:
         raise ImportError("PIAF SDK not found, check installation")
 
-    sys.path.append(PIAF_SDK)
+    sys.path.append(str(PIAF_SDK))
 
     clr.AddReference("OSIsoft.AFSDK")  # type: ignore ; pylint: disable=no-member
 
     import System as _System  # type: ignore
     from OSIsoft import AF as _af  # type: ignore
 
-    _AF_SDK_version = typing.cast(str, _af.PISystems().Version)  # type: ignore ; pylint: disable=no-member
+    _AF_SDK_version = cast(str, _af.PISystems().Version)  # type: ignore ; pylint: disable=no-member
     print("OSIsoft(r) AF SDK Version: {}".format(_AF_SDK_version))
 
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     # This branch is separate from previous one as otherwise no typechecking takes place
     # on the main logic.
     _af, _System, _AF_SDK_version = __fallback()
