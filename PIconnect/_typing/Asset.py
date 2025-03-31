@@ -23,13 +23,19 @@ __all__ = [
 
 
 class AFAttribute:
-    def __init__(self, name: str, parent: "AFAttribute | None" = None) -> None:
+    def __init__(
+        self,
+        name: str,
+        parent: "AFAttribute | None" = None,
+        _element: "AFBaseElement | None" = None,
+    ) -> None:
         self.Attributes: AFAttributes
+        self.Element: "AFBaseElement" = AFBaseElement(name) if _element is None else _element
         if parent is None:
             self.Attributes = AFAttributes(
                 [
-                    AFAttribute("Attribute1", parent=self),
-                    AFAttribute("Attribute2", parent=self),
+                    AFAttribute("Attribute1", parent=self, _element=self.Element),
+                    AFAttribute("Attribute2", parent=self, _element=self.Element),
                 ]
             )
         self.Data: Data.AFData
@@ -43,6 +49,11 @@ class AFAttribute:
     def GetValue() -> AFValue:
         """Stub for getting a value."""
         return AFValue(0)
+
+    @staticmethod
+    def GetPath() -> str:
+        """Stub for getting the path."""
+        return "Path\\to\\the|attribute"
 
 
 class AFAttributes(list[AFAttribute]):
@@ -58,8 +69,8 @@ class AFBaseElement:
     def __init__(self, name: str, parent: "AFElement | None" = None) -> None:
         self.Attributes = AFAttributes(
             [
-                AFAttribute("Attribute1"),
-                AFAttribute("Attribute2"),
+                AFAttribute("Attribute1", _element=self),
+                AFAttribute("Attribute2", _element=self),
             ]
         )
         self.Categories: AF.AFCategories
@@ -98,6 +109,14 @@ class AFElements(list[AFElement]):
 
 class AFElementTemplate:
     """Mock class of the AF.Asset.AFElementTemplate class."""
+
+
+class AFEnumerationValue:
+    """Mock class of the AF.Asset.AFEnumerationValue class."""
+
+    def __init__(self, name: str, value: int) -> None:
+        self.Name = name
+        self.Value = value
 
 
 class AFDataReference:

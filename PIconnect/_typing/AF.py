@@ -2,13 +2,15 @@
 
 from collections.abc import Iterator
 
-from . import PI, Asset, Data, EventFrame, Time, UnitsOfMeasure
+from . import PI, Asset, Data, EventFrame, Search, Time, UnitsOfMeasure
+from .Database import AFDatabase
 
 __all__ = [
     "Asset",
     "Data",
     "EventFrame",
     "PI",
+    "Search",
     "Time",
     "UnitsOfMeasure",
     "AFDatabase",
@@ -28,17 +30,6 @@ class AFCategories(list[AFCategory]):
         self._values = elements
 
 
-class AFDatabase:
-    """Mock class of the AF.AFDatabase class."""
-
-    def __init__(self, name: str) -> None:
-        self.Name = name
-        self.Elements = Asset.AFElements(
-            [Asset.AFElement("TestElement"), Asset.AFElement("BaseElement")]
-        )
-        self.Tables = Asset.AFTables([Asset.AFTable("TestTable")])
-
-
 class PISystem:
     """Mock class of the AF.PISystem class."""
 
@@ -46,10 +37,11 @@ class PISystem:
         """Mock class for the AF.PISystem.Databases property."""
 
         def __init__(self) -> None:
-            self.DefaultDatabase = AFDatabase("TestDatabase")
+            self.DefaultDatabase: AFDatabase | None = AFDatabase("TestDatabase")
 
         def __iter__(self) -> Iterator[AFDatabase]:
-            return (x for x in [self.DefaultDatabase])
+            if self.DefaultDatabase is not None:
+                yield from [self.DefaultDatabase]
 
     def __init__(self, name: str) -> None:
         self.Name = name
