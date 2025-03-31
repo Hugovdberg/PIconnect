@@ -70,8 +70,8 @@ else:
 if typing.TYPE_CHECKING:
     # This branch is separate from previous one as otherwise no typechecking takes place
     # on the main logic.
-    _af, _System, _AF_SDK_version = __fallback()
-
-AF = _af
-System = _System
-AF_SDK_VERSION = _AF_SDK_version
+    from ._typing import AF, AF_SDK_VERSION, System
+else:
+    AF = _af
+    System = _System
+    AF_SDK_VERSION = _AF_SDK_version
