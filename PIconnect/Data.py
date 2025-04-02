@@ -4,7 +4,7 @@ import abc
 import datetime
 import enum
 from collections.abc import Callable
-from typing import Any, Concatenate, ParamSpec, TypeVar, cast
+from typing import Any, Concatenate, Literal, ParamSpec, TypeVar, cast
 
 import pandas as pd  # type: ignore
 
@@ -455,9 +455,7 @@ class DataContainer(abc.ABC):
             pd.Series: A pd.Series with a single row, with the corresponding time as
                 the index
         """
-        from . import Time as time_module
-
-        _time = time_module.to_af_time(time)
+        _time = Time.to_af_time(time)
         _retrieval_mode = SDK.AF.Data.AFRetrievalMode(int(retrieval_mode))
         pivalue = self._recorded_value(_time, _retrieval_mode)
         result = pd.Series(
@@ -735,6 +733,8 @@ class DataContainer(abc.ABC):
 DataContainerType = TypeVar("DataContainerType", bound=DataContainer)
 Parameters = ParamSpec("Parameters")
 
+Align = Literal["auto", "ffill", "bfill", "nearest", "time", False]
+
 
 class DataContainerCollection(AF.NamedItemList[DataContainerType]):
     """Container for a collection of data containers."""
@@ -747,24 +747,55 @@ class DataContainerCollection(AF.NamedItemList[DataContainerType]):
 
     def _combine_dfs_to_df(
         self,
-        func: Callable[Concatenate[DataContainerType, Parameters], pd.DataFrame],
+        func: Callable[Concatenate[DataContainerType, Parameters], pd.DataFrame | pd.Series],
+        _align: Align = False,
+        _add_name_to_index: bool = False,
         *args: Parameters.args,
         **kwargs: Parameters.kwargs,
     ) -> pd.DataFrame:
         """Combine the results of a function applied to each element in the collection."""
-        df = pd.DataFrame()
-        for element in self._elements:
+
+        def add_name_to_index(df: pd.DataFrame, element: DataContainerType) -> pd.DataFrame:
+            if _add_name_to_index:
+                return df.set_axis(  # type: ignore
+                    pd.MultiIndex.from_product([[element.name], df.columns]), axis=1
+                )
+            return df
+
+        def apply_func(element: DataContainerType) -> pd.DataFrame:
             result = func(element, *args, **kwargs)
-            df = pd.concat(
-                [
-                    df,
-                    result.set_axis(  # type: ignore
-                        pd.MultiIndex.from_product([[element.name], result.columns]), axis=1
-                    ),
-                ],
-                axis=1,
-            )
-        return df
+            match result:
+                case pd.DataFrame():
+                    df = result
+                case pd.Series():
+                    df = result.to_frame()
+            return add_name_to_index(df, element)
+
+        def align(df: pd.DataFrame) -> pd.DataFrame:
+            match _align:
+                case False:
+                    return df
+                case "auto":
+                    for col in df.columns.levels[0]:  # type: ignore
+                        if self[str(col)].stepped_data:  # type: ignore
+                            df[col] = df[col].ffill(axis=0)  # type: ignore
+                        else:
+                            df[col] = (
+                                df[col]
+                                .apply(pd.to_numeric, axis=1, errors="coerce")  # type: ignore
+                                .interpolate(method="time", axis=0)  # type: ignore
+                            )
+                    return df
+                case "ffill":
+                    return df.ffill(axis=0)  # type: ignore
+                case "bfill":
+                    return df.bfill(axis=0)  # type: ignore
+                case "nearest":
+                    return df.interpolate(method="nearest", axis=0)  # type: ignore
+                case "time":
+                    return df.interpolate(method="time", axis=0)  # type: ignore
+
+        return align(pd.concat(map(apply_func, self._elements), axis=1))
 
     @property
     def current_value(self) -> pd.Series:
@@ -785,22 +816,25 @@ class DataContainerCollection(AF.NamedItemList[DataContainerType]):
         filter_evaluation: ExpressionSampleType = _DEFAULT_FILTER_EVALUATION,
         filter_interval: Time.IntervalLike | None = None,
         time_type: TimestampCalculation = _DEFAULT_TIMESTAMP_CALCULATION,
+        align: Align = False,
     ) -> pd.DataFrame:
         """Return one or more summary values for each interval within a time range."""
         return self._combine_dfs_to_df(
             self._element_type.filtered_summaries,
-            start_time,
-            end_time,
-            interval,
-            filter_expression,
-            summary_types,
-            calculation_basis,
-            filter_evaluation,
-            filter_interval,
-            time_type,
+            _align=align,
+            _add_name_to_index=True,
+            start_time=start_time,
+            end_time=end_time,
+            interval=interval,
+            filter_expression=filter_expression,
+            summary_types=summary_types,
+            calculation_basis=calculation_basis,
+            filter_evaluation=filter_evaluation,
+            filter_interval=filter_interval,
+            time_type=time_type,
         )
 
-    def interpolated_value(self, time: Time.TimeLike) -> pd.DataFrame:
+    def interpolated_value(self, time: Time.TimeLike, align: Align = False) -> pd.DataFrame:
         """Return a pd.DataFrame with an interpolated value at the given time.
 
         .. warning::
@@ -823,17 +857,9 @@ class DataContainerCollection(AF.NamedItemList[DataContainerType]):
             pd.Series: A pd.Series with a single row, with the corresponding time as
                 the index
         """
-
-        def _interpolated_value(
-            element: DataContainerType,
-            time: Time.TimeLike,
-        ) -> pd.DataFrame:
-            return element.interpolated_value(time).to_frame()
-
         return self._combine_dfs_to_df(
-            _interpolated_value,
-            time,
-        ).droplevel(0, axis=1)
+            self._element_type.interpolated_value, _align=align, time=time
+        )
 
     def interpolated_values(
         self,
@@ -841,6 +867,7 @@ class DataContainerCollection(AF.NamedItemList[DataContainerType]):
         end_time: Time.TimeLike,
         interval: Time.IntervalLike,
         filter_expression: str = "",
+        align: Align = False,
     ) -> pd.DataFrame:
         """Return a pd.DataFrame of interpolated data.
 
@@ -883,12 +910,192 @@ class DataContainerCollection(AF.NamedItemList[DataContainerType]):
         -------
             pd.DataFrame: Timeseries of the values returned by the SDK
         """
+        return self._combine_dfs_to_df(
+            self._element_type.interpolated_values,
+            _align=align,
+            start_time=start_time,
+            end_time=end_time,
+            interval=interval,
+            filter_expression=filter_expression,
+        )
 
-        def _interpolated_values(
-            element: DataContainerType,
-        ) -> pd.DataFrame:
-            return element.interpolated_values(
-                start_time, end_time, interval, filter_expression
-            ).to_frame()
+    def recorded_value(
+        self,
+        time: Time.TimeLike,
+        retrieval_mode: RetrievalMode = RetrievalMode.AUTO,
+        align: Align = False,
+    ) -> pd.DataFrame:
+        """Return a pd.Series with the recorded value at or close to the given time.
 
-        return self._combine_dfs_to_df(_interpolated_values).droplevel(0, axis=1)
+        Parameters
+        ----------
+            time (str): String containing the date, and possibly time,
+                for which to retrieve the value. This is parsed, using
+                :afsdk:`AF.Time.AFTime <M_OSIsoft_AF_Time_AFTime__ctor_7.htm>`.
+            retrieval_mode (int or :any:`PIConsts.RetrievalMode`): Flag determining
+                which value to return if no value available at the exact requested
+                time.
+
+        Returns
+        -------
+            pd.Series: A pd.Series with a single row, with the corresponding time as
+                the index
+        """
+        return self._combine_dfs_to_df(
+            self._element_type.recorded_value,
+            _align=align,
+            time=time,
+            retrieval_mode=retrieval_mode,
+        )
+
+    def recorded_values(
+        self,
+        start_time: Time.TimeLike,
+        end_time: Time.TimeLike,
+        boundary_type: BoundaryType = BoundaryType.INSIDE,
+        filter_expression: str = "",
+        align: Align = False,
+    ) -> pd.DataFrame:
+        """Return a pd.Series of recorded data.
+
+        Data is returned between the given *start_time* and *end_time*,
+        inclusion of the boundaries is determined by the *boundary_type*
+        attribute. Both *start_time* and *end_time* are parsed by AF.Time and
+        allow for time specification relative to "now" by use of the asterisk.
+
+        By default the *boundary_type* is set to 'inside', which returns from
+        the first value after *start_time* to the last value before *end_time*.
+        The other options are 'outside', which returns from the last value
+        before *start_time* to the first value before *end_time*, and
+        'interpolate', which interpolates the first value to the given
+        *start_time* and the last value to the given *end_time*.
+
+        *filter_expression* is an optional string to filter the returned
+        values, see OSIsoft PI documentation for more information.
+
+        The AF SDK allows for inclusion of filtered data, with filtered values
+        marked as such. At this point PIconnect does not support this and
+        filtered values are always left out entirely.
+
+        Parameters
+        ----------
+            start_time (str or datetime): Containing the date, and possibly time,
+                from which to retrieve the values. This is parsed, together
+                with `end_time`, using :ref:`Time.to_af_time_range`.
+            end_time (str or datetime): Containing the date, and possibly time,
+                until which to retrieve values. This is parsed, together
+                with `start_time`, using :ref:`Time.to_af_time_range`.
+            boundary_type (BoundaryType): Specification for how to handle values near the
+                specified start and end time. Defaults to `BoundaryType.INSIDE`.
+            filter_expression (str, optional): Defaults to ''. Query on which
+                data to include in the results. See :ref:`filtering_values`
+                for more information on filter queries.
+
+        Returns
+        -------
+            pd.Series: Timeseries of the values returned by the SDK
+        """
+        return self._combine_dfs_to_df(
+            self._element_type.recorded_values,
+            _align=align,
+            start_time=start_time,
+            end_time=end_time,
+            boundary_type=boundary_type,
+            filter_expression=filter_expression,
+        )
+
+    def summary(
+        self,
+        start_time: Time.TimeLike,
+        end_time: Time.TimeLike,
+        summary_types: SummaryType,
+        calculation_basis: CalculationBasis = _DEFAULT_CALCULATION_BASIS,
+        time_type: TimestampCalculation = _DEFAULT_TIMESTAMP_CALCULATION,
+        align: Align = False,
+    ) -> pd.DataFrame:
+        """Return one or more summary values over a single time range.
+
+        Parameters
+        ----------
+            start_time (str or datetime): Containing the date, and possibly time,
+                from which to retrieve the values. This is parsed, together
+                with `end_time`, using :ref:`Time.to_af_time_range`.
+            end_time (str or datetime): Containing the date, and possibly time,
+                until which to retrieve values. This is parsed, together
+                with `start_time`, using :ref:`Time.to_af_time_range`.
+            summary_types (int or SummaryType): Type(s) of summaries
+                of the data within the requested time range.
+            calculation_basis (int or CalculationBasis, optional):
+                Event weighting within an interval. See :ref:`event_weighting`
+                and :any:`CalculationBasis` for more information. Defaults to
+                CalculationBasis.TIME_WEIGHTED.
+            time_type (int or TimestampCalculation, optional):
+                Timestamp to return for each of the requested summaries. See
+                :ref:`summary_timestamps` and :any:`TimestampCalculation` for
+                more information. Defaults to TimestampCalculation.AUTO.
+
+        Returns
+        -------
+            pandas.DataFrame: Dataframe with the unique timestamps as row index
+                and the summary name as column name.
+        """
+        return self._combine_dfs_to_df(
+            self._element_type.summary,
+            _align=align,
+            _add_name_to_index=True,
+            start_time=start_time,
+            end_time=end_time,
+            summary_types=summary_types,
+            calculation_basis=calculation_basis,
+            time_type=time_type,
+        )
+
+    def summaries(
+        self,
+        start_time: Time.TimeLike,
+        end_time: Time.TimeLike,
+        interval: Time.IntervalLike,
+        summary_types: SummaryType,
+        calculation_basis: CalculationBasis = _DEFAULT_CALCULATION_BASIS,
+        time_type: TimestampCalculation = _DEFAULT_TIMESTAMP_CALCULATION,
+        align: Align = False,
+    ) -> pd.DataFrame:
+        """Return one or more summary values for each interval within a time range.
+
+        Parameters
+        ----------
+            start_time (str or datetime): Containing the date, and possibly time,
+                from which to retrieve the values. This is parsed, together
+                with `end_time`, using :ref:`Time.to_af_time_range`.
+            end_time (str or datetime): Containing the date, and possibly time,
+                until which to retrieve values. This is parsed, together
+                with `start_time`, using :ref:`Time.to_af_time_range`.
+            interval (str, datetime.timedelta or pd.Timedelta): String containing the interval
+                at which to extract data. This is parsed using :ref:`Time.to_af_time_span`.
+            summary_types (int or PIConsts.SummaryType): Type(s) of summaries
+                of the data within the requested time range.
+            calculation_basis (int or PIConsts.CalculationBasis, optional):
+                Event weighting within an interval. See :ref:`event_weighting`
+                and :any:`CalculationBasis` for more information. Defaults to
+                CalculationBasis.TIME_WEIGHTED.
+            time_type (int or PIConsts.TimestampCalculation, optional):
+                Timestamp to return for each of the requested summaries. See
+                :ref:`summary_timestamps` and :any:`TimestampCalculation` for
+                more information. Defaults to TimestampCalculation.AUTO.
+
+        Returns
+        -------
+            pandas.DataFrame: Dataframe with the unique timestamps as row index
+                and the summary name as column name.
+        """
+        return self._combine_dfs_to_df(
+            self._element_type.summaries,
+            _align=align,
+            _add_name_to_index=True,
+            start_time=start_time,
+            end_time=end_time,
+            interval=interval,
+            summary_types=summary_types,
+            calculation_basis=calculation_basis,
+            time_type=time_type,
+        )
