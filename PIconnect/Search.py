@@ -133,8 +133,7 @@ class Search:
         if isinstance(query, list):
             for x in query:
                 attributelist.extend(self(x))
-            return attributelist
-        if "|" in query:
+        elif "|" in query:
             splitpath = query.split("|")
             elem = self._descendant(splitpath[0])
             attribute = elem.attributes[splitpath[1]]
