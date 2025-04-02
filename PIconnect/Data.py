@@ -220,6 +220,12 @@ class DataContainer(abc.ABC):
         pass
 
     @property
+    @abc.abstractmethod
+    def stepped_data(self) -> bool:
+        """Return True if the data is stepped, False if it is continuous."""
+        pass
+
+    @property
     def current_value(self) -> Any:
         """Return the current value of the attribute."""
         return self._current_value()

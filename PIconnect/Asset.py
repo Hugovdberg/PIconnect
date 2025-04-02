@@ -107,6 +107,11 @@ class AFAttribute(Data.DataContainer):
         return f"{self.__class__.__qualname__}({description}; Current Value: {value})"
 
     @property
+    def stepped_data(self) -> bool:
+        """Return True if the attribute is a stepped data type."""
+        return self.attribute.Step
+
+    @property
     def element(self) -> SDK.AF.Asset.AFBaseElement:
         """Return the element to which the attribute belongs."""
         return self.attribute.Element
@@ -295,6 +300,11 @@ class AFBaseElement(Generic[ElementType]):
     def description(self) -> str:
         """Return the description of the current element."""
         return self.element.Description
+
+    @property
+    def path(self) -> str:
+        """Return the path of the current element."""
+        return self.element.GetPath()
 
 
 class AFElement(AFBaseElement[SDK.AF.Asset.AFElement]):

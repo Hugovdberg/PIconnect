@@ -44,6 +44,7 @@ class AFAttribute:
         self.DefaultUOM = UOM.UOM()
         self.Name = name
         self.Parent = parent
+        self.Step = False
 
     @staticmethod
     def GetValue() -> AFValue:
@@ -86,6 +87,11 @@ class AFBaseElement:
             )
         self.Name = name
         self.Parent = parent
+
+    @staticmethod
+    def GetPath() -> str:
+        """Stub for getting the path."""
+        return "Path\\to\\the|element"
 
 
 class AFElement(AFBaseElement):
