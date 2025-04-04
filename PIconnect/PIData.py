@@ -4,10 +4,11 @@ import abc
 import datetime
 from typing import Any
 
-import pandas as pd
+import pandas as pd  # type: ignore
 
 import PIconnect._typing.AF as _AFtyping
-from PIconnect import AF, PIConsts, Time
+import PIconnect.AFSDK as SDK
+from PIconnect import PIConsts, Time
 
 __all__ = [
     "PISeries",
@@ -64,9 +65,9 @@ class PISeriesContainer(abc.ABC):
     version = "0.1.0"
 
     __boundary_types = {
-        "inside": AF.Data.AFBoundaryType.Inside,
-        "outside": AF.Data.AFBoundaryType.Outside,
-        "interpolate": AF.Data.AFBoundaryType.Interpolated,
+        "inside": SDK.AF.Data.AFBoundaryType.Inside,
+        "outside": SDK.AF.Data.AFBoundaryType.Outside,
+        "interpolate": SDK.AF.Data.AFBoundaryType.Interpolated,
     }
 
     @property
@@ -133,13 +134,13 @@ class PISeriesContainer(abc.ABC):
                 and the summary name as column name.
         """
         time_range = Time.to_af_time_range(start_time, end_time)
-        _interval = AF.Time.AFTimeSpan.Parse(interval)
+        _interval = SDK.AF.Time.AFTimeSpan.Parse(interval)
         _filter_expression = self._normalize_filter_expression(filter_expression)
-        _summary_types = AF.Data.AFSummaryTypes(int(summary_types))
-        _calculation_basis = AF.Data.AFCalculationBasis(int(calculation_basis))
-        _filter_evaluation = AF.Data.AFSampleType(int(filter_evaluation))
-        _filter_interval = AF.Time.AFTimeSpan.Parse(filter_interval)
-        _time_type = AF.Data.AFTimestampCalculation(int(time_type))
+        _summary_types = SDK.AF.Data.AFSummaryTypes(int(summary_types))
+        _calculation_basis = SDK.AF.Data.AFCalculationBasis(int(calculation_basis))
+        _filter_evaluation = SDK.AF.Data.AFSampleType(int(filter_evaluation))
+        _filter_interval = SDK.AF.Time.AFTimeSpan.Parse(filter_interval)
+        _time_type = SDK.AF.Data.AFTimestampCalculation(int(time_type))
         pivalues = self._filtered_summaries(
             time_range,
             _interval,
@@ -168,14 +169,14 @@ class PISeriesContainer(abc.ABC):
     @abc.abstractmethod
     def _filtered_summaries(
         self,
-        time_range: AF.Time.AFTimeRange,
-        interval: AF.Time.AFTimeSpan,
+        time_range: SDK.AF.Time.AFTimeRange,
+        interval: SDK.AF.Time.AFTimeSpan,
         filter_expression: str,
-        summary_types: AF.Data.AFSummaryTypes,
-        calculation_basis: AF.Data.AFCalculationBasis,
-        filter_evaluation: AF.Data.AFSampleType,
-        filter_interval: AF.Time.AFTimeSpan,
-        time_type: AF.Data.AFTimestampCalculation,
+        summary_types: SDK.AF.Data.AFSummaryTypes,
+        calculation_basis: SDK.AF.Data.AFCalculationBasis,
+        filter_evaluation: SDK.AF.Data.AFSampleType,
+        filter_interval: SDK.AF.Time.AFTimeSpan,
+        time_type: SDK.AF.Data.AFTimestampCalculation,
     ) -> _AFtyping.Data.SummariesDict:
         pass
 
@@ -209,7 +210,7 @@ class PISeriesContainer(abc.ABC):
         )
 
     @abc.abstractmethod
-    def _interpolated_value(self, time: AF.Time.AFTime) -> AF.Asset.AFValue:
+    def _interpolated_value(self, time: SDK.AF.Time.AFTime) -> SDK.AF.Asset.AFValue:
         pass
 
     def interpolated_values(
@@ -255,7 +256,7 @@ class PISeriesContainer(abc.ABC):
             PISeries: Timeseries of the values returned by the SDK
         """
         time_range = Time.to_af_time_range(start_time, end_time)
-        _interval = AF.Time.AFTimeSpan.Parse(interval)
+        _interval = SDK.AF.Time.AFTimeSpan.Parse(interval)
         _filter_expression = self._normalize_filter_expression(filter_expression)
         pivalues = self._interpolated_values(time_range, _interval, _filter_expression)
 
@@ -274,10 +275,10 @@ class PISeriesContainer(abc.ABC):
     @abc.abstractmethod
     def _interpolated_values(
         self,
-        time_range: AF.Time.AFTimeRange,
-        interval: AF.Time.AFTimeSpan,
+        time_range: SDK.AF.Time.AFTimeRange,
+        interval: SDK.AF.Time.AFTimeSpan,
         filter_expression: str,
-    ) -> AF.Asset.AFValues:
+    ) -> SDK.AF.Asset.AFValues:
         pass
 
     @property
@@ -313,7 +314,7 @@ class PISeriesContainer(abc.ABC):
         from . import Time as time_module
 
         _time = time_module.to_af_time(time)
-        _retrieval_mode = AF.Data.AFRetrievalMode(int(retrieval_mode))
+        _retrieval_mode = SDK.AF.Data.AFRetrievalMode(int(retrieval_mode))
         pivalue = self._recorded_value(_time, _retrieval_mode)
         return PISeries(  # type: ignore
             tag=self.name,
@@ -324,8 +325,8 @@ class PISeriesContainer(abc.ABC):
 
     @abc.abstractmethod
     def _recorded_value(
-        self, time: AF.Time.AFTime, retrieval_mode: AF.Data.AFRetrievalMode
-    ) -> AF.Asset.AFValue:
+        self, time: SDK.AF.Time.AFTime, retrieval_mode: SDK.AF.Data.AFRetrievalMode
+    ) -> SDK.AF.Asset.AFValue:
         pass
 
     def recorded_values(
@@ -408,10 +409,10 @@ class PISeriesContainer(abc.ABC):
     @abc.abstractmethod
     def _recorded_values(
         self,
-        time_range: AF.Time.AFTimeRange,
-        boundary_type: AF.Data.AFBoundaryType,
+        time_range: SDK.AF.Time.AFTimeRange,
+        boundary_type: SDK.AF.Data.AFBoundaryType,
         filter_expression: str,
-    ) -> AF.Asset.AFValues:
+    ) -> SDK.AF.Asset.AFValues:
         """Abstract implementation for recorded values.
 
         The internals for retrieving recorded values from PI and PI-AF are
@@ -457,9 +458,9 @@ class PISeriesContainer(abc.ABC):
                 and the summary name as column name.
         """
         time_range = Time.to_af_time_range(start_time, end_time)
-        _summary_types = AF.Data.AFSummaryTypes(int(summary_types))
-        _calculation_basis = AF.Data.AFCalculationBasis(int(calculation_basis))
-        _time_type = AF.Data.AFTimestampCalculation(int(time_type))
+        _summary_types = SDK.AF.Data.AFSummaryTypes(int(summary_types))
+        _calculation_basis = SDK.AF.Data.AFCalculationBasis(int(calculation_basis))
+        _time_type = SDK.AF.Data.AFTimestampCalculation(int(time_type))
         pivalues = self._summary(time_range, _summary_types, _calculation_basis, _time_type)
         df = pd.DataFrame()
         for summary in pivalues:
@@ -475,10 +476,10 @@ class PISeriesContainer(abc.ABC):
     @abc.abstractmethod
     def _summary(
         self,
-        time_range: AF.Time.AFTimeRange,
-        summary_types: AF.Data.AFSummaryTypes,
-        calculation_basis: AF.Data.AFCalculationBasis,
-        time_type: AF.Data.AFTimestampCalculation,
+        time_range: SDK.AF.Time.AFTimeRange,
+        summary_types: SDK.AF.Data.AFSummaryTypes,
+        calculation_basis: SDK.AF.Data.AFCalculationBasis,
+        time_type: SDK.AF.Data.AFTimestampCalculation,
     ) -> _AFtyping.Data.SummaryDict:
         pass
 
@@ -523,10 +524,10 @@ class PISeriesContainer(abc.ABC):
                 and the summary name as column name.
         """
         time_range = Time.to_af_time_range(start_time, end_time)
-        _interval = AF.Time.AFTimeSpan.Parse(interval)
-        _summary_types = AF.Data.AFSummaryTypes(int(summary_types))
-        _calculation_basis = AF.Data.AFCalculationBasis(int(calculation_basis))
-        _time_type = AF.Data.AFTimestampCalculation(int(time_type))
+        _interval = SDK.AF.Time.AFTimeSpan.Parse(interval)
+        _summary_types = SDK.AF.Data.AFSummaryTypes(int(summary_types))
+        _calculation_basis = SDK.AF.Data.AFCalculationBasis(int(calculation_basis))
+        _time_type = SDK.AF.Data.AFTimestampCalculation(int(time_type))
         pivalues = self._summaries(
             time_range, _interval, _summary_types, _calculation_basis, _time_type
         )
@@ -548,11 +549,11 @@ class PISeriesContainer(abc.ABC):
     @abc.abstractmethod
     def _summaries(
         self,
-        time_range: AF.Time.AFTimeRange,
-        interval: AF.Time.AFTimeSpan,
-        summary_types: AF.Data.AFSummaryTypes,
-        calculation_basis: AF.Data.AFCalculationBasis,
-        time_type: AF.Data.AFTimestampCalculation,
+        time_range: SDK.AF.Time.AFTimeRange,
+        interval: SDK.AF.Time.AFTimeSpan,
+        summary_types: SDK.AF.Data.AFSummaryTypes,
+        calculation_basis: SDK.AF.Data.AFCalculationBasis,
+        time_type: SDK.AF.Data.AFTimestampCalculation,
     ) -> _AFtyping.Data.SummariesDict:
         pass
 
@@ -583,19 +584,19 @@ class PISeriesContainer(abc.ABC):
         from . import Time as time_module
 
         if time is not None:
-            _value = AF.Asset.AFValue(value, time_module.to_af_time(time))
+            _value = SDK.AF.Asset.AFValue(value, time_module.to_af_time(time))
         else:
-            _value = AF.Asset.AFValue(value)
+            _value = SDK.AF.Asset.AFValue(value)
 
-        _update_mode = AF.Data.AFUpdateOption(int(update_mode))
-        _buffer_mode = AF.Data.AFBufferOption(int(buffer_mode))
+        _update_mode = SDK.AF.Data.AFUpdateOption(int(update_mode))
+        _buffer_mode = SDK.AF.Data.AFBufferOption(int(buffer_mode))
         self._update_value(_value, _update_mode, _buffer_mode)
 
     @abc.abstractmethod
     def _update_value(
         self,
-        value: AF.Asset.AFValue,
-        update_mode: AF.Data.AFUpdateOption,
-        buffer_mode: AF.Data.AFBufferOption,
+        value: SDK.AF.Asset.AFValue,
+        update_mode: SDK.AF.Data.AFUpdateOption,
+        buffer_mode: SDK.AF.Data.AFBufferOption,
     ) -> None:
         pass
