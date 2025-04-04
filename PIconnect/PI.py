@@ -3,15 +3,14 @@
 import warnings
 from typing import Any, cast
 
+import PIconnect._typing.AF as _AFtyping
 import PIconnect.AFSDK as SDK
-import PIconnect.PIPoint as PIPoint_
-from PIconnect import AF, PIConsts
+from PIconnect import Data, PIConsts, Time
 from PIconnect._utils import InitialisationWarning
 from PIconnect.AFSDK import System
 
 __all__ = ["PIServer", "PIPoint"]
 
-PIPoint = PIPoint_.PIPoint
 _DEFAULT_AUTH_MODE = PIConsts.AuthenticationMode.PI_USER_AUTHENTICATION
 
 
@@ -38,6 +37,171 @@ def _lookup_default_server() -> SDK.AF.PI.PIServer | None:
     except Exception:
         warnings.warn("Could not load the default PI Server", ResourceWarning, stacklevel=2)
     return default_server
+
+
+class PIPoint(Data.DataContainer):
+    """Reference to a PI Point to get data and corresponding metadata from the server.
+
+    Parameters
+    ----------
+        pi_point (AF.PI.PIPoint): Reference to a PIPoint as returned by the SDK
+    """
+
+    version = "0.3.0"
+
+    def __init__(self, pi_point: SDK.AF.PI.PIPoint) -> None:
+        super().__init__()
+        self.pi_point = pi_point
+        self.tag = pi_point.Name
+        self.__attributes_loaded = False
+        self.__raw_attributes = {}
+
+    def __repr__(self):
+        """Return the string representation of the PI Point."""
+        return (
+            f"{self.__class__.__qualname__}({self.tag}, {self.description}; "
+            f"Current Value: {self.current_value} {self.units_of_measurement})"
+        )
+
+    @property
+    def created(self):
+        """Return the creation datetime of a point."""
+        return Time.timestamp_to_index(self.raw_attributes["creationdate"])
+
+    @property
+    def description(self):
+        """Return the description of the PI Point.
+
+        .. todo::
+
+            Add setter to alter displayed description
+        """
+        return self.raw_attributes["descriptor"]
+
+    @property
+    def last_update(self):
+        """Return the time at which the last value for this PI Point was recorded."""
+        return Time.timestamp_to_index(self.pi_point.CurrentValue().Timestamp.UtcTime)
+
+    @property
+    def name(self) -> str:
+        """Return the name of the PI Point."""
+        return self.tag
+
+    @property
+    def raw_attributes(self) -> dict[str, Any]:
+        """Return a dictionary of the raw attributes of the PI Point."""
+        self.__load_attributes()
+        return self.__raw_attributes
+
+    @property
+    def units_of_measurement(self) -> str | None:
+        """Return the units of measument in which values for this PI Point are reported."""
+        return self.raw_attributes["engunits"]
+
+    @property
+    def stepped_data(self) -> bool:
+        """Return False when the PIPoint contains continuous data or True when stepped data."""
+        return self.pi_point.Step
+
+    def __load_attributes(self) -> None:
+        """Load the raw attributes of the PI Point from the server."""
+        if not self.__attributes_loaded:
+            self.pi_point.LoadAttributes([])
+            self.__attributes_loaded = True
+        self.__raw_attributes = {att.Key: att.Value for att in self.pi_point.GetAttributes([])}
+
+    def _current_value(self) -> Any:
+        """Return the last recorded value for this PI Point (internal use only)."""
+        return self.pi_point.CurrentValue().Value
+
+    def _filtered_summaries(
+        self,
+        time_range: SDK.AF.Time.AFTimeRange,
+        interval: SDK.AF.Time.AFTimeSpan,
+        filter_expression: str,
+        summary_types: SDK.AF.Data.AFSummaryTypes,
+        calculation_basis: SDK.AF.Data.AFCalculationBasis,
+        filter_evaluation: SDK.AF.Data.AFSampleType,
+        filter_interval: SDK.AF.Time.AFTimeSpan,
+        time_type: SDK.AF.Data.AFTimestampCalculation,
+    ) -> _AFtyping.Data.SummariesDict:
+        return self.pi_point.FilteredSummaries(
+            time_range,
+            interval,
+            filter_expression,
+            summary_types,
+            calculation_basis,
+            filter_evaluation,
+            filter_interval,
+            time_type,
+        )
+
+    def _interpolated_value(self, time: SDK.AF.Time.AFTime) -> SDK.AF.Asset.AFValue:
+        """Return a single value for this PI Point."""
+        return self.pi_point.InterpolatedValue(time)
+
+    def _interpolated_values(
+        self,
+        time_range: SDK.AF.Time.AFTimeRange,
+        interval: SDK.AF.Time.AFTimeSpan,
+        filter_expression: str,
+    ) -> SDK.AF.Asset.AFValues:
+        include_filtered_values = False
+        return self.pi_point.InterpolatedValues(
+            time_range, interval, filter_expression, include_filtered_values
+        )
+
+    def _normalize_filter_expression(self, filter_expression: str) -> str:
+        return filter_expression.replace("%tag%", self.tag)
+
+    def _recorded_value(
+        self, time: SDK.AF.Time.AFTime, retrieval_mode: SDK.AF.Data.AFRetrievalMode
+    ) -> SDK.AF.Asset.AFValue:
+        """Return a single recorded value for this PI Point."""
+        return self.pi_point.RecordedValue(
+            time, SDK.AF.Data.AFRetrievalMode(int(retrieval_mode))
+        )
+
+    def _recorded_values(
+        self,
+        time_range: SDK.AF.Time.AFTimeRange,
+        boundary_type: SDK.AF.Data.AFBoundaryType,
+        filter_expression: str,
+    ) -> SDK.AF.Asset.AFValues:
+        include_filtered_values = False
+        return self.pi_point.RecordedValues(
+            time_range, boundary_type, filter_expression, include_filtered_values
+        )
+
+    def _summary(
+        self,
+        time_range: SDK.AF.Time.AFTimeRange,
+        summary_types: SDK.AF.Data.AFSummaryTypes,
+        calculation_basis: SDK.AF.Data.AFCalculationBasis,
+        time_type: SDK.AF.Data.AFTimestampCalculation,
+    ) -> _AFtyping.Data.SummaryDict:
+        return self.pi_point.Summary(time_range, summary_types, calculation_basis, time_type)
+
+    def _summaries(
+        self,
+        time_range: SDK.AF.Time.AFTimeRange,
+        interval: SDK.AF.Time.AFTimeSpan,
+        summary_types: SDK.AF.Data.AFSummaryTypes,
+        calculation_basis: SDK.AF.Data.AFCalculationBasis,
+        time_type: SDK.AF.Data.AFTimestampCalculation,
+    ) -> _AFtyping.Data.SummariesDict:
+        return self.pi_point.Summaries(
+            time_range, interval, summary_types, calculation_basis, time_type
+        )
+
+    def _update_value(
+        self,
+        value: SDK.AF.Asset.AFValue,
+        update_mode: SDK.AF.Data.AFUpdateOption,
+        buffer_mode: SDK.AF.Data.AFBufferOption,
+    ) -> None:
+        return self.pi_point.UpdateValue(value, update_mode, buffer_mode)
 
 
 class PIServer(object):  # pylint: disable=useless-object-inheritance
@@ -92,9 +256,9 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
                 raise ValueError("No server was specified and no default server was found.")
             self.connection = default_server
         else:
-            try:
-                self.connection = SDK.AF.PI.PIServers()[server]
-            except (Exception, System.Exception):  # type: ignore
+            if (_server := SDK.AF.PI.PIServers()[server]) is not None:
+                self.connection = _server
+            else:
                 if default_server is None:
                     raise ValueError(
                         f"Server '{server}' not found and no default server was found."
@@ -121,7 +285,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
             cred = (username, secure_pass) + ((domain,) if domain else ())
             self._credentials = (
                 System.Net.NetworkCredential(cred[0], cred[1], *cred[2:]),
-                AF.PI.PIAuthenticationMode(int(authentication_mode)),
+                SDK.AF.PI.PIAuthenticationMode(int(authentication_mode)),
             )
         else:
             self._credentials = None
@@ -153,9 +317,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         """Name of the connected server."""
         return self.connection.Name
 
-    def search(
-        self, query: str | list[str], source: str | None = None
-    ) -> list[PIPoint_.PIPoint]:
+    def search(self, query: str | list[str], source: str | None = None) -> list[PIPoint]:
         """Search PIPoints on the PIServer.
 
         Parameters
@@ -177,7 +339,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         #     raise TypeError('Argument query must be either a string or a list of strings,' +
         #                     'got type ' + str(type(query)))
         return [
-            PIPoint_.PIPoint(pi_point)
+            PIPoint(pi_point)
             for pi_point in SDK.AF.PI.PIPoint.FindPIPoints(
                 self.connection, str(query), source, None
             )

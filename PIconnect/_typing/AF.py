@@ -43,11 +43,10 @@ class PISystem:
             if self.DefaultDatabase is not None:
                 yield from [self.DefaultDatabase]
 
-        def __getitem__(self, name: str) -> AFDatabase:
+        def __getitem__(self, name: str) -> AFDatabase | None:
             """Return the AFDatabase with the given name."""
             if name == self.DefaultDatabase.Name:
                 return self.DefaultDatabase
-            raise KeyError(f"AFDatabase {name} not found")
 
     def __init__(self, name: str) -> None:
         self.Name = name
@@ -75,8 +74,7 @@ class PISystems:
     def __iter__(self) -> Iterator[PISystem]:
         return (x for x in [self.DefaultPISystem])
 
-    def __getitem__(self, name: str) -> PISystem:
+    def __getitem__(self, name: str) -> PISystem | None:
         """Return the PISystem with the given name."""
         if name == self.DefaultPISystem.Name:
             return self.DefaultPISystem
-        raise KeyError(f"PISystem {name} not found")

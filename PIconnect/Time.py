@@ -5,8 +5,8 @@ import zoneinfo
 
 import pandas as pd  # type: ignore
 
-from PIconnect import AF, PIConfig
-from PIconnect.AFSDK import System
+from PIconnect import PIConfig
+from PIconnect.AFSDK import AF, System
 
 TimeLike = str | datetime.datetime
 IntervalLike = str | datetime.timedelta | pd.Timedelta
@@ -58,7 +58,7 @@ def to_af_time(time: TimeLike) -> AF.Time.AFTime:
     return AF.Time.AFTime(time)
 
 
-def to_af_time_span(interval: IntervalLike) -> AF.Time.AFTimeSpan:
+def to_af_time_span(interval: IntervalLike | None) -> AF.Time.AFTimeSpan:
     """Convert a time interval to a AFTimeSpan value.
 
     Parameters

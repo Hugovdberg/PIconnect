@@ -7,7 +7,7 @@ import pandas as pd  # type: ignore
 
 import PIconnect._typing.AF as _AFtyping
 import PIconnect.AFSDK as SDK
-from PIconnect import Data, PIPoint, _collections
+from PIconnect import PI, Data, _collections
 
 __all__ = [
     "AFDataReference",
@@ -36,10 +36,10 @@ class AFDataReference:
         return self.data_reference.Name
 
     @property
-    def pi_point(self) -> PIPoint.PIPoint | None:
+    def pi_point(self) -> PI.PIPoint | None:
         """Return the PI Point associated with the data reference, if any."""
         if self.data_reference.PIPoint is not None:
-            return PIPoint.PIPoint(self.data_reference.PIPoint)
+            return PI.PIPoint(self.data_reference.PIPoint)
 
 
 class AFEnumerationValue:

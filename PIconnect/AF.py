@@ -1,12 +1,13 @@
 """AF - Core containers for connections to the PI Asset Framework."""
 
+import logging
 import warnings
 from typing import Any, Self
 
 import PIconnect.AFSDK as SDK
 from PIconnect import Asset, PIConsts, Search, Time
-from PIconnect.AFSDK import System
 
+_logger = logging.getLogger(__name__)
 _DEFAULT_EVENTFRAME_SEARCH_MODE = PIConsts.EventFrameSearchMode.STARTING_AFTER
 
 
@@ -38,20 +39,24 @@ class AFDatabase:
 
     def _initialise_server(self, server: str | None) -> SDK.AF.PISystem:
         """Initialise the server connection."""
+        _logger.debug(f"Initialising server connection from {server!r}")
         default_server = self.default_server()
         if server is None:
             if default_server is None:
                 raise ValueError("No server specified and no default server found.")
+            _logger.debug(f"Using default server: {default_server.Name}")
             return default_server
 
-        try:
-            return SDK.AF.PISystems()[server]
-        except (Exception, System.Exception):  # type: ignore
+        if (_server := SDK.AF.PISystems()[server]) is not None:
+            _logger.debug(_server)
+            return _server
+        else:
             if default_server is None:
                 raise ValueError(
                     f'Server "{server}" not found and no default server found.'
                 ) from None
             message = f'Server "{server}" not found, using the default server.'
+            _logger.debug(message)
             warnings.warn(message=message, category=UserWarning, stacklevel=2)
             return default_server
 
@@ -65,9 +70,10 @@ class AFDatabase:
         if database is None:
             return default_db()
 
-        try:
-            return self.server.Databases[database]
-        except (Exception, System.Exception):  # type: ignore
+        if (_db := self.server.Databases[database]) is not None:
+            _logger.debug(_db)
+            return _db
+        else:
             message = f'Database "{database}" not found, using the default database.'
             warnings.warn(message=message, category=UserWarning, stacklevel=2)
             return default_db()
@@ -142,3 +148,17 @@ class AFDatabase:
                 search_full_hierarchy,
             )
         }
+
+
+class PIAFDatabase(AFDatabase):
+    """Context manager for connections to the PI Asset Framework database."""
+
+    version = "0.3.0"
+
+    def __init__(self, server: str | None = None, database: str | None = None) -> None:
+        warnings.warn(
+            "PIAFDatabase is deprecated, use AFDatabase instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(server=server, database=database)

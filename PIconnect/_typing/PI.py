@@ -53,11 +53,10 @@ class PIServers:
     def __iter__(self) -> Iterator[PIServer]:
         return (x for x in [self.DefaultPIServer])
 
-    def __getitem__(self, server: str) -> PIServer:
+    def __getitem__(self, server: str) -> PIServer | None:
         """Stub to mock getting a server by name."""
         if server == self.DefaultPIServer.Name:
             return self.DefaultPIServer
-        raise KeyError(f"Server '{server}' not found.")
 
 
 class PIPoint:

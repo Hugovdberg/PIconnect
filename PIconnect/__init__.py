@@ -1,9 +1,9 @@
 """PIconnect - Connector to the OSISoft PI and PI-AF databases."""
 
+from PIconnect.config import PIConfig  # noqa: I001
+from PIconnect.AF import AFDatabase, PIAFDatabase
 from PIconnect.AFSDK import AF, AF_SDK_VERSION
-from PIconnect.config import PIConfig
 from PIconnect.PI import PIServer
-from PIconnect.PIAF import PIAFDatabase
 
 from . import _version
 
@@ -13,6 +13,7 @@ __sdk_version = tuple(int(x) for x in AF_SDK_VERSION.split("."))
 __all__ = [
     "AF",
     "AF_SDK_VERSION",
+    "AFDatabase",
     "PIAFDatabase",
     "PIConfig",
     "PIServer",

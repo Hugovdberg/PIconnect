@@ -5,44 +5,39 @@ from typing import cast
 import pytest
 
 import PIconnect as PI
-import PIconnect.AFSDK as AFSDK
-import PIconnect.PIAF as PIAF
 from PIconnect import Asset
 from PIconnect._typing import AF
-
-AFSDK.AF, AFSDK.System, AFSDK.AF_SDK_VERSION = AFSDK.__fallback()
-PI.AF = PIAF.AF = AFSDK.AF
 
 
 class TestAFDatabase:
     """Test connecting to the AF database."""
 
     def test_connection(self):
-        """Test creating a PI.PIAFDatabase object without arguments raises no exception."""
-        PI.PIAFDatabase()
+        """Test creating a PI.AFDatabase object without arguments raises no exception."""
+        PI.AFDatabase()
 
     def test_server_name(self):
         """Test that the server reports the same name as which was connected to."""
         AFserver = PI.AF.PISystems().DefaultPISystem.Name
         database = PI.AF.PISystems().DefaultPISystem.Databases.DefaultDatabase.Name
-        server = PI.PIAFDatabase(AFserver, database)
+        server = PI.AFDatabase(AFserver, database)
         assert server.server_name == AFserver
         assert server.database_name == database
         assert repr(server) == "PIAFDatabase(\\\\{s}\\{d})".format(s=AFserver, d=database)
 
     def test_unknown_server_name(self):
         """Test that the server reports a warning for an unknown server."""
-        AFserver_name = "__".join(list(PI.PIAFDatabase.servers()) + ["UnkownServerName"])
+        AFserver_name = "__".join(list(PI.AFDatabase.servers()) + ["UnkownServerName"])
         with pytest.warns(UserWarning):
-            PI.PIAFDatabase(server=AFserver_name)
+            PI.AFDatabase(server=AFserver_name)
 
     def test_unknown_database_name(self):
         """Test that the server reports a warning for an unknown database."""
-        server = cast(AF.PISystem, PI.PIAFDatabase.default_server())  # type: ignore
+        server = cast(AF.PISystem, PI.AFDatabase.default_server())  # type: ignore
         databases = [db.Name for db in server.Databases]
         AFdatabase_name = "__".join(databases + ["UnkownDatabaseName"])
         with pytest.warns(UserWarning):
-            PI.PIAFDatabase(database=AFdatabase_name)
+            PI.AFDatabase(database=AFdatabase_name)
 
 
 class TestDatabaseDescendants:
@@ -50,7 +45,7 @@ class TestDatabaseDescendants:
 
     def test_children(self):
         """Test that calling children on the database returns a dict of child elements."""
-        with PI.PIAFDatabase() as db:
+        with PI.AFDatabase() as db:
             children = db.children
             assert isinstance(children, dict)
 
@@ -61,20 +56,21 @@ class TestDatabaseSearch:
     def test_search(self):
         """Test that calling attributes on the database returns a list of attributes."""
         with pytest.warns(DeprecationWarning):
-            with PI.PIAFDatabase() as db:
+            with PI.AFDatabase() as db:
                 attributes = db.search([r"", r""])
                 assert isinstance(attributes, Asset.AFAttributeList)
 
     def test_split_element_attribute(self):
         """Test that calling attributes on the database returns a list of attributes."""
         with pytest.warns(DeprecationWarning):
-            with PI.PIAFDatabase() as db:
+            with PI.AFDatabase() as db:
+                print(db.children)
                 attributes = db.search(r"BaseElement|Attribute1")
                 assert isinstance(attributes[0].name, str)
 
     def test_split_element_nested_attribute(self):
         """Test that calling attributes on the database returns a list of attributes."""
         with pytest.warns(DeprecationWarning):
-            with PI.PIAFDatabase() as db:
+            with PI.AFDatabase() as db:
                 attributes = db.search(r"BaseElement|Attribute1|Attribute2")
                 assert isinstance(attributes[0].name, str)
