@@ -2,14 +2,12 @@
 
 # pyright: strict
 import datetime
-from typing import Union
-
-import pytz
+import zoneinfo
 
 from PIconnect import AF, PIConfig
 from PIconnect.AFSDK import System
 
-TimeLike = Union[str, datetime.datetime]
+TimeLike = str | datetime.datetime
 
 
 def to_af_time_range(start_time: TimeLike, end_time: TimeLike) -> AF.Time.AFTimeRange:
@@ -69,7 +67,7 @@ def timestamp_to_index(timestamp: System.DateTime) -> datetime.datetime:
     -------
         `datetime`: Datetime with the timezone info from :data:`PIConfig.DEFAULT_TIMEZONE <PIconnect.config.PIConfigContainer.DEFAULT_TIMEZONE>`.
     """  # noqa: E501
-    local_tz = pytz.timezone(PIConfig.DEFAULT_TIMEZONE)
+    local_tz = zoneinfo.ZoneInfo(PIConfig.DEFAULT_TIMEZONE)
     return (
         datetime.datetime(
             timestamp.Year,
@@ -80,6 +78,6 @@ def timestamp_to_index(timestamp: System.DateTime) -> datetime.datetime:
             timestamp.Second,
             timestamp.Millisecond * 1000,
         )
-        .replace(tzinfo=pytz.utc)
+        .replace(tzinfo=datetime.timezone.utc)
         .astimezone(local_tz)
     )

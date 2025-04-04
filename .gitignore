@@ -78,3 +78,7 @@ target/
 # Pycharm
 .idea
 venv/
+
+# pixi environments
+.pixi
+*.egg-info

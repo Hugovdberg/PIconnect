@@ -5,7 +5,14 @@ from typing import cast
 import pytest
 
 import PIconnect as PI
+import PIconnect.AFSDK as AFSDK
+import PIconnect.PIAF as PIAF
 from PIconnect._typing import AF
+
+AFSDK.AF, AFSDK.System, AFSDK.AF_SDK_VERSION = AFSDK.__fallback()
+PI.AF = PIAF.AF = AFSDK.AF
+PI.PIAFDatabase.servers = PIAF._lookup_servers()
+PI.PIAFDatabase.default_server = PIAF._lookup_default_server()
 
 
 class TestAFDatabase:
@@ -57,3 +64,15 @@ class TestDatabaseSearch:
         with PI.PIAFDatabase() as db:
             attributes = db.search([r"", r""])
         assert isinstance(attributes, list)
+
+    def test_split_element_attribute(self):
+        """Test that calling attributes on the database returns a list of attributes."""
+        with PI.PIAFDatabase() as db:
+            attributes = db.search(r"BaseElement|Attribute1")
+        assert attributes[0].name == "Attribute1"
+
+    def test_split_element_nested_attribute(self):
+        """Test that calling attributes on the database returns a list of attributes."""
+        with PI.PIAFDatabase() as db:
+            attributes = db.search(r"BaseElement|Attribute1|Attribute2")
+        assert attributes[0].name == "Attribute2"

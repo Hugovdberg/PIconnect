@@ -2,7 +2,8 @@
 
 import dataclasses
 import datetime
-from typing import Any, Dict, Generic, Iterable, List, TypeVar
+from collections.abc import Iterable
+from typing import Any, Generic, TypeVar
 
 import pytest
 import pytz
@@ -73,11 +74,12 @@ class FakePIPoint_(Generic[_a]):
         tag: str,
         values: Iterable[_a],
         timestamps: Iterable[datetime.datetime],
-        attributes: Dict[str, Any],
+        attributes: dict[str, Any],
     ):
         self.Name = tag
         self.values = [
-            FakeAFValue(value, timestamp) for value, timestamp in zip(values, timestamps)
+            FakeAFValue(value, timestamp)
+            for value, timestamp in zip(values, timestamps, strict=True)
         ]
         self.attributes = [FakeKeyValue(*att) for att in attributes.items()]
 
@@ -99,17 +101,17 @@ class FakePIPoint(AF.PI.PIPoint, Generic[_a]):
         """Load the attributes of the PI Point."""
         self.call_stack.append("LoadAttributes called")
 
-    def GetAttributes(self, *args: Any, **kwargs: Any) -> List[FakeKeyValue[str, Any]]:
+    def GetAttributes(self, *args: Any, **kwargs: Any) -> list[FakeKeyValue[str, Any]]:
         """Return the attributes of the PI Point."""
         self.call_stack.append("GetAttributes called")
         return self.pi_point.attributes
 
-    def RecordedValues(self, *args: Any, **kwargs: Any) -> List[FakeAFValue[_a]]:
+    def RecordedValues(self, *args: Any, **kwargs: Any) -> list[FakeAFValue[_a]]:
         """Return the recorded values of the PI Point."""
         self.call_stack.append("RecordedValues called")
         return self.pi_point.values
 
-    def InterpolatedValues(self, *args: Any, **kwargs: Any) -> List[FakeAFValue[_a]]:
+    def InterpolatedValues(self, *args: Any, **kwargs: Any) -> list[FakeAFValue[_a]]:
         """Return the interpolated values of the PI Point."""
         self.call_stack.append("InterpolatedValues called")
         return self.pi_point.values
@@ -146,7 +148,7 @@ class VirtualTestCase(object):
         self.point = PI.PIPoint(FakePIPoint(pi_point))
 
 
-@pytest.fixture()
+@pytest.fixture
 def pi_point() -> VirtualTestCase:
     """Return a VirtualTestCase object."""
     return VirtualTestCase()

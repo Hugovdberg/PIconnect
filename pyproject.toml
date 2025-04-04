@@ -1,6 +1,109 @@
+[project]
+name = "PIconnect"
+description = "PIconnect - Connector to the OSISoft PI and PI-AF databases."
+authors = [{ name = "Hugo Lapre", email = "dev@tbdwebdesign.nl" }]
+readme = "README.rst"
+license = { text = "MIT" }
+keywords = ["OSIsoft", "AVEVA", "PI", "Process Information", "PIconnect"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Topic :: Database",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dynamic = ["version"]
+requires-python = ">=3.11"
+dependencies = ["pandas>=2,<3", "numpy>=2,<3", "pythonnet>=3", "wrapt>=1.17,<2"]
+
+[project.urls]
+Homepage = "https://github.com/Hugovdberg/PIconnect"
+Repository = "https://github.com/Hugovdberg/PIconnect.git"
+Issues = "https://github.com/Hugovdberg/PIconnect/issues"
+Documentation = "https://piconnect.readthedocs.io/en/stable/"
+
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta:__legacy__"
+requires = ["setuptools>=75", "versioneer[toml]>=0.28"]
+build-backend = "setuptools.build_meta"
+
+[tool.pixi.project]
+name = "PIconnect"
+channels = ["conda-forge"]
+platforms = ["win-64", "linux-64"]
+
+[tool.pixi.pypi-dependencies]
+PIconnect = { path = ".", editable = true }
+
+[tool.pixi.tasks]
+test = { depends-on = ["test311", "test312", "test313", "format"] }
+
+[tool.pixi.feature.build.dependencies]
+python = "*"
+
+[tool.pixi.feature.build.pypi-dependencies]
+build = "*"
+versioneer = { version = ">=0.28", extras = ["toml"] }
+
+[tool.pixi.feature.build.tasks]
+build = "python -m build --outdir ./dist"
+
+[tool.pixi.feature.lint.dependencies]
+ruff = "*"
+
+[tool.pixi.feature.lint.tasks]
+lint = "ruff check ."
+format = { cmd = "ruff format --check .", depends-on = ["lint"] }
+
+[tool.pixi.feature.test.dependencies]
+pytest = "*"
+pytest-cov = "*"
+codacy-coverage = "*"
+codecov = "*"
+coverage = "*"
+
+[tool.pixi.feature.test.tasks]
+
+[tool.pixi.feature.docs]
+platforms = ["linux-64", "win-64"]
+
+[tool.pixi.feature.docs.dependencies]
+Sphinx = "*"
+pydata-sphinx-theme = "*"
+
+[tool.pixi.feature.docs.tasks]
+build-docs = "sphinx-build -T -b html docs"
+
+[tool.pixi.feature.py311.dependencies]
+python = "3.11.*"
+
+[tool.pixi.feature.py311.tasks]
+test311 = "pytest"
+
+[tool.pixi.feature.py312.dependencies]
+python = "3.12.*"
+
+[tool.pixi.feature.py312.tasks]
+test312 = "pytest"
+
+[tool.pixi.feature.py313.dependencies]
+python = "3.13.*"
+
+[tool.pixi.feature.py313.tasks]
+test313 = "pytest"
+
+[tool.pixi.environments]
+build = { features = ["build"], no-default-feature = true }
+test = { features = ["test"], solve-group = "default" }
+lint = ["lint"]
+docs = ["docs"]
+py311 = ["py311", "test"]
+py313 = ["py313", "test"]
+py312 = ["py312", "test"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
@@ -13,14 +116,14 @@ exclude = ["build", "dist", "docs", "venv"]
 [tool.ruff.lint]
 # See: https://docs.astral.sh/ruff/rules/
 select = [
-    "C4",  # flake8-comprehensions
-    "E",   # pycodestyle
-    "F",   # pyflakes
-    "I",   # isort
-    "PT",  # pytest-style
-    "D",   # pydocstyle
-    "B",   # flake8-bugbear
-    "NPY", # numpy
+  "C4",  # flake8-comprehensions
+  "E",   # pycodestyle
+  "F",   # pyflakes
+  "I",   # isort
+  "PT",  # pytest-style
+  "D",   # pydocstyle
+  "B",   # flake8-bugbear
+  "NPY", # numpy
 ]
 # ignore = [
 #     "D100",  # Missing docstring in public module
@@ -37,3 +140,11 @@ select = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
+
+
+[tool.versioneer]
+VCS = "git"
+style = "pep440"
+versionfile_source = "PIconnect/_version.py"
+versionfile_build = "PIconnect/_version.py"
+tag_prefix = "v"

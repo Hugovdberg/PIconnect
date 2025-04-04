@@ -3,7 +3,7 @@
 These classes are in a separate file to avoid circular imports.
 """
 
-from typing import Any, List
+from typing import Any
 
 from . import Time
 
@@ -16,7 +16,7 @@ class AFValue:
         self.Timestamp = timestamp
 
 
-class AFValues(List[AFValue]):
+class AFValues(list[AFValue]):
     def __init__(self):
         self.Count: int
-        self.Value: List[AFValue]
+        self.Value: list[AFValue]

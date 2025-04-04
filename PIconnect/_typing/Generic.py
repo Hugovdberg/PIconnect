@@ -3,7 +3,8 @@
 TODO: Migrate to the `_typing.dotnet` module.
 """
 
-from typing import Any, Generic, Iterable, Iterator, Optional, Tuple, TypeVar
+from collections.abc import Iterable, Iterator
+from typing import Any, Generic, TypeVar
 
 _KT = TypeVar("_KT")
 _VT = TypeVar("_VT")
@@ -16,7 +17,7 @@ class DictItem(Generic[_KT, _VT]):
 
 
 class Dictionary(Generic[_KT, _VT]):
-    def __init__(self, items: Iterable[Tuple[_KT, _VT]]) -> None:
+    def __init__(self, items: Iterable[tuple[_KT, _VT]]) -> None:
         self.Items = items
 
     def __iter__(self) -> Iterator[DictItem[_KT, _VT]]:
@@ -41,7 +42,7 @@ class SecureString:
 
 class NetworkCredential:
     def __init__(
-        self, username: str, password: SecureString, domain: Optional[str] = None
+        self, username: str, password: SecureString, domain: str | None = None
     ) -> None:
         self.UserName = username
         self.Password = password

@@ -1,7 +1,7 @@
 """PI - Core containers for connections to PI databases."""
 
 import warnings
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, cast
 
 import PIconnect.PIPoint as PIPoint_
 from PIconnect import AF, PIConsts
@@ -14,8 +14,8 @@ PIPoint = PIPoint_.PIPoint
 _DEFAULT_AUTH_MODE = PIConsts.AuthenticationMode.PI_USER_AUTHENTICATION
 
 
-def _lookup_servers() -> Dict[str, AF.PI.PIServer]:
-    servers: Dict[str, AF.PI.PIServer] = {}
+def _lookup_servers() -> dict[str, AF.PI.PIServer]:
+    servers: dict[str, AF.PI.PIServer] = {}
 
     for server in AF.PI.PIServers():
         try:
@@ -30,7 +30,7 @@ def _lookup_servers() -> Dict[str, AF.PI.PIServer]:
     return servers
 
 
-def _lookup_default_server() -> Optional[AF.PI.PIServer]:
+def _lookup_default_server() -> AF.PI.PIServer | None:
     default_server = None
     try:
         default_server = AF.PI.PIServers().DefaultPIServer
@@ -65,12 +65,12 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
 
     def __init__(
         self,
-        server: Optional[str] = None,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
-        domain: Optional[str] = None,
+        server: str | None = None,
+        username: str | None = None,
+        password: str | None = None,
+        domain: str | None = None,
         authentication_mode: PIConsts.AuthenticationMode = _DEFAULT_AUTH_MODE,
-        timeout: Optional[int] = None,
+        timeout: int | None = None,
     ) -> None:
         if server is None:
             if self.default_server is None:
@@ -138,8 +138,8 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         return self.connection.Name
 
     def search(
-        self, query: Union[str, List[str]], source: Optional[str] = None
-    ) -> List[PIPoint_.PIPoint]:
+        self, query: str | list[str], source: str | None = None
+    ) -> list[PIPoint_.PIPoint]:
         """Search PIPoints on the PIServer.
 
         Parameters
