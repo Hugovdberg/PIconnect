@@ -3,6 +3,7 @@
 import warnings
 from typing import Any, cast
 
+import PIconnect.AFSDK as SDK
 import PIconnect.PIPoint as PIPoint_
 from PIconnect import AF, PIConsts
 from PIconnect._utils import InitialisationWarning
@@ -14,10 +15,10 @@ PIPoint = PIPoint_.PIPoint
 _DEFAULT_AUTH_MODE = PIConsts.AuthenticationMode.PI_USER_AUTHENTICATION
 
 
-def _lookup_servers() -> dict[str, AF.PI.PIServer]:
-    servers: dict[str, AF.PI.PIServer] = {}
+def _lookup_servers() -> dict[str, SDK.AF.PI.PIServer]:
+    servers: dict[str, SDK.AF.PI.PIServer] = {}
 
-    for server in AF.PI.PIServers():
+    for server in SDK.AF.PI.PIServers():
         try:
             servers[server.Name] = server
         except (Exception, System.Exception) as e:  # type: ignore
@@ -30,10 +31,10 @@ def _lookup_servers() -> dict[str, AF.PI.PIServer]:
     return servers
 
 
-def _lookup_default_server() -> AF.PI.PIServer | None:
+def _lookup_default_server() -> SDK.AF.PI.PIServer | None:
     default_server = None
     try:
-        default_server = AF.PI.PIServers().DefaultPIServer
+        default_server = SDK.AF.PI.PIServers().DefaultPIServer
     except Exception:
         warnings.warn("Could not load the default PI Server", ResourceWarning, stacklevel=2)
     return default_server
@@ -59,9 +60,22 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
     version = "0.2.2"
 
     #: Dictionary of known servers, as reported by the SDK
-    servers = _lookup_servers()
-    #: Default server, as reported by the SDK
-    default_server = _lookup_default_server()
+    _servers: dict[str, SDK.AF.PI.PIServer] | None = None
+    _default_server: SDK.AF.PI.PIServer | None = None
+
+    @classmethod
+    def servers(cls) -> dict[str, SDK.AF.PI.PIServer]:
+        """Return a dictionary of the known servers."""
+        if cls._servers is None:
+            cls._servers = _lookup_servers()
+        return cls._servers
+
+    @classmethod
+    def default_server(cls) -> SDK.AF.PI.PIServer | None:
+        """Return the default server."""
+        if cls._default_server is None:
+            cls._default_server = _lookup_default_server()
+        return cls._default_server
 
     def __init__(
         self,
@@ -72,22 +86,24 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         authentication_mode: PIConsts.AuthenticationMode = _DEFAULT_AUTH_MODE,
         timeout: int | None = None,
     ) -> None:
+        default_server = self.default_server()
         if server is None:
-            if self.default_server is None:
+            if default_server is None:
                 raise ValueError("No server was specified and no default server was found.")
-            self.connection = self.default_server
-        elif server not in self.servers:
-            if self.default_server is None:
-                raise ValueError(
-                    f"Server '{server}' not found and no default server was found."
-                )
-            message = 'Server "{server}" not found, using the default server.'
-            warnings.warn(
-                message=message.format(server=server), category=UserWarning, stacklevel=1
-            )
-            self.connection = self.default_server
+            self.connection = default_server
         else:
-            self.connection = self.servers[server]
+            try:
+                self.connection = SDK.AF.PI.PIServers()[server]
+            except (Exception, System.Exception):  # type: ignore
+                if default_server is None:
+                    raise ValueError(
+                        f"Server '{server}' not found and no default server was found."
+                    ) from None
+                message = 'Server "{server}" not found, using the default server.'
+                warnings.warn(
+                    message=message.format(server=server), category=UserWarning, stacklevel=1
+                )
+                self.connection = default_server
 
         if bool(username) != bool(password):
             raise ValueError(
@@ -162,7 +178,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         #                     'got type ' + str(type(query)))
         return [
             PIPoint_.PIPoint(pi_point)
-            for pi_point in AF.PI.PIPoint.FindPIPoints(
+            for pi_point in SDK.AF.PI.PIPoint.FindPIPoints(
                 self.connection, str(query), source, None
             )
         ]

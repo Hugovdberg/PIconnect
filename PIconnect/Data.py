@@ -9,9 +9,8 @@ from typing import Any, Concatenate, Literal, ParamSpec, TypeVar, cast
 import pandas as pd  # type: ignore
 
 import PIconnect._typing.AF as _AFtyping
-import PIconnect.AF as AF
 import PIconnect.AFSDK as SDK
-from PIconnect import Time
+from PIconnect import Time, _collections
 
 
 class BoundaryType(enum.IntEnum):
@@ -736,7 +735,7 @@ Parameters = ParamSpec("Parameters")
 Align = Literal["auto", "ffill", "bfill", "nearest", "time", False]
 
 
-class DataContainerCollection(AF.NamedItemList[DataContainerType]):
+class DataContainerCollection(_collections.NamedItemList[DataContainerType]):
     """Container for a collection of data containers."""
 
     @property
@@ -776,13 +775,13 @@ class DataContainerCollection(AF.NamedItemList[DataContainerType]):
                 case False:
                     return df
                 case "auto":
-                    for col in df.columns.levels[0]:  # type: ignore
+                    for col in df.columns.get_level_values(0):  # type: ignore
                         if self[str(col)].stepped_data:  # type: ignore
                             df[col] = df[col].ffill(axis=0)  # type: ignore
                         else:
                             df[col] = (
                                 df[col]
-                                .apply(pd.to_numeric, axis=1, errors="coerce")  # type: ignore
+                                .apply(pd.to_numeric, errors="coerce", by_row=False)  # type: ignore
                                 .interpolate(method="time", axis=0)  # type: ignore
                             )
                     return df

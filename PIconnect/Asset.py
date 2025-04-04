@@ -6,9 +6,8 @@ from typing import Generic, Self, TypeVar, overload
 import pandas as pd  # type: ignore
 
 import PIconnect._typing.AF as _AFtyping
-import PIconnect.AF as AF
 import PIconnect.AFSDK as SDK
-from PIconnect import Data, PIPoint
+from PIconnect import Data, PIPoint, _collections
 
 __all__ = [
     "AFDataReference",
@@ -329,7 +328,7 @@ class AFElement(AFBaseElement[SDK.AF.Asset.AFElement]):
         return self.__class__(self.element.Elements.get_Item(path))
 
 
-class AFElementList(AF.NamedItemList[AFElement]):
+class AFElementList(_collections.NamedItemList[AFElement]):
     """Container for a list of PIAFElement objects."""
 
     pass
@@ -356,6 +355,12 @@ class AFEventFrame(AFBaseElement[SDK.AF.EventFrame.AFEventFrame]):
     def children(self) -> dict[str, Self]:
         """Return a dictionary of the direct child event frames of the current event frame."""
         return {c.Name: self.__class__(c) for c in self.element.EventFrames}
+
+
+class AFEventFrameList(_collections.NamedItemList[AFEventFrame]):
+    """Container for a list of PIAFEventFrame objects."""
+
+    pass
 
 
 class AFTable:

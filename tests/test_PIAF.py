@@ -12,8 +12,6 @@ from PIconnect._typing import AF
 
 AFSDK.AF, AFSDK.System, AFSDK.AF_SDK_VERSION = AFSDK.__fallback()
 PI.AF = PIAF.AF = AFSDK.AF
-PI.PIAFDatabase.servers = PIAF._lookup_servers()
-PI.PIAFDatabase.default_server = PIAF._lookup_default_server()
 
 
 class TestAFDatabase:
@@ -34,13 +32,13 @@ class TestAFDatabase:
 
     def test_unknown_server_name(self):
         """Test that the server reports a warning for an unknown server."""
-        AFserver_name = "__".join(list(PI.PIAFDatabase.servers) + ["UnkownServerName"])
+        AFserver_name = "__".join(list(PI.PIAFDatabase.servers()) + ["UnkownServerName"])
         with pytest.warns(UserWarning):
             PI.PIAFDatabase(server=AFserver_name)
 
     def test_unknown_database_name(self):
         """Test that the server reports a warning for an unknown database."""
-        server = cast(AF.PISystem, PI.PIAFDatabase.default_server["server"])  # type: ignore
+        server = cast(AF.PISystem, PI.PIAFDatabase.default_server())  # type: ignore
         databases = [db.Name for db in server.Databases]
         AFdatabase_name = "__".join(databases + ["UnkownDatabaseName"])
         with pytest.warns(UserWarning):
@@ -54,7 +52,7 @@ class TestDatabaseDescendants:
         """Test that calling children on the database returns a dict of child elements."""
         with PI.PIAFDatabase() as db:
             children = db.children
-        assert isinstance(children, dict)
+            assert isinstance(children, dict)
 
 
 class TestDatabaseSearch:
@@ -65,18 +63,18 @@ class TestDatabaseSearch:
         with pytest.warns(DeprecationWarning):
             with PI.PIAFDatabase() as db:
                 attributes = db.search([r"", r""])
-            assert isinstance(attributes, Asset.AFAttributeList)
+                assert isinstance(attributes, Asset.AFAttributeList)
 
     def test_split_element_attribute(self):
         """Test that calling attributes on the database returns a list of attributes."""
         with pytest.warns(DeprecationWarning):
             with PI.PIAFDatabase() as db:
                 attributes = db.search(r"BaseElement|Attribute1")
-            assert isinstance(attributes[0].name, str)
+                assert isinstance(attributes[0].name, str)
 
     def test_split_element_nested_attribute(self):
         """Test that calling attributes on the database returns a list of attributes."""
         with pytest.warns(DeprecationWarning):
             with PI.PIAFDatabase() as db:
                 attributes = db.search(r"BaseElement|Attribute1|Attribute2")
-            assert isinstance(attributes[0].name, str)
+                assert isinstance(attributes[0].name, str)
