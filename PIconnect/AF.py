@@ -1,114 +1,144 @@
-"""Generics for AF collections."""
+"""AF - Core containers for connections to the PI Asset Framework."""
 
-from collections.abc import Iterable, Iterator, MutableSequence
-from typing import Protocol, Self, TypeVar, overload
+import warnings
+from typing import Any, Self
 
+import PIconnect.AFSDK as SDK
+from PIconnect import Asset, PIConsts, Search, Time
+from PIconnect.AFSDK import System
 
-class NamedItem(Protocol):
-    """Protocol for an item with a name."""
-
-    @property
-    def name(self) -> str:
-        """Return the name of the item."""
-        ...
+_DEFAULT_EVENTFRAME_SEARCH_MODE = PIConsts.EventFrameSearchMode.STARTING_AFTER
 
 
-NamedItemType = TypeVar("NamedItemType", bound=NamedItem)
+class AFDatabase:
+    """Context manager for connections to the PI Asset Framework database."""
 
+    version = "0.3.0"
 
-class NamedItemList(MutableSequence[NamedItemType]):
-    """A list of items with names.
+    @classmethod
+    def servers(cls) -> dict[str, SDK.AF.PISystem]:
+        """Return a dictionary of the known servers."""
+        return {server.Name: server for server in SDK.AF.PISystems()}
 
-    This class provides a way to access items by index or by name.
-    """
+    @classmethod
+    def default_server(cls) -> SDK.AF.PISystem | None:
+        """Return the default server."""
+        if SDK.AF.PISystems().DefaultPISystem:
+            return SDK.AF.PISystems().DefaultPISystem
+        servers = SDK.AF.PISystems()
+        if servers.Count > 0:
+            return next(iter(servers))
+        else:
+            return None
 
-    def __init__(self, elements: MutableSequence[NamedItemType]) -> None:
-        self._elements = elements
+    def __init__(self, server: str | None = None, database: str | None = None) -> None:
+        self.server: SDK.AF.PISystem = self._initialise_server(server)
+        self.database: SDK.AF.AFDatabase = self._initialise_database(database)
+        self.search = Search.Search(self.database)
 
-    @overload
-    def __getitem__(self, index: int | str) -> NamedItemType: ...
-    @overload
-    def __getitem__(self, index: slice) -> Self: ...
-    def __getitem__(self, index: int | str | slice) -> NamedItemType | Self:
-        """Return the list item at the given index or the list item with the given name."""
-        match index:
-            case int():
-                return self._elements[index]
-            case str():
-                for attr in self._elements:
-                    if attr.name == index:
-                        return attr
-                raise KeyError(f"List item {index} not found.")
-            case slice():
-                return self.__class__(self._elements[index])
-            case _:
-                raise TypeError("Index must be an int, string or slice of int.")  # type: ignore
+    def _initialise_server(self, server: str | None) -> SDK.AF.PISystem:
+        """Initialise the server connection."""
+        default_server = self.default_server()
+        if server is None:
+            if default_server is None:
+                raise ValueError("No server specified and no default server found.")
+            return default_server
 
-    def __len__(self) -> int:
-        """Return the number of items in the list."""
-        return len(self._elements)
+        try:
+            return SDK.AF.PISystems()[server]
+        except (Exception, System.Exception):  # type: ignore
+            if default_server is None:
+                raise ValueError(
+                    f'Server "{server}" not found and no default server found.'
+                ) from None
+            message = f'Server "{server}" not found, using the default server.'
+            warnings.warn(message=message, category=UserWarning, stacklevel=2)
+            return default_server
 
-    def __iter__(self) -> Iterator[NamedItemType]:
-        """Return an iterator over the items in the list."""
-        return iter(self._elements)
+    def _initialise_database(self, database: str | None) -> SDK.AF.AFDatabase:
+        def default_db():
+            default = self.server.Databases.DefaultDatabase
+            if default is None:
+                raise ValueError("No database specified and no default database found.")
+            return default
 
-    @overload
-    def __setitem__(self, index: int | str, value: NamedItemType) -> None: ...
-    @overload
-    def __setitem__(self, index: slice, value: Iterable[NamedItemType]) -> None: ...
-    def __setitem__(
-        self, index: int | str | slice, value: NamedItemType | Iterable[NamedItemType]
-    ) -> None:
-        """Set the list item at the given index or the list item with the given name."""
-        match index:
-            case int():
-                self._elements[index] = value  # type: ignore
-            case str():
-                for i, attr in enumerate(self._elements):
-                    if attr.name == index:
-                        self._elements[i] = value  # type: ignore
-                        return
-                raise KeyError(f"List item {index} not found.")
-            case slice():
-                if isinstance(value, Iterable):
-                    self._elements[index] = list(value)
-                else:
-                    raise TypeError("Value must be an iterable.")
-            case _:
-                raise TypeError("Index must be an int or string.")  # type: ignore
+        if database is None:
+            return default_db()
 
-    def __delitem__(self, index: int | str | slice) -> None:
-        """Delete the list item at the given index or the list item with the given name."""
-        match index:
-            case int():
-                del self._elements[index]
-            case slice():
-                del self._elements[index]
-            case str():
-                for i, attr in enumerate(self._elements):
-                    if attr.name == index:
-                        del self._elements[i]
-                        return
-                raise KeyError(f"List item {index} not found.")
-            case _:
-                raise TypeError("Index must be an int or string.")  # type: ignore
+        try:
+            return self.server.Databases[database]
+        except (Exception, System.Exception):  # type: ignore
+            message = f'Database "{database}" not found, using the default database.'
+            warnings.warn(message=message, category=UserWarning, stacklevel=2)
+            return default_db()
 
-    def insert(self, index: int, value: NamedItemType) -> None:
-        """Insert a new item at the given index."""
-        self._elements.insert(index, value)
+    def __enter__(self) -> Self:
+        """Open the PI AF server connection context."""
+        self.server.Connect()
+        return self
 
-    def append(self, value: NamedItemType) -> None:
-        """Append a new item to the end of the list."""
-        self._elements.append(value)
-
-    def extend(self, values: Iterable[NamedItemType]) -> None:
-        """Extend the list with a new iterable of items."""
-        self._elements.extend(values)
-
-    def __reversed__(self) -> Iterator[NamedItemType]:
-        """Return a reverse iterator over the items in the list."""
-        return reversed(self._elements)
+    def __exit__(
+        self,
+        *args: Any,  # type: ignore
+    ) -> bool:
+        """Close the PI AF server connection context."""
+        return False
+        # Disabled disconnecting because garbage collection sometimes impedes
+        # connecting to another server later
+        # self.server.Disconnect()
 
     def __repr__(self) -> str:
-        """Return the string representation of the list."""
-        return f"{self.__class__.__qualname__}({len(self._elements)} items)"
+        """Return a representation of the PI AF database connection."""
+        return f"{self.__class__.__qualname__}(\\\\{self.server_name}\\{self.database_name})"
+
+    @property
+    def server_name(self) -> str:
+        """Return the name of the connected PI AF server."""
+        return self.server.Name
+
+    @property
+    def database_name(self) -> str:
+        """Return the name of the connected PI AF database."""
+        return self.database.Name
+
+    @property
+    def children(self) -> dict[str, Asset.AFElement]:
+        """Return a dictionary of the direct child elements of the database."""
+        return {c.Name: Asset.AFElement(c) for c in self.database.Elements}
+
+    @property
+    def tables(self) -> dict[str, Asset.AFTable]:
+        """Return a dictionary of the tables in the database."""
+        return {t.Name: Asset.AFTable(t) for t in self.database.Tables}
+
+    def descendant(self, path: str) -> Asset.AFElement:
+        """Return a descendant of the database from an exact path."""
+        return Asset.AFElement(self.database.Elements.get_Item(path))
+
+    def event_frames(
+        self,
+        start_time: Time.TimeLike = "",
+        start_index: int = 0,
+        max_count: int = 1000,
+        search_mode: PIConsts.EventFrameSearchMode = _DEFAULT_EVENTFRAME_SEARCH_MODE,
+        search_full_hierarchy: bool = False,
+    ) -> dict[str, Asset.AFEventFrame]:
+        """Search for event frames in the database."""
+        _start_time = Time.to_af_time(start_time)
+        _search_mode = SDK.AF.EventFrame.AFEventFrameSearchMode(int(search_mode))
+        return {
+            frame.Name: Asset.AFEventFrame(frame)
+            for frame in SDK.AF.EventFrame.AFEventFrame.FindEventFrames(
+                self.database,
+                None,
+                _start_time,
+                start_index,
+                max_count,
+                _search_mode,
+                None,
+                None,
+                None,
+                None,
+                search_full_hierarchy,
+            )
+        }
