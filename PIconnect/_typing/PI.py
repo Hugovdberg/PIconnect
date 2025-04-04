@@ -66,6 +66,9 @@ class PIPoint:
     Name: str = "TestPIPoint"
     """This property identifies the name of the PIPoint"""
 
+    Step: bool = False
+    """This property indicates whether the PIPoint is a step PIPoint"""
+
     @staticmethod
     def CurrentValue() -> _values.AFValue:
         return _values.AFValue(None)
