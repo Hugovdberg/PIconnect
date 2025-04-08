@@ -2,8 +2,7 @@
 
 from typing import Protocol
 
-from . import AF
-from . import dotnet as System
+from . import AF, System
 
 
 class AFType(Protocol):
@@ -17,7 +16,7 @@ class AFType(Protocol):
     # Modeling = AF.Modeling
     # Notification = AF.Notification
     PI = AF.PI
-    # Search = AF.Search
+    Search = AF.Search
     # Support = AF.Support
     Time = AF.Time
     # UI = AF.UI

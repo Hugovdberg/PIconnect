@@ -45,7 +45,7 @@ class PISystem:
 
         def __getitem__(self, name: str) -> AFDatabase | None:
             """Return the AFDatabase with the given name."""
-            if name == self.DefaultDatabase.Name:
+            if self.DefaultDatabase and name == self.DefaultDatabase.Name:
                 return self.DefaultDatabase
 
     def __init__(self, name: str) -> None:

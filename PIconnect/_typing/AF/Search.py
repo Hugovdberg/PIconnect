@@ -5,6 +5,7 @@ from typing import Generic, TypeVar
 
 from .Asset import AFAttribute, AFElement
 from .Database import AFDatabase
+from .EventFrame import AFEventFrame
 
 _AFSearchable = TypeVar(
     "_AFSearchable",
@@ -35,4 +36,8 @@ class AFAttributeSearch(AFSearch[AFAttribute]):
 
 
 class AFElementSearch(AFSearch[AFElement]):
+    """Search for AF elements."""
+
+
+class AFEventFrameSearch(AFSearch[AFEventFrame]):
     """Search for AF elements."""

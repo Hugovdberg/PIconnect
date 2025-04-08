@@ -3,8 +3,9 @@
 import enum
 from collections.abc import Iterable, Iterator
 
+from PIconnect._typing import System
+
 from . import Data, Generic, Time, _values
-from . import dotnet as System
 
 __all__ = ["PIPoint", "PIServer", "PIServers"]
 

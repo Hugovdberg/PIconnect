@@ -1,11 +1,12 @@
-"""Mock classes for the AF module."""
+"""Mock classes for the AF.Asset module."""
 
 from collections.abc import Iterator
 from typing import cast
 
-from . import AF, Data, Generic
+from PIconnect._typing import AF, System
+
+from . import Data, Generic
 from . import UnitsOfMeasure as UOM
-from . import dotnet as System
 from ._values import AFValue, AFValues
 
 __all__ = [
