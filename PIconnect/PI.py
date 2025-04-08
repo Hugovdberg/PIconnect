@@ -6,13 +6,14 @@ from typing import Any, cast
 import PIconnect._typing.AF as _AFtyping
 import PIconnect.AFSDK as SDK
 from PIconnect import Data, PIConsts, Time
-from PIconnect._utils import InitialisationWarning
 from PIconnect.AFSDK import System
 
 __all__ = ["PIServer", "PIPoint"]
 
 _DEFAULT_AUTH_MODE = PIConsts.AuthenticationMode.PI_USER_AUTHENTICATION
 
+class InitialisationWarning(UserWarning):
+    pass
 
 def _lookup_servers() -> dict[str, SDK.AF.PI.PIServer]:
     servers: dict[str, SDK.AF.PI.PIServer] = {}
