@@ -334,35 +334,6 @@ class AFElementList(_collections.NamedItemList[AFElement]):
     pass
 
 
-class AFEventFrame(AFBaseElement[SDK.AF.EventFrame.AFEventFrame]):
-    """Container for PI AF Event Frames in the database."""
-
-    version = "0.1.0"
-
-    @property
-    def event_frame(self) -> SDK.AF.EventFrame.AFEventFrame:
-        """Return the underlying AF Event Frame object."""
-        return self.element
-
-    @property
-    def parent(self) -> Self | None:
-        """Return the parent element of the current event frame, or None if it has none."""
-        if not self.element.Parent:
-            return None
-        return self.__class__(self.element.Parent)
-
-    @property
-    def children(self) -> dict[str, Self]:
-        """Return a dictionary of the direct child event frames of the current event frame."""
-        return {c.Name: self.__class__(c) for c in self.element.EventFrames}
-
-
-class AFEventFrameList(_collections.NamedItemList[AFEventFrame]):
-    """Container for a list of PIAFEventFrame objects."""
-
-    pass
-
-
 class AFTable:
     """Container for PI AF Tables in the database."""
 

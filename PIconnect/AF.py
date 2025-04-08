@@ -5,10 +5,10 @@ import warnings
 from typing import Any, Self
 
 import PIconnect.AFSDK as SDK
-from PIconnect import Asset, PIConsts, Search, Time
+from PIconnect import Asset, EventFrame, Search, Time
 
 _logger = logging.getLogger(__name__)
-_DEFAULT_EVENTFRAME_SEARCH_MODE = PIConsts.EventFrameSearchMode.STARTING_AFTER
+_DEFAULT_EVENTFRAME_SEARCH_MODE = EventFrame.EventFrameSearchMode.STARTING_AFTER
 
 
 class AFDatabase:
@@ -126,14 +126,14 @@ class AFDatabase:
         start_time: Time.TimeLike = "",
         start_index: int = 0,
         max_count: int = 1000,
-        search_mode: PIConsts.EventFrameSearchMode = _DEFAULT_EVENTFRAME_SEARCH_MODE,
+        search_mode: EventFrame.EventFrameSearchMode = _DEFAULT_EVENTFRAME_SEARCH_MODE,
         search_full_hierarchy: bool = False,
-    ) -> dict[str, Asset.AFEventFrame]:
+    ) -> dict[str, EventFrame.AFEventFrame]:
         """Search for event frames in the database."""
         _start_time = Time.to_af_time(start_time)
         _search_mode = SDK.AF.EventFrame.AFEventFrameSearchMode(int(search_mode))
         return {
-            frame.Name: Asset.AFEventFrame(frame)
+            frame.Name: EventFrame.AFEventFrame(frame)
             for frame in SDK.AF.EventFrame.AFEventFrame.FindEventFrames(
                 self.database,
                 None,
