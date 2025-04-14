@@ -799,9 +799,13 @@ class DataContainerCollection(_collections.NamedItemList[DataContainerType]):
     @property
     def current_value(self) -> pd.Series:
         """Return the current values of all attributes in the collection."""
-        idx, value = zip(
-            *[(element.name, element.current_value) for element in self._elements], strict=True
-        )
+        if self._elements:
+            idx, value = zip(
+                *[(element.name, element.current_value) for element in self._elements],
+                strict=True,
+            )
+        else:
+            idx, value = [], []
         return pd.Series(value, index=idx)
 
     def filtered_summaries(
