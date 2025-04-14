@@ -96,6 +96,9 @@ python = "3.13.*"
 [tool.pixi.feature.py313.tasks]
 test313 = "pytest"
 
+[tool.pixi.feature.debug.dependencies]
+jupyterlab = "*"
+
 [tool.pixi.environments]
 build = { features = ["build"], no-default-feature = true }
 test = { features = ["test"], solve-group = "default" }
@@ -104,6 +107,7 @@ docs = ["docs"]
 py311 = ["py311", "test"]
 py313 = ["py313", "test"]
 py312 = ["py312", "test"]
+debug = { features = ["debug"], solve-group = "default" }
 
 [tool.pytest.ini_options]
 minversion = "6.0"

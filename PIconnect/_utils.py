@@ -1,2 +1,0 @@
-class InitialisationWarning(UserWarning):
-    pass

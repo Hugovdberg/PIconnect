@@ -3,7 +3,8 @@
 import enum
 from collections.abc import Iterable
 
-from . import AF, Asset, Time
+from PIconnect._typing import AF
+from PIconnect._typing.AF import Asset, Time
 
 
 class AFEventFrameSearchMode(enum.IntEnum):
@@ -39,6 +40,20 @@ class AFEventFrame(Asset.AFBaseElement):
         search_full_hierarchy: bool = False,
         /,
     ) -> Iterable["AFEventFrame"]:
+        """Mock method to find event frames."""
+        _config = {
+            "database": database,
+            "search_root": search_root,
+            "start_time": start_time,
+            "start_index": start_index,
+            "max_count": max_count,
+            "search_mode": search_mode,
+            "name_filter": name_filter,
+            "referenced_element_name_filter": referenced_element_name_filter,
+            "element_category": element_category,
+            "element_template": element_template,
+            "search_full_hierarchy": search_full_hierarchy,
+        }
         return []
 
 

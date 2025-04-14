@@ -54,19 +54,6 @@ class BufferMode(enum.IntEnum):
     BUFFER = 2
 
 
-class AuthenticationMode(enum.IntEnum):
-    """AuthenticationMode indicates how a user authenticates to a PI Server.
-
-    Detailed information is available at
-    :afsdk:`AF.PI.PIAuthenticationMode <T_OSIsoft_AF_PI_PIAuthenticationMode.htm>`.
-    """
-
-    #: Use Windows authentication when making a connection
-    WINDOWS_AUTHENTICATION = 0
-    #: Use the PI User authentication mode when making a connection
-    PI_USER_AUTHENTICATION = 1
-
-
 class CalculationBasis(enum.IntEnum):
     """CalculationBasis indicates how values should be weighted over a time range.
 
