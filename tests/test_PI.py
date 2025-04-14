@@ -7,8 +7,11 @@ import pytz
 
 import PIconnect as PI
 import PIconnect.PI as PI_
+from PIconnect import dotnet
 
 from .fakes import VirtualTestCase, pi_point
+
+dotnet.lib.load_test_SDK()
 
 __all__ = ["TestServer", "TestSearchPIPoints", "TestPIPoint", "pi_point"]
 
@@ -22,28 +25,30 @@ class TestServer:
 
     def test_server_name(self):
         """Test that the server reports the same name as which was connected to."""
-        default_server = PI.PIServer.default_server
+        default_server = PI.PIServer.default_server()
         if default_server is None:
             pytest.skip("No default server found.")
-        servername = default_server.Name
-        server = PI.PIServer(servername)
-        assert server.server_name == servername
+        else:
+            servername = default_server.Name
+            server = PI.PIServer(servername)
+            assert server.server_name == servername
 
     def test_warn_unkown_server(self):
         """Test that the server reports a warning when an unknown host is specified."""
-        server_names = list(PI.PIServer.servers)
+        server_names = list(PI.PIServer.servers())
         server_name = "__".join(server_names + ["UnknownHostName"])
         with pytest.warns(UserWarning):
             PI.PIServer(server_name)
 
     def test_repr(self):
         """Test that the server representation matches the connected server."""
-        default_server = PI.PIServer.default_server
+        default_server = PI.PIServer.default_server()
         if default_server is None:
             pytest.skip("No default server found.")
-        servername = default_server.Name
-        server = PI.PIServer(servername)
-        assert repr(server) == "PIServer(\\\\{})".format(servername)
+        else:
+            servername = default_server.Name
+            server = PI.PIServer(servername)
+            assert repr(server) == "PIServer(\\\\{})".format(servername)
 
 
 class TestSearchPIPoints:

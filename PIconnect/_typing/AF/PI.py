@@ -3,8 +3,9 @@
 import enum
 from collections.abc import Iterable, Iterator
 
+from PIconnect._typing import System
+
 from . import Data, Generic, Time, _values
-from . import dotnet as System
 
 __all__ = ["PIPoint", "PIServer", "PIServers"]
 
@@ -53,12 +54,20 @@ class PIServers:
     def __iter__(self) -> Iterator[PIServer]:
         return (x for x in [self.DefaultPIServer])
 
+    def __getitem__(self, server: str) -> PIServer | None:
+        """Stub to mock getting a server by name."""
+        if server == self.DefaultPIServer.Name:
+            return self.DefaultPIServer
+
 
 class PIPoint:
     """Mock class of the AF.PI.PIPoint class."""
 
     Name: str = "TestPIPoint"
     """This property identifies the name of the PIPoint"""
+
+    Step: bool = False
+    """This property indicates whether the PIPoint is a step PIPoint"""
 
     @staticmethod
     def CurrentValue() -> _values.AFValue:

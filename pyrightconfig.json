@@ -1,15 +1,16 @@
 {
     "typeCheckingMode": "strict",
+    "useLibraryCodeForTypes": true,
     "exclude": [
         ".venv/*",
         "*.egg-info/*",
         "build/*",
         "dist/*",
         ".tox/*",
-        "PIconnect/_versions.py"
+        "PIconnect/_version.py"
     ],
     "ignore": [
     ],
-    "pythonVersion": "3.10",
+    "pythonVersion": "3.11",
     "deprecateTypingAliases": true
 }

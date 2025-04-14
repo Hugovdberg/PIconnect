@@ -1,6 +1,6 @@
 """Mock classes for the AF.Time module."""
 
-from . import dotnet as System
+from PIconnect._typing import System
 
 
 class AFTime:
