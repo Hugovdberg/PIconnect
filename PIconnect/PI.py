@@ -1,5 +1,6 @@
 """PI - Core containers for connections to PI databases."""
 
+import enum
 import warnings
 from typing import Any, cast
 
@@ -10,10 +11,25 @@ from PIconnect.AFSDK import System
 
 __all__ = ["PIServer", "PIPoint"]
 
-_DEFAULT_AUTH_MODE = PIConsts.AuthenticationMode.PI_USER_AUTHENTICATION
 
 class InitialisationWarning(UserWarning):
     pass
+
+class AuthenticationMode(enum.IntEnum):
+    """AuthenticationMode indicates how a user authenticates to a PI Server.
+
+    Detailed information is available at
+    :afsdk:`AF.PI.PIAuthenticationMode <T_OSIsoft_AF_PI_PIAuthenticationMode.htm>`.
+    """
+
+    #: Use Windows authentication when making a connection
+    WINDOWS_AUTHENTICATION = 0
+    #: Use the PI User authentication mode when making a connection
+    PI_USER_AUTHENTICATION = 1
+
+
+_DEFAULT_AUTH_MODE = AuthenticationMode.PI_USER_AUTHENTICATION
+
 
 def _lookup_servers() -> dict[str, SDK.AF.PI.PIServer]:
     servers: dict[str, SDK.AF.PI.PIServer] = {}
@@ -248,7 +264,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         username: str | None = None,
         password: str | None = None,
         domain: str | None = None,
-        authentication_mode: PIConsts.AuthenticationMode = _DEFAULT_AUTH_MODE,
+        authentication_mode: AuthenticationMode = _DEFAULT_AUTH_MODE,
         timeout: int | None = None,
     ) -> None:
         default_server = self.default_server()
