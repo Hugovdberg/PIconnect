@@ -36,6 +36,8 @@ def _lookup_servers() -> dict[str, dotnet.AF.PI.PIServer]:
     for server in dotnet.lib.AF.PI.PIServers():
         try:
             servers[server.Name] = server
+        except ImportError as e:
+            raise e
         except (Exception, dotnet.lib.System.Exception) as e:  # type: ignore
             warnings.warn(
                 f"Failed loading server data for {server.Name} "
@@ -50,6 +52,8 @@ def _lookup_default_server() -> dotnet.AF.PI.PIServer | None:
     default_server = None
     try:
         default_server = dotnet.lib.AF.PI.PIServers().DefaultPIServer
+    except ImportError as e:
+        raise e
     except Exception:
         warnings.warn("Could not load the default PI Server", ResourceWarning, stacklevel=2)
     return default_server
