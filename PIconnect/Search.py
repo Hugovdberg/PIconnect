@@ -5,9 +5,7 @@ import warnings
 from collections.abc import Iterator, Sequence
 from typing import Generic, TypeVar
 
-import PIconnect.AFSDK as SDK
-
-from . import Asset
+from . import Asset, EventFrame, dotnet
 
 SearchResultType = TypeVar(
     "SearchResultType",
@@ -23,7 +21,7 @@ class SearchResult(Generic[AFSearchResultType, SearchResultType], abc.ABC):
 
     def __init__(
         self,
-        search: "SDK.AF.Search.AFSearch[AFSearchResultType]",
+        search: "dotnet.AF.Search.AFSearch[AFSearchResultType]",
     ) -> None:
         self.search = search
         self.result_type: type[SearchResultType]
@@ -62,12 +60,12 @@ class SearchResult(Generic[AFSearchResultType, SearchResultType], abc.ABC):
         pass
 
 
-class AttributeSearchResult(SearchResult[SDK.AF.Asset.AFAttribute, Asset.AFAttribute]):
+class AttributeSearchResult(SearchResult[dotnet.AF.Asset.AFAttribute, Asset.AFAttribute]):
     """Container for attribute search results."""
 
     def __init__(
         self,
-        search: SDK.AF.Search.AFAttributeSearch,
+        search: dotnet.AF.Search.AFAttributeSearch,
     ) -> None:
         super().__init__(search)
         self.result_type = Asset.AFAttribute
@@ -77,12 +75,12 @@ class AttributeSearchResult(SearchResult[SDK.AF.Asset.AFAttribute, Asset.AFAttri
         return Asset.AFAttributeList(list(self))
 
 
-class ElementSearchResult(SearchResult[SDK.AF.Asset.AFElement, Asset.AFElement]):
+class ElementSearchResult(SearchResult[dotnet.AF.Asset.AFElement, Asset.AFElement]):
     """Container for attribute search results."""
 
     def __init__(
         self,
-        search: SDK.AF.Search.AFElementSearch,
+        search: dotnet.AF.Search.AFElementSearch,
     ) -> None:
         super().__init__(search)
         self.result_type = Asset.AFElement
@@ -92,23 +90,47 @@ class ElementSearchResult(SearchResult[SDK.AF.Asset.AFElement, Asset.AFElement])
         return Asset.AFElementList(list(self))
 
 
+class EventFrameSearchResult(
+    SearchResult[dotnet.AF.EventFrame.AFEventFrame, EventFrame.AFEventFrame]
+):
+    """Container for attribute search results."""
+
+    def __init__(
+        self,
+        search: dotnet.AF.Search.AFEventFrameSearch,
+    ) -> None:
+        super().__init__(search)
+        self.result_type = EventFrame.AFEventFrame
+
+    def to_list(self) -> EventFrame.AFEventFrameList:
+        """Return all items in the search result."""
+        return EventFrame.AFEventFrameList(list(self))
+
+
 class Search:
     """Search the AF database for different objects."""
 
-    def __init__(self, database: SDK.AF.AFDatabase) -> None:
+    def __init__(self, database: dotnet.AF.AFDatabase) -> None:
         self.database = database
 
     def attributes(
-        self, query: str, query_name: str = "element_search"
+        self, query: str, query_name: str = "attribute_search"
     ) -> AttributeSearchResult:
         """Search for elements in the AF database."""
-        search = SDK.AF.Search.AFAttributeSearch(self.database, query_name, query)
+        search = dotnet.lib.AF.Search.AFAttributeSearch(self.database, query_name, query)
         return AttributeSearchResult(search)
 
     def elements(self, query: str, query_name: str = "element_search") -> ElementSearchResult:
         """Search for elements in the AF database."""
-        search = SDK.AF.Search.AFElementSearch(self.database, query_name, query)
+        search = dotnet.lib.AF.Search.AFElementSearch(self.database, query_name, query)
         return ElementSearchResult(search)
+
+    def event_frames(
+        self, query: str, query_name: str = "event_frame_search"
+    ) -> EventFrameSearchResult:
+        """Search for event frames in the AF database."""
+        search = dotnet.lib.AF.Search.AFEventFrameSearch(self.database, query_name, query)
+        return EventFrameSearchResult(search)
 
     def _descendant(self, path: str) -> Asset.AFElement:
         return Asset.AFElement(self.database.Elements.get_Item(path))

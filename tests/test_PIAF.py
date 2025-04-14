@@ -5,8 +5,10 @@ from typing import cast
 import pytest
 
 import PIconnect as PI
-from PIconnect import Asset
+from PIconnect import Asset, dotnet
 from PIconnect._typing import AF
+
+dotnet.lib.load_test_SDK()
 
 
 class TestAFDatabase:
@@ -18,12 +20,12 @@ class TestAFDatabase:
 
     def test_server_name(self):
         """Test that the server reports the same name as which was connected to."""
-        AFserver = PI.AF.PISystems().DefaultPISystem.Name
-        database = PI.AF.PISystems().DefaultPISystem.Databases.DefaultDatabase.Name
+        AFserver = dotnet.lib.AF.PISystems().DefaultPISystem.Name
+        database = dotnet.lib.AF.PISystems().DefaultPISystem.Databases.DefaultDatabase.Name
         server = PI.AFDatabase(AFserver, database)
         assert server.server_name == AFserver
         assert server.database_name == database
-        assert repr(server) == "PIAFDatabase(\\\\{s}\\{d})".format(s=AFserver, d=database)
+        assert repr(server) == "AFDatabase(\\\\{s}\\{d})".format(s=AFserver, d=database)
 
     def test_unknown_server_name(self):
         """Test that the server reports a warning for an unknown server."""

@@ -4,8 +4,7 @@ import logging
 import warnings
 from typing import Any, Self
 
-import PIconnect.AFSDK as SDK
-from PIconnect import Asset, EventFrame, Search, Time
+from PIconnect import Asset, EventFrame, Search, Time, dotnet
 
 _logger = logging.getLogger(__name__)
 _DEFAULT_EVENTFRAME_SEARCH_MODE = EventFrame.EventFrameSearchMode.STARTING_AFTER
@@ -17,27 +16,27 @@ class AFDatabase:
     version = "0.3.0"
 
     @classmethod
-    def servers(cls) -> dict[str, SDK.AF.PISystem]:
+    def servers(cls) -> dict[str, dotnet.AF.PISystem]:
         """Return a dictionary of the known servers."""
-        return {server.Name: server for server in SDK.AF.PISystems()}
+        return {server.Name: server for server in dotnet.lib.AF.PISystems()}
 
     @classmethod
-    def default_server(cls) -> SDK.AF.PISystem | None:
+    def default_server(cls) -> dotnet.AF.PISystem | None:
         """Return the default server."""
-        if SDK.AF.PISystems().DefaultPISystem:
-            return SDK.AF.PISystems().DefaultPISystem
-        servers = SDK.AF.PISystems()
+        if dotnet.lib.AF.PISystems().DefaultPISystem:
+            return dotnet.lib.AF.PISystems().DefaultPISystem
+        servers = dotnet.lib.AF.PISystems()
         if servers.Count > 0:
             return next(iter(servers))
         else:
             return None
 
     def __init__(self, server: str | None = None, database: str | None = None) -> None:
-        self.server: SDK.AF.PISystem = self._initialise_server(server)
-        self.database: SDK.AF.AFDatabase = self._initialise_database(database)
+        self.server = self._initialise_server(server)
+        self.database = self._initialise_database(database)
         self.search = Search.Search(self.database)
 
-    def _initialise_server(self, server: str | None) -> SDK.AF.PISystem:
+    def _initialise_server(self, server: str | None) -> dotnet.AF.PISystem:
         """Initialise the server connection."""
         _logger.debug(f"Initialising server connection from {server!r}")
         default_server = self.default_server()
@@ -47,7 +46,7 @@ class AFDatabase:
             _logger.debug(f"Using default server: {default_server.Name}")
             return default_server
 
-        if (_server := SDK.AF.PISystems()[server]) is not None:
+        if (_server := dotnet.lib.AF.PISystems()[server]) is not None:
             _logger.debug(_server)
             return _server
         else:
@@ -60,7 +59,7 @@ class AFDatabase:
             warnings.warn(message=message, category=UserWarning, stacklevel=2)
             return default_server
 
-    def _initialise_database(self, database: str | None) -> SDK.AF.AFDatabase:
+    def _initialise_database(self, database: str | None) -> dotnet.AF.AFDatabase:
         def default_db():
             default = self.server.Databases.DefaultDatabase
             if default is None:
@@ -88,6 +87,7 @@ class AFDatabase:
         *args: Any,  # type: ignore
     ) -> bool:
         """Close the PI AF server connection context."""
+        _logger.log(0, f"Closing connection to {self} ({args=})")
         return False
         # Disabled disconnecting because garbage collection sometimes impedes
         # connecting to another server later
@@ -131,10 +131,10 @@ class AFDatabase:
     ) -> dict[str, EventFrame.AFEventFrame]:
         """Search for event frames in the database."""
         _start_time = Time.to_af_time(start_time)
-        _search_mode = SDK.AF.EventFrame.AFEventFrameSearchMode(int(search_mode))
+        _search_mode = dotnet.lib.AF.EventFrame.AFEventFrameSearchMode(int(search_mode))
         return {
             frame.Name: EventFrame.AFEventFrame(frame)
-            for frame in SDK.AF.EventFrame.AFEventFrame.FindEventFrames(
+            for frame in dotnet.lib.AF.EventFrame.AFEventFrame.FindEventFrames(
                 self.database,
                 None,
                 _start_time,

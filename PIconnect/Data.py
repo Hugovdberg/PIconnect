@@ -9,8 +9,7 @@ from typing import Any, Concatenate, Literal, ParamSpec, TypeVar, cast
 import pandas as pd  # type: ignore
 
 import PIconnect._typing.AF as _AFtyping
-import PIconnect.AFSDK as SDK
-from PIconnect import Time, _collections
+from PIconnect import Time, _collections, dotnet
 
 
 class BoundaryType(enum.IntEnum):
@@ -291,11 +290,11 @@ class DataContainer(abc.ABC):
         time_range = Time.to_af_time_range(start_time, end_time)
         _interval = Time.to_af_time_span(interval)
         _filter_expression = self._normalize_filter_expression(filter_expression)
-        _summary_types = SDK.AF.Data.AFSummaryTypes(int(summary_types))
-        _calculation_basis = SDK.AF.Data.AFCalculationBasis(int(calculation_basis))
-        _filter_evaluation = SDK.AF.Data.AFSampleType(int(filter_evaluation))
+        _summary_types = dotnet.lib.AF.Data.AFSummaryTypes(int(summary_types))
+        _calculation_basis = dotnet.lib.AF.Data.AFCalculationBasis(int(calculation_basis))
+        _filter_evaluation = dotnet.lib.AF.Data.AFSampleType(int(filter_evaluation))
         _filter_interval = Time.to_af_time_span(filter_interval)
-        _time_type = SDK.AF.Data.AFTimestampCalculation(int(time_type))
+        _time_type = dotnet.lib.AF.Data.AFTimestampCalculation(int(time_type))
         pivalues = self._filtered_summaries(
             time_range,
             _interval,
@@ -325,14 +324,14 @@ class DataContainer(abc.ABC):
     @abc.abstractmethod
     def _filtered_summaries(
         self,
-        time_range: SDK.AF.Time.AFTimeRange,
-        interval: SDK.AF.Time.AFTimeSpan,
+        time_range: dotnet.AF.Time.AFTimeRange,
+        interval: dotnet.AF.Time.AFTimeSpan,
         filter_expression: str,
-        summary_types: SDK.AF.Data.AFSummaryTypes,
-        calculation_basis: SDK.AF.Data.AFCalculationBasis,
-        filter_evaluation: SDK.AF.Data.AFSampleType,
-        filter_interval: SDK.AF.Time.AFTimeSpan,
-        time_type: SDK.AF.Data.AFTimestampCalculation,
+        summary_types: dotnet.AF.Data.AFSummaryTypes,
+        calculation_basis: dotnet.AF.Data.AFCalculationBasis,
+        filter_evaluation: dotnet.AF.Data.AFSampleType,
+        filter_interval: dotnet.AF.Time.AFTimeSpan,
+        time_type: dotnet.AF.Data.AFTimestampCalculation,
     ) -> _AFtyping.Data.SummariesDict:
         pass
 
@@ -361,7 +360,7 @@ class DataContainer(abc.ABC):
         return result
 
     @abc.abstractmethod
-    def _interpolated_value(self, time: SDK.AF.Time.AFTime) -> SDK.AF.Asset.AFValue:
+    def _interpolated_value(self, time: dotnet.AF.Time.AFTime) -> dotnet.AF.Asset.AFValue:
         pass
 
     def interpolated_values(
@@ -424,10 +423,10 @@ class DataContainer(abc.ABC):
     @abc.abstractmethod
     def _interpolated_values(
         self,
-        time_range: SDK.AF.Time.AFTimeRange,
-        interval: SDK.AF.Time.AFTimeSpan,
+        time_range: dotnet.AF.Time.AFTimeRange,
+        interval: dotnet.AF.Time.AFTimeSpan,
         filter_expression: str,
-    ) -> SDK.AF.Asset.AFValues:
+    ) -> dotnet.AF.Asset.AFValues:
         pass
 
     def _normalize_filter_expression(self, filter_expression: str) -> str:
@@ -455,7 +454,7 @@ class DataContainer(abc.ABC):
                 the index
         """
         _time = Time.to_af_time(time)
-        _retrieval_mode = SDK.AF.Data.AFRetrievalMode(int(retrieval_mode))
+        _retrieval_mode = dotnet.lib.AF.Data.AFRetrievalMode(int(retrieval_mode))
         pivalue = self._recorded_value(_time, _retrieval_mode)
         result = pd.Series(
             data=[pivalue.Value],
@@ -467,8 +466,8 @@ class DataContainer(abc.ABC):
 
     @abc.abstractmethod
     def _recorded_value(
-        self, time: SDK.AF.Time.AFTime, retrieval_mode: SDK.AF.Data.AFRetrievalMode
-    ) -> SDK.AF.Asset.AFValue:
+        self, time: dotnet.AF.Time.AFTime, retrieval_mode: dotnet.AF.Data.AFRetrievalMode
+    ) -> dotnet.AF.Asset.AFValue:
         pass
 
     def recorded_values(
@@ -518,7 +517,7 @@ class DataContainer(abc.ABC):
             pd.Series: Timeseries of the values returned by the SDK
         """
         time_range = Time.to_af_time_range(start_time, end_time)
-        _boundary_type = SDK.AF.Data.AFBoundaryType(int(boundary_type))
+        _boundary_type = dotnet.lib.AF.Data.AFBoundaryType(int(boundary_type))
         _filter_expression = self._normalize_filter_expression(filter_expression)
 
         pivalues = self._recorded_values(time_range, _boundary_type, _filter_expression)
@@ -539,10 +538,10 @@ class DataContainer(abc.ABC):
     @abc.abstractmethod
     def _recorded_values(
         self,
-        time_range: SDK.AF.Time.AFTimeRange,
-        boundary_type: SDK.AF.Data.AFBoundaryType,
+        time_range: dotnet.AF.Time.AFTimeRange,
+        boundary_type: dotnet.AF.Data.AFBoundaryType,
         filter_expression: str,
-    ) -> SDK.AF.Asset.AFValues:
+    ) -> dotnet.AF.Asset.AFValues:
         """Abstract implementation for recorded values.
 
         The internals for retrieving recorded values from PI and PI-AF are
@@ -586,9 +585,9 @@ class DataContainer(abc.ABC):
                 and the summary name as column name.
         """
         time_range = Time.to_af_time_range(start_time, end_time)
-        _summary_types = SDK.AF.Data.AFSummaryTypes(int(summary_types))
-        _calculation_basis = SDK.AF.Data.AFCalculationBasis(int(calculation_basis))
-        _time_type = SDK.AF.Data.AFTimestampCalculation(int(time_type))
+        _summary_types = dotnet.lib.AF.Data.AFSummaryTypes(int(summary_types))
+        _calculation_basis = dotnet.lib.AF.Data.AFCalculationBasis(int(calculation_basis))
+        _time_type = dotnet.lib.AF.Data.AFTimestampCalculation(int(time_type))
         pivalues = self._summary(time_range, _summary_types, _calculation_basis, _time_type)
         df = pd.DataFrame()
         for summary in pivalues:
@@ -605,10 +604,10 @@ class DataContainer(abc.ABC):
     @abc.abstractmethod
     def _summary(
         self,
-        time_range: SDK.AF.Time.AFTimeRange,
-        summary_types: SDK.AF.Data.AFSummaryTypes,
-        calculation_basis: SDK.AF.Data.AFCalculationBasis,
-        time_type: SDK.AF.Data.AFTimestampCalculation,
+        time_range: dotnet.AF.Time.AFTimeRange,
+        summary_types: dotnet.AF.Data.AFSummaryTypes,
+        calculation_basis: dotnet.AF.Data.AFCalculationBasis,
+        time_type: dotnet.AF.Data.AFTimestampCalculation,
     ) -> _AFtyping.Data.SummaryDict:
         pass
 
@@ -651,9 +650,9 @@ class DataContainer(abc.ABC):
         """
         time_range = Time.to_af_time_range(start_time, end_time)
         _interval = Time.to_af_time_span(interval)
-        _summary_types = SDK.AF.Data.AFSummaryTypes(int(summary_types))
-        _calculation_basis = SDK.AF.Data.AFCalculationBasis(int(calculation_basis))
-        _time_type = SDK.AF.Data.AFTimestampCalculation(int(time_type))
+        _summary_types = dotnet.lib.AF.Data.AFSummaryTypes(int(summary_types))
+        _calculation_basis = dotnet.lib.AF.Data.AFCalculationBasis(int(calculation_basis))
+        _time_type = dotnet.lib.AF.Data.AFTimestampCalculation(int(time_type))
         pivalues = self._summaries(
             time_range, _interval, _summary_types, _calculation_basis, _time_type
         )
@@ -676,11 +675,11 @@ class DataContainer(abc.ABC):
     @abc.abstractmethod
     def _summaries(
         self,
-        time_range: SDK.AF.Time.AFTimeRange,
-        interval: SDK.AF.Time.AFTimeSpan,
-        summary_types: SDK.AF.Data.AFSummaryTypes,
-        calculation_basis: SDK.AF.Data.AFCalculationBasis,
-        time_type: SDK.AF.Data.AFTimestampCalculation,
+        time_range: dotnet.AF.Time.AFTimeRange,
+        interval: dotnet.AF.Time.AFTimeSpan,
+        summary_types: dotnet.AF.Data.AFSummaryTypes,
+        calculation_basis: dotnet.AF.Data.AFCalculationBasis,
+        time_type: dotnet.AF.Data.AFTimestampCalculation,
     ) -> _AFtyping.Data.SummariesDict:
         pass
 
@@ -711,20 +710,20 @@ class DataContainer(abc.ABC):
         from . import Time as time_module
 
         if time is not None:
-            _value = SDK.AF.Asset.AFValue(value, time_module.to_af_time(time))
+            _value = dotnet.lib.AF.Asset.AFValue(value, time_module.to_af_time(time))
         else:
-            _value = SDK.AF.Asset.AFValue(value)
+            _value = dotnet.lib.AF.Asset.AFValue(value)
 
-        _update_mode = SDK.AF.Data.AFUpdateOption(int(update_mode))
-        _buffer_mode = SDK.AF.Data.AFBufferOption(int(buffer_mode))
+        _update_mode = dotnet.lib.AF.Data.AFUpdateOption(int(update_mode))
+        _buffer_mode = dotnet.lib.AF.Data.AFBufferOption(int(buffer_mode))
         self._update_value(_value, _update_mode, _buffer_mode)
 
     @abc.abstractmethod
     def _update_value(
         self,
-        value: SDK.AF.Asset.AFValue,
-        update_mode: SDK.AF.Data.AFUpdateOption,
-        buffer_mode: SDK.AF.Data.AFBufferOption,
+        value: dotnet.AF.Asset.AFValue,
+        update_mode: dotnet.AF.Data.AFUpdateOption,
+        buffer_mode: dotnet.AF.Data.AFBufferOption,
     ) -> None:
         pass
 
@@ -794,7 +793,12 @@ class DataContainerCollection(_collections.NamedItemList[DataContainerType]):
                 case "time":
                     return df.interpolate(method="time", axis=0)  # type: ignore
 
-        return align(pd.concat(map(apply_func, self._elements), axis=1))
+        return align(
+            pd.concat(
+                [pd.DataFrame()] + [apply_func(e) for e in self._elements],
+                axis=1,
+            )
+        )
 
     @property
     def current_value(self) -> pd.Series:

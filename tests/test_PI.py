@@ -7,8 +7,11 @@ import pytz
 
 import PIconnect as PI
 import PIconnect.PI as PI_
+from PIconnect import dotnet
 
 from .fakes import VirtualTestCase, pi_point
+
+dotnet.lib.load_test_SDK()
 
 __all__ = ["TestServer", "TestSearchPIPoints", "TestPIPoint", "pi_point"]
 

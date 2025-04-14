@@ -3,8 +3,7 @@
 import enum
 from typing import Self
 
-from PIconnect import AFSDK as dotnet
-from PIconnect import Asset, _collections
+from PIconnect import Asset, _collections, dotnet
 
 
 class EventFrameSearchMode(enum.IntEnum):

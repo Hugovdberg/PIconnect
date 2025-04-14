@@ -6,8 +6,7 @@ from typing import Generic, Self, TypeVar, overload
 import pandas as pd  # type: ignore
 
 import PIconnect._typing.AF as _AFtyping
-import PIconnect.AFSDK as SDK
-from PIconnect import PI, Data, _collections
+from PIconnect import PI, Data, _collections, dotnet
 
 __all__ = [
     "AFDataReference",
@@ -16,14 +15,14 @@ __all__ = [
 ]
 
 T = TypeVar("T")
-ElementType = TypeVar("ElementType", bound=SDK.AF.Asset.AFBaseElement)
+ElementType = TypeVar("ElementType", bound=dotnet.AF.Asset.AFBaseElement)
 
 
 @dataclasses.dataclass
 class AFDataReference:
     """Reference to the data source of an AF attribute."""
 
-    data_reference: SDK.AF.Asset.AFDataReference
+    data_reference: dotnet.AF.Asset.AFDataReference
 
     @property
     def attribute(self) -> "AFAttribute":
@@ -45,7 +44,7 @@ class AFDataReference:
 class AFEnumerationValue:
     """Representation of an AF enumeration value."""
 
-    def __init__(self, value: SDK.AF.Asset.AFEnumerationValue) -> None:
+    def __init__(self, value: dotnet.AF.Asset.AFEnumerationValue) -> None:
         self._value = value
 
     def __str__(self) -> str:
@@ -73,7 +72,7 @@ class AFEnumerationValue:
     @overload
     @staticmethod
     def wrap_enumeration_value(
-        value: SDK.AF.Asset.AFEnumerationValue,
+        value: dotnet.AF.Asset.AFEnumerationValue,
     ) -> "AFEnumerationValue": ...
     @overload
     @staticmethod
@@ -82,10 +81,10 @@ class AFEnumerationValue:
     ) -> T: ...
     @staticmethod
     def wrap_enumeration_value(
-        value: T | SDK.AF.Asset.AFEnumerationValue,
+        value: T | dotnet.AF.Asset.AFEnumerationValue,
     ) -> "T | AFEnumerationValue":
         """Wrap the value in an AFEnumerationValue if it is an enumeration value."""
-        if isinstance(value, SDK.AF.Asset.AFEnumerationValue):
+        if isinstance(value, dotnet.lib.AF.Asset.AFEnumerationValue):
             return AFEnumerationValue(value)
         return value
 
@@ -93,7 +92,7 @@ class AFEnumerationValue:
 class AFAttribute(Data.DataContainer):
     """Representation of an AF attribute."""
 
-    def __init__(self, attribute: SDK.AF.Asset.AFAttribute) -> None:
+    def __init__(self, attribute: dotnet.AF.Asset.AFAttribute) -> None:
         super().__init__()
         self.attribute = attribute
 
@@ -111,7 +110,7 @@ class AFAttribute(Data.DataContainer):
         return self.attribute.Step
 
     @property
-    def element(self) -> SDK.AF.Asset.AFBaseElement:
+    def element(self) -> dotnet.AF.Asset.AFBaseElement:
         """Return the element to which the attribute belongs."""
         return self.attribute.Element
 
@@ -163,14 +162,14 @@ class AFAttribute(Data.DataContainer):
 
     def _filtered_summaries(
         self,
-        time_range: SDK.AF.Time.AFTimeRange,
-        interval: SDK.AF.Time.AFTimeSpan,
+        time_range: dotnet.AF.Time.AFTimeRange,
+        interval: dotnet.AF.Time.AFTimeSpan,
         filter_expression: str,
-        summary_types: SDK.AF.Data.AFSummaryTypes,
-        calculation_basis: SDK.AF.Data.AFCalculationBasis,
-        filter_evaluation: SDK.AF.Data.AFSampleType,
-        filter_interval: SDK.AF.Time.AFTimeSpan,
-        time_type: SDK.AF.Data.AFTimestampCalculation,
+        summary_types: dotnet.AF.Data.AFSummaryTypes,
+        calculation_basis: dotnet.AF.Data.AFCalculationBasis,
+        filter_evaluation: dotnet.AF.Data.AFSampleType,
+        filter_interval: dotnet.AF.Time.AFTimeSpan,
+        time_type: dotnet.AF.Data.AFTimestampCalculation,
     ) -> _AFtyping.Data.SummariesDict:
         return self.attribute.Data.FilteredSummaries(
             time_range,
@@ -183,13 +182,13 @@ class AFAttribute(Data.DataContainer):
             time_type,
         )
 
-    def _interpolated_value(self, time: SDK.AF.Time.AFTime):
+    def _interpolated_value(self, time: dotnet.AF.Time.AFTime):
         """Return a single value for this PI Point."""
         return self.attribute.Data.InterpolatedValue(time, self.attribute.DefaultUOM)
 
     def _recorded_value(
-        self, time: SDK.AF.Time.AFTime, retrieval_mode: SDK.AF.Data.AFRetrievalMode
-    ) -> SDK.AF.Asset.AFValue:
+        self, time: dotnet.AF.Time.AFTime, retrieval_mode: dotnet.AF.Data.AFRetrievalMode
+    ) -> dotnet.AF.Asset.AFValue:
         """Return a single value for this PI Point."""
         return self.attribute.Data.RecordedValue(
             time, retrieval_mode, self.attribute.DefaultUOM
@@ -197,10 +196,10 @@ class AFAttribute(Data.DataContainer):
 
     def _recorded_values(
         self,
-        time_range: SDK.AF.Time.AFTimeRange,
-        boundary_type: SDK.AF.Data.AFBoundaryType,
+        time_range: dotnet.AF.Time.AFTimeRange,
+        boundary_type: dotnet.AF.Data.AFBoundaryType,
         filter_expression: str,
-    ) -> SDK.AF.Asset.AFValues:
+    ) -> dotnet.AF.Asset.AFValues:
         include_filtered_values = False
         return self.attribute.Data.RecordedValues(
             time_range,
@@ -212,10 +211,10 @@ class AFAttribute(Data.DataContainer):
 
     def _interpolated_values(
         self,
-        time_range: SDK.AF.Time.AFTimeRange,
-        interval: SDK.AF.Time.AFTimeSpan,
+        time_range: dotnet.AF.Time.AFTimeRange,
+        interval: dotnet.AF.Time.AFTimeSpan,
         filter_expression: str,
-    ) -> SDK.AF.Asset.AFValues:
+    ) -> dotnet.AF.Asset.AFValues:
         """Query the pi af attribute, internal implementation."""
         include_filtered_values = False
         return self.attribute.Data.InterpolatedValues(
@@ -228,11 +227,11 @@ class AFAttribute(Data.DataContainer):
 
     def _summaries(
         self,
-        time_range: SDK.AF.Time.AFTimeRange,
-        interval: SDK.AF.Time.AFTimeSpan,
-        summary_types: SDK.AF.Data.AFSummaryTypes,
-        calculation_basis: SDK.AF.Data.AFCalculationBasis,
-        time_type: SDK.AF.Data.AFTimestampCalculation,
+        time_range: dotnet.AF.Time.AFTimeRange,
+        interval: dotnet.AF.Time.AFTimeSpan,
+        summary_types: dotnet.AF.Data.AFSummaryTypes,
+        calculation_basis: dotnet.AF.Data.AFCalculationBasis,
+        time_type: dotnet.AF.Data.AFTimestampCalculation,
     ) -> _AFtyping.Data.SummariesDict:
         return self.attribute.Data.Summaries(
             time_range, interval, summary_types, calculation_basis, time_type
@@ -240,10 +239,10 @@ class AFAttribute(Data.DataContainer):
 
     def _summary(
         self,
-        time_range: SDK.AF.Time.AFTimeRange,
-        summary_types: SDK.AF.Data.AFSummaryTypes,
-        calculation_basis: SDK.AF.Data.AFCalculationBasis,
-        time_type: SDK.AF.Data.AFTimestampCalculation,
+        time_range: dotnet.AF.Time.AFTimeRange,
+        summary_types: dotnet.AF.Data.AFSummaryTypes,
+        calculation_basis: dotnet.AF.Data.AFCalculationBasis,
+        time_type: dotnet.AF.Data.AFTimestampCalculation,
     ) -> _AFtyping.Data.SummaryDict:
         return self.attribute.Data.Summary(
             time_range, summary_types, calculation_basis, time_type
@@ -251,9 +250,9 @@ class AFAttribute(Data.DataContainer):
 
     def _update_value(
         self,
-        value: SDK.AF.Asset.AFValue,
-        update_mode: SDK.AF.Data.AFUpdateOption,
-        buffer_mode: SDK.AF.Data.AFBufferOption,
+        value: dotnet.AF.Asset.AFValue,
+        update_mode: dotnet.AF.Data.AFUpdateOption,
+        buffer_mode: dotnet.AF.Data.AFBufferOption,
     ) -> None:
         return self.attribute.Data.UpdateValue(
             value,
@@ -291,7 +290,7 @@ class AFBaseElement(Generic[ElementType]):
         return {a.Name: AFAttribute(a) for a in self.element.Attributes}
 
     @property
-    def categories(self) -> SDK.AF.AFCategories:
+    def categories(self) -> dotnet.AF.AFCategories:
         """Return the categories of the current element."""
         return self.element.Categories
 
@@ -306,7 +305,7 @@ class AFBaseElement(Generic[ElementType]):
         return self.element.GetPath()
 
 
-class AFElement(AFBaseElement[SDK.AF.Asset.AFElement]):
+class AFElement(AFBaseElement[dotnet.AF.Asset.AFElement]):
     """Container for PI AF elements in the database."""
 
     version = "0.1.0"
@@ -337,7 +336,7 @@ class AFElementList(_collections.NamedItemList[AFElement]):
 class AFTable:
     """Container for PI AF Tables in the database."""
 
-    def __init__(self, table: SDK.AF.Asset.AFTable) -> None:
+    def __init__(self, table: dotnet.AF.Asset.AFTable) -> None:
         self._table = table
 
     @property
@@ -346,7 +345,7 @@ class AFTable:
         return [col.ColumnName for col in self._table.Table.Columns]
 
     @property
-    def _rows(self) -> list[SDK.System.Data.DataRow]:
+    def _rows(self) -> list[dotnet.System.Data.DataRow]:
         return self._table.Table.Rows
 
     @property

@@ -5,15 +5,14 @@ import warnings
 from typing import Any, cast
 
 import PIconnect._typing.AF as _AFtyping
-import PIconnect.AFSDK as SDK
-from PIconnect import Data, PIConsts, Time
-from PIconnect.AFSDK import System
+from PIconnect import Data, Time, dotnet
 
 __all__ = ["PIServer", "PIPoint"]
 
 
 class InitialisationWarning(UserWarning):
     pass
+
 
 class AuthenticationMode(enum.IntEnum):
     """AuthenticationMode indicates how a user authenticates to a PI Server.
@@ -31,13 +30,13 @@ class AuthenticationMode(enum.IntEnum):
 _DEFAULT_AUTH_MODE = AuthenticationMode.PI_USER_AUTHENTICATION
 
 
-def _lookup_servers() -> dict[str, SDK.AF.PI.PIServer]:
-    servers: dict[str, SDK.AF.PI.PIServer] = {}
+def _lookup_servers() -> dict[str, dotnet.AF.PI.PIServer]:
+    servers: dict[str, dotnet.AF.PI.PIServer] = {}
 
-    for server in SDK.AF.PI.PIServers():
+    for server in dotnet.lib.AF.PI.PIServers():
         try:
             servers[server.Name] = server
-        except (Exception, System.Exception) as e:  # type: ignore
+        except (Exception, dotnet.lib.System.Exception) as e:  # type: ignore
             warnings.warn(
                 f"Failed loading server data for {server.Name} "
                 f"with error {type(cast(Exception, e)).__qualname__}",
@@ -47,10 +46,10 @@ def _lookup_servers() -> dict[str, SDK.AF.PI.PIServer]:
     return servers
 
 
-def _lookup_default_server() -> SDK.AF.PI.PIServer | None:
+def _lookup_default_server() -> dotnet.AF.PI.PIServer | None:
     default_server = None
     try:
-        default_server = SDK.AF.PI.PIServers().DefaultPIServer
+        default_server = dotnet.lib.AF.PI.PIServers().DefaultPIServer
     except Exception:
         warnings.warn("Could not load the default PI Server", ResourceWarning, stacklevel=2)
     return default_server
@@ -66,7 +65,7 @@ class PIPoint(Data.DataContainer):
 
     version = "0.3.0"
 
-    def __init__(self, pi_point: SDK.AF.PI.PIPoint) -> None:
+    def __init__(self, pi_point: dotnet.AF.PI.PIPoint) -> None:
         super().__init__()
         self.pi_point = pi_point
         self.tag = pi_point.Name
@@ -134,14 +133,14 @@ class PIPoint(Data.DataContainer):
 
     def _filtered_summaries(
         self,
-        time_range: SDK.AF.Time.AFTimeRange,
-        interval: SDK.AF.Time.AFTimeSpan,
+        time_range: dotnet.AF.Time.AFTimeRange,
+        interval: dotnet.AF.Time.AFTimeSpan,
         filter_expression: str,
-        summary_types: SDK.AF.Data.AFSummaryTypes,
-        calculation_basis: SDK.AF.Data.AFCalculationBasis,
-        filter_evaluation: SDK.AF.Data.AFSampleType,
-        filter_interval: SDK.AF.Time.AFTimeSpan,
-        time_type: SDK.AF.Data.AFTimestampCalculation,
+        summary_types: dotnet.AF.Data.AFSummaryTypes,
+        calculation_basis: dotnet.AF.Data.AFCalculationBasis,
+        filter_evaluation: dotnet.AF.Data.AFSampleType,
+        filter_interval: dotnet.AF.Time.AFTimeSpan,
+        time_type: dotnet.AF.Data.AFTimestampCalculation,
     ) -> _AFtyping.Data.SummariesDict:
         return self.pi_point.FilteredSummaries(
             time_range,
@@ -154,16 +153,16 @@ class PIPoint(Data.DataContainer):
             time_type,
         )
 
-    def _interpolated_value(self, time: SDK.AF.Time.AFTime) -> SDK.AF.Asset.AFValue:
+    def _interpolated_value(self, time: dotnet.AF.Time.AFTime) -> dotnet.AF.Asset.AFValue:
         """Return a single value for this PI Point."""
         return self.pi_point.InterpolatedValue(time)
 
     def _interpolated_values(
         self,
-        time_range: SDK.AF.Time.AFTimeRange,
-        interval: SDK.AF.Time.AFTimeSpan,
+        time_range: dotnet.AF.Time.AFTimeRange,
+        interval: dotnet.AF.Time.AFTimeSpan,
         filter_expression: str,
-    ) -> SDK.AF.Asset.AFValues:
+    ) -> dotnet.AF.Asset.AFValues:
         include_filtered_values = False
         return self.pi_point.InterpolatedValues(
             time_range, interval, filter_expression, include_filtered_values
@@ -173,19 +172,19 @@ class PIPoint(Data.DataContainer):
         return filter_expression.replace("%tag%", self.tag)
 
     def _recorded_value(
-        self, time: SDK.AF.Time.AFTime, retrieval_mode: SDK.AF.Data.AFRetrievalMode
-    ) -> SDK.AF.Asset.AFValue:
+        self, time: dotnet.AF.Time.AFTime, retrieval_mode: dotnet.AF.Data.AFRetrievalMode
+    ) -> dotnet.AF.Asset.AFValue:
         """Return a single recorded value for this PI Point."""
         return self.pi_point.RecordedValue(
-            time, SDK.AF.Data.AFRetrievalMode(int(retrieval_mode))
+            time, dotnet.lib.AF.Data.AFRetrievalMode(int(retrieval_mode))
         )
 
     def _recorded_values(
         self,
-        time_range: SDK.AF.Time.AFTimeRange,
-        boundary_type: SDK.AF.Data.AFBoundaryType,
+        time_range: dotnet.AF.Time.AFTimeRange,
+        boundary_type: dotnet.AF.Data.AFBoundaryType,
         filter_expression: str,
-    ) -> SDK.AF.Asset.AFValues:
+    ) -> dotnet.AF.Asset.AFValues:
         include_filtered_values = False
         return self.pi_point.RecordedValues(
             time_range, boundary_type, filter_expression, include_filtered_values
@@ -193,20 +192,20 @@ class PIPoint(Data.DataContainer):
 
     def _summary(
         self,
-        time_range: SDK.AF.Time.AFTimeRange,
-        summary_types: SDK.AF.Data.AFSummaryTypes,
-        calculation_basis: SDK.AF.Data.AFCalculationBasis,
-        time_type: SDK.AF.Data.AFTimestampCalculation,
+        time_range: dotnet.AF.Time.AFTimeRange,
+        summary_types: dotnet.AF.Data.AFSummaryTypes,
+        calculation_basis: dotnet.AF.Data.AFCalculationBasis,
+        time_type: dotnet.AF.Data.AFTimestampCalculation,
     ) -> _AFtyping.Data.SummaryDict:
         return self.pi_point.Summary(time_range, summary_types, calculation_basis, time_type)
 
     def _summaries(
         self,
-        time_range: SDK.AF.Time.AFTimeRange,
-        interval: SDK.AF.Time.AFTimeSpan,
-        summary_types: SDK.AF.Data.AFSummaryTypes,
-        calculation_basis: SDK.AF.Data.AFCalculationBasis,
-        time_type: SDK.AF.Data.AFTimestampCalculation,
+        time_range: dotnet.AF.Time.AFTimeRange,
+        interval: dotnet.AF.Time.AFTimeSpan,
+        summary_types: dotnet.AF.Data.AFSummaryTypes,
+        calculation_basis: dotnet.AF.Data.AFCalculationBasis,
+        time_type: dotnet.AF.Data.AFTimestampCalculation,
     ) -> _AFtyping.Data.SummariesDict:
         return self.pi_point.Summaries(
             time_range, interval, summary_types, calculation_basis, time_type
@@ -214,9 +213,9 @@ class PIPoint(Data.DataContainer):
 
     def _update_value(
         self,
-        value: SDK.AF.Asset.AFValue,
-        update_mode: SDK.AF.Data.AFUpdateOption,
-        buffer_mode: SDK.AF.Data.AFBufferOption,
+        value: dotnet.AF.Asset.AFValue,
+        update_mode: dotnet.AF.Data.AFUpdateOption,
+        buffer_mode: dotnet.AF.Data.AFBufferOption,
     ) -> None:
         return self.pi_point.UpdateValue(value, update_mode, buffer_mode)
 
@@ -241,18 +240,18 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
     version = "0.2.2"
 
     #: Dictionary of known servers, as reported by the SDK
-    _servers: dict[str, SDK.AF.PI.PIServer] | None = None
-    _default_server: SDK.AF.PI.PIServer | None = None
+    _servers: dict[str, dotnet.AF.PI.PIServer] | None = None
+    _default_server: dotnet.AF.PI.PIServer | None = None
 
     @classmethod
-    def servers(cls) -> dict[str, SDK.AF.PI.PIServer]:
+    def servers(cls) -> dict[str, dotnet.AF.PI.PIServer]:
         """Return a dictionary of the known servers."""
         if cls._servers is None:
             cls._servers = _lookup_servers()
         return cls._servers
 
     @classmethod
-    def default_server(cls) -> SDK.AF.PI.PIServer | None:
+    def default_server(cls) -> dotnet.AF.PI.PIServer | None:
         """Return the default server."""
         if cls._default_server is None:
             cls._default_server = _lookup_default_server()
@@ -273,7 +272,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
                 raise ValueError("No server was specified and no default server was found.")
             self.connection = default_server
         else:
-            if (_server := SDK.AF.PI.PIServers()[server]) is not None:
+            if (_server := dotnet.lib.AF.PI.PIServers()[server]) is not None:
                 self.connection = _server
             else:
                 if default_server is None:
@@ -295,21 +294,23 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
                 "A domain can only specified together with a username and password."
             )
         if username:
-            secure_pass = System.Security.SecureString()
+            secure_pass = dotnet.lib.System.Security.SecureString()
             if password is not None:
                 for c in password:
                     secure_pass.AppendChar(c)
             cred = (username, secure_pass) + ((domain,) if domain else ())
             self._credentials = (
-                System.Net.NetworkCredential(cred[0], cred[1], *cred[2:]),
-                SDK.AF.PI.PIAuthenticationMode(int(authentication_mode)),
+                dotnet.lib.System.Net.NetworkCredential(cred[0], cred[1], *cred[2:]),
+                dotnet.lib.AF.PI.PIAuthenticationMode(int(authentication_mode)),
             )
         else:
             self._credentials = None
 
         if timeout:
             # System.TimeSpan(hours, minutes, seconds)
-            self.connection.ConnectionInfo.OperationTimeOut = System.TimeSpan(0, 0, timeout)
+            self.connection.ConnectionInfo.OperationTimeOut = dotnet.lib.System.TimeSpan(
+                0, 0, timeout
+            )
 
     def __enter__(self):
         """Open connection context with the PI Server."""
@@ -357,7 +358,7 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         #                     'got type ' + str(type(query)))
         return [
             PIPoint(pi_point)
-            for pi_point in SDK.AF.PI.PIPoint.FindPIPoints(
+            for pi_point in dotnet.lib.AF.PI.PIPoint.FindPIPoints(
                 self.connection, str(query), source, None
             )
         ]
