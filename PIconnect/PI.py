@@ -224,7 +224,7 @@ class PIPoint(Data.DataContainer):
         return self.pi_point.UpdateValue(value, update_mode, buffer_mode)
 
 
-class PIServer(object):  # pylint: disable=useless-object-inheritance
+class PIServer:
     """PIServer is a connection to an OSIsoft PI Server.
 
     Parameters
@@ -339,7 +339,9 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         """Name of the connected server."""
         return self.connection.Name
 
-    def search(self, query: str | list[str], source: str | None = None) -> list[PIPoint]:
+    def search(
+        self, query: str | list[str], source: str | None = None
+    ) -> Data.DataContainerCollection[PIPoint]:
         """Search PIPoints on the PIServer.
 
         Parameters
@@ -356,13 +358,17 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
             Reject searches while not connected
         """
         if isinstance(query, list):
-            return [y for x in query for y in self.search(x, source)]
+            return Data.DataContainerCollection(
+                [y for x in query for y in self.search(x, source)]
+            )
         # elif not isinstance(query, str):
         #     raise TypeError('Argument query must be either a string or a list of strings,' +
         #                     'got type ' + str(type(query)))
-        return [
-            PIPoint(pi_point)
-            for pi_point in dotnet.lib.AF.PI.PIPoint.FindPIPoints(
-                self.connection, str(query), source, None
-            )
-        ]
+        return Data.DataContainerCollection(
+            [
+                PIPoint(pi_point)
+                for pi_point in dotnet.lib.AF.PI.PIPoint.FindPIPoints(
+                    self.connection, str(query), source, None
+                )
+            ]
+        )
