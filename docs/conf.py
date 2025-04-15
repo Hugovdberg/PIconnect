@@ -92,7 +92,7 @@ release = PIconnect.__version__
 extlinks = {"afsdk": ("https://docs.aveva.com/bundle/af-sdk/page/html/%s", "")}
 
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3.10", None),
+    "python": ("https://docs.python.org/3.11", None),
     "pandas": ("https://pandas.pydata.org/docs", None),
 }
 
