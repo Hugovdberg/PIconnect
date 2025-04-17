@@ -26,6 +26,7 @@ Contents
 
    installation
    tutorials
+   howto
    api/index
    contributing
    authors

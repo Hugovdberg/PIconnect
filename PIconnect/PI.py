@@ -64,7 +64,8 @@ class PIPoint(Data.DataContainer):
 
     Parameters
     ----------
-        pi_point (AF.PI.PIPoint): Reference to a PIPoint as returned by the SDK
+    pi_point : :afsdk:`AF.PI.PIPoint <T_OSIsoft_AF_PI_PIPoint.htm>`
+        Reference to a PIPoint as returned by the SDK
     """
 
     version = "0.3.0"
@@ -224,16 +225,24 @@ class PIPoint(Data.DataContainer):
         return self.pi_point.UpdateValue(value, update_mode, buffer_mode)
 
 
-class PIServer(object):  # pylint: disable=useless-object-inheritance
+class PIServer:
     """PIServer is a connection to an OSIsoft PI Server.
 
     Parameters
     ----------
-        server (str, optional): Name of the server to connect to, defaults to None
-        username (str, optional): can be used only with password as well
-        password (str, optional): -//-
-        todo: domain, auth
-        timeout (int, optional): the maximum seconds an operation can take
+    server : str, optional
+        Name of the server to connect to, defaults to None
+    username : str, optional
+        Username to connect to the server, defaults to None
+    password : str, optional
+        Password for the username, defaults to None
+    domain : str, optional
+        Domain of the username, defaults to None
+    authentication_mode : AuthenticationMode, optional
+        Authentication mode to use, defaults to PI_USER_AUTHENTICATION
+    timeout : int, optional
+        the maximum seconds an operation can take
+
 
     .. note::
         If the specified `server` is unknown a warning is thrown and the connection
@@ -241,9 +250,6 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         of known servers is available in the `PIServer.servers` dictionary.
     """
 
-    version = "0.2.2"
-
-    #: Dictionary of known servers, as reported by the SDK
     _servers: dict[str, dotnet.AF.PI.PIServer] | None = None
     _default_server: dotnet.AF.PI.PIServer | None = None
 
@@ -339,30 +345,37 @@ class PIServer(object):  # pylint: disable=useless-object-inheritance
         """Name of the connected server."""
         return self.connection.Name
 
-    def search(self, query: str | list[str], source: str | None = None) -> list[PIPoint]:
+    def search(
+        self, query: str | list[str], source: str | None = None
+    ) -> Data.DataContainerCollection[PIPoint]:
         """Search PIPoints on the PIServer.
 
         Parameters
         ----------
-            query (str or [str]): String or list of strings with queries
-            source (str, optional): Defaults to None. Point source to limit the results
+        query : str or [str]
+            String or list of strings with queries
+        source : str, optional
+            Defaults to None. Point source to limit the results
 
         Returns
         -------
-            list: A list of :class:`PIPoint` objects as a result of the query
+        Data.DataContainerCollection[PIPoint]
+            A collection of :class:`PIPoint` objects as a result of the query.
+
 
         .. todo::
 
             Reject searches while not connected
         """
         if isinstance(query, list):
-            return [y for x in query for y in self.search(x, source)]
-        # elif not isinstance(query, str):
-        #     raise TypeError('Argument query must be either a string or a list of strings,' +
-        #                     'got type ' + str(type(query)))
-        return [
-            PIPoint(pi_point)
-            for pi_point in dotnet.lib.AF.PI.PIPoint.FindPIPoints(
-                self.connection, str(query), source, None
+            return Data.DataContainerCollection(
+                [y for x in query for y in self.search(x, source)]
             )
-        ]
+        return Data.DataContainerCollection(
+            [
+                PIPoint(pi_point)
+                for pi_point in dotnet.lib.AF.PI.PIPoint.FindPIPoints(
+                    self.connection, str(query), source, None
+                )
+            ]
+        )

@@ -16,7 +16,7 @@ the following code:
 .. code-block:: python
 
     import PIconnect as PI
-    from PIconnect.PIConsts import SummaryType
+    from PIconnect.Data import SummaryType
 
     with PI.PIServer() as server:
         points = server.search('*')[0]
@@ -31,22 +31,22 @@ multiple summaries over the same time span:
 .. code-block:: python
 
     import PIconnect as PI
-    from PIconnect.PIConsts import SummaryType
+    from PIconnect.Data import SummaryType
 
     with PI.PIServer() as server:
         points = server.search('*')[0]
         data = points.summary('*-14d', '*', SummaryType.MAXIMUM | SummaryType.MINIMUM)
         print(data)
 
-Similarly, a :any:`PIAFAttribute` also has a :any:`PIAFAttribute.summary`
+Similarly, a :any:`AFAttribute` also has a :any:`AFAttribute.summary`
 method, that works in the same way:
 
 .. code-block:: python
 
     import PIconnect as PI
-    from PIconnect.PIConsts import SummaryType
+    from PIconnect.Data import SummaryType
 
-    with PI.PIAFDatabase() as database:
+    with PI.AFDatabase() as database:
         key = next(iter(database.children))
         element = database.children[key]
         attribute = next(iter(element.attributes.values()))
@@ -71,12 +71,12 @@ There are two possibilities for the timestamp, the beginning of the requested
 time interval, or the end of the interval. Which to return is specified using
 the `time_type` argument. To always return the beginning of the interval, you
 should use the :any:`TimestampCalculation.EARLIEST_TIME` constant from
-:any:`PIConsts`:
+:any:`Data`:
 
 .. code-block:: python
 
     import PIconnect as PI
-    from PIconnect.PIConsts import SummaryType, TimestampCalculation
+    from PIconnect.Data import SummaryType, TimestampCalculation
 
     with PI.PIServer() as server:
         points = server.search('*')[0]
@@ -94,7 +94,7 @@ returns the time at the end of the interval:
 .. code-block:: python
 
     import PIconnect as PI
-    from PIconnect.PIConsts import SummaryType, TimestampCalculation
+    from PIconnect.Data import SummaryType, TimestampCalculation
 
     with PI.PIServer() as server:
         points = server.search('*')[0]
@@ -118,13 +118,13 @@ time for which it is valid. This period depends on the type of data, whether
 it is stepped or continuous data.
 
 To get an unweighted summary, in which every event has equal weight, the
-:any:`CalculationBasis.EVENT_WEIGHTED` constant from the :any:`PIConsts`
+:any:`CalculationBasis.EVENT_WEIGHTED` constant from the :any:`Data`
 module should be used:
 
 .. code-block:: python
 
     import PIconnect as PI
-    from PIconnect.PIConsts import CalculationBasis, SummaryType
+    from PIconnect.Data import CalculationBasis, SummaryType
 
     with PI.PIServer() as server:
         points = server.search('*')[0]
@@ -143,7 +143,7 @@ Extracting summaries at regular time intervals
 
 Besides extracting a single summary over an entire period of time, it is also
 possible to extract summaries at fixed intervals within a period of time. This
-is done using the :any:`PIPoint.summaries` or :any:`PIAFAttribute.summaries`
+is done using the :any:`PIPoint.summaries` or :any:`AFAttribute.summaries`
 methods. In addition to the singular :py:meth:`summary` method, this takes an
 `interval` as an argument. The following code extracts the maximum value for
 each hour within the last 14 days:
@@ -151,7 +151,7 @@ each hour within the last 14 days:
 .. code-block:: python
 
     import PIconnect as PI
-    from PIconnect.PIConsts import SummaryType
+    from PIconnect.Data import SummaryType
 
     with PI.PIServer() as server:
         points = server.search('*')[0]

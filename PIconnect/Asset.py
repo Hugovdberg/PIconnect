@@ -1,7 +1,7 @@
 """Mirror of the OSISoft.AF.Asset namespace."""
 
 import dataclasses
-from typing import Generic, Self, TypeVar, overload
+from typing import Generic, Self, TypeVar
 
 import pandas as pd  # type: ignore
 
@@ -10,11 +10,12 @@ from PIconnect import PI, Data, _collections, dotnet
 
 __all__ = [
     "AFDataReference",
+    "AFElement",
+    "AFElementList",
     "AFAttribute",
     "AFAttributeList",
 ]
 
-T = TypeVar("T")
 ElementType = TypeVar("ElementType", bound=dotnet.AF.Asset.AFBaseElement)
 
 
@@ -39,54 +40,6 @@ class AFDataReference:
         """Return the PI Point associated with the data reference, if any."""
         if self.data_reference.PIPoint is not None:
             return PI.PIPoint(self.data_reference.PIPoint)
-
-
-class AFEnumerationValue:
-    """Representation of an AF enumeration value."""
-
-    def __init__(self, value: dotnet.AF.Asset.AFEnumerationValue) -> None:
-        self._value = value
-
-    def __str__(self) -> str:
-        """Return the string representation of the enumeration value."""
-        return self._value.Name
-
-    def __int__(self) -> int:
-        """Return the integer representation of the enumeration value."""
-        return self._value.Value
-
-    def __repr__(self):
-        """Return the string representation of the enumeration value."""
-        return f"{self.__class__.__qualname__}({self._value.Name})"
-
-    @property
-    def name(self) -> str:
-        """Return the name of the enumeration value."""
-        return self._value.Name
-
-    @property
-    def value(self) -> int:
-        """Return the integer value of the enumeration value."""
-        return self._value.Value
-
-    @overload
-    @staticmethod
-    def wrap_enumeration_value(
-        value: dotnet.AF.Asset.AFEnumerationValue,
-    ) -> "AFEnumerationValue": ...
-    @overload
-    @staticmethod
-    def wrap_enumeration_value(
-        value: T,
-    ) -> T: ...
-    @staticmethod
-    def wrap_enumeration_value(
-        value: T | dotnet.AF.Asset.AFEnumerationValue,
-    ) -> "T | AFEnumerationValue":
-        """Wrap the value in an AFEnumerationValue if it is an enumeration value."""
-        if isinstance(value, dotnet.lib.AF.Asset.AFEnumerationValue):
-            return AFEnumerationValue(value)
-        return value
 
 
 class AFAttribute(Data.DataContainer):
@@ -158,7 +111,7 @@ class AFAttribute(Data.DataContainer):
 
     def _current_value(self) -> object:
         """Return the current value of the attribute."""
-        return AFEnumerationValue.wrap_enumeration_value(self.attribute.GetValue().Value)
+        return self.attribute.GetValue().Value
 
     def _filtered_summaries(
         self,

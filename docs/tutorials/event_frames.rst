@@ -4,22 +4,22 @@ Extracting event frames
 
 Since the data in the PI archive is compressed by default, the time interval
 between consecutive values is typically irregular. To get values at regular
-intervals the `interpolated_values` method is used. This is available on both
-:any:`PIPoint`, and :any:`PIAFAttribute` objects.
+intervals the :meth:`~DataContainer.interpolated_values` method is used.
+This is available on both :class:`PIPoint`, and :class:`AFAttribute` objects.
 
-For simplicity this tutorial only uses :any:`PIPoint` objects, see the
-tutorial on :doc:`PI AF</tutorials/piaf>` to find how to access
-:any:`PIAFAttribute` objects.
+For simplicity this tutorial only uses :class:`PIPoint` objects, see the
+tutorial on :doc:`PI AF</tutorials/af>` to find how to access
+:class:`AFAttribute` objects.
 
 
 ***********
 Basic usage
 ***********
 
-The basic example takes the first :any:`PIPoint` that is returned by the
+The basic example takes the first :class:`PIPoint` that is returned by the
 server and gets the data for the last hour at 5 minute intervals,
 by specifying the `start_time`, `end_time`, and `interval` arguments to
-:any:`PIPoint.interpolated_values`:
+:meth:`PIPoint.interpolated_values`:
 
 .. code-block:: python
 

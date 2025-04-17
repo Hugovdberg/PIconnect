@@ -23,7 +23,7 @@ PI Asset Framework related modules
    :maxdepth: 4
    :glob:
 
-   ./PIAF/*
+   ./AF/*
 
 Generic utility modules
 -----------------------

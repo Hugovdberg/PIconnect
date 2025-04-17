@@ -1,7 +1,7 @@
-PIconnect.AFSDK module
+PIconnect.Time module
 ======================
 
-.. automodule:: PIconnect.AFSDK
+.. automodule:: PIconnect.Time
     :members:
     :undoc-members:
     :inherited-members:

@@ -14,7 +14,6 @@
 
 import os
 import sys
-from unittest.mock import MagicMock
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -22,15 +21,6 @@ from unittest.mock import MagicMock
 #
 sys.path.insert(0, os.path.abspath(".."))
 
-
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name) -> MagicMock:  # type: ignore
-        return MagicMock()
-
-
-MOCK_MODULES = ["pygtk", "gtk", "gobject", "argparse", "numpy", "pandas"]
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # Get the project root dir, which is the parent dir of this
 # cwd = os.getcwd()
@@ -70,14 +60,14 @@ templates_path = ["_templates"]
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = ".rst"
+source_suffix = {'.rst': 'restructuredtext'}
 
 # The master toctree document.
 master_doc = "index"
 
 # General information about the project.
 project = "PIconnect"
-copyright = "2017, Hugo Lapré; Stijn de Jong"
+copyright = "2025, Hugo Lapré; Stijn de Jong"
 author = "Hugo Lapré; Stijn de Jong"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -89,10 +79,13 @@ version = '.'.join(PIconnect.__version__.split('.')[:2])
 # The full version, including alpha/beta/rc tags.
 release = PIconnect.__version__
 
-extlinks = {"afsdk": ("https://docs.aveva.com/bundle/af-sdk/page/html/%s", "")}
+extlinks = {
+    "afsdk": ("https://docs.aveva.com/bundle/af-sdk/page/html/%s", ""),
+    "dotnet": ("https://learn.microsoft.com/en-us/dotnet/api/%s?view=netframework-4.8", ""),
+}
 
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3.10", None),
+    "python": ("https://docs.python.org/3.11", None),
     "pandas": ("https://pandas.pydata.org/docs", None),
 }
 
@@ -115,6 +108,8 @@ pygments_style = "sphinx"
 todo_include_todos = True
 
 autosummary_generate = True
+
+autodoc_member_order = "groupwise"
 # -- Options for HTML output ----------------------------------------------
 
 

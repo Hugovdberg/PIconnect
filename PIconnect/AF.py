@@ -32,9 +32,13 @@ class AFDatabase:
             return None
 
     def __init__(self, server: str | None = None, database: str | None = None) -> None:
+        #: The PI AF server connection.
         self.server = self._initialise_server(server)
+        #: The PI AF database connection.
         self.database = self._initialise_database(database)
-        self.search = Search.Search(self.database)
+        #: Search reference for searching objects in the database.
+        #: See :class:`.Search.Search` for more information.
+        self.search: Search.Search = Search.Search(self.database)
 
     def _initialise_server(self, server: str | None) -> dotnet.AF.PISystem:
         """Initialise the server connection."""
@@ -151,7 +155,11 @@ class AFDatabase:
 
 
 class PIAFDatabase(AFDatabase):
-    """Context manager for connections to the PI Asset Framework database."""
+    """Context manager for connections to the PI Asset Framework database.
+
+    .. deprecated:: 1.0.0
+       Use :class:`AFDatabase` instead.
+    """
 
     version = "0.3.0"
 

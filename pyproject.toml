@@ -103,7 +103,7 @@ jupyterlab = "*"
 build = { features = ["build"], no-default-feature = true }
 test = { features = ["test"], solve-group = "default" }
 lint = ["lint"]
-docs = ["docs"]
+docs = { features = ["docs"], solve-group = "default" }
 py311 = ["py311", "test"]
 py313 = ["py313", "test"]
 py312 = ["py312", "test"]

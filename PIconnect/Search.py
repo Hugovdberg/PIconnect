@@ -7,12 +7,7 @@ from typing import Generic, TypeVar
 
 from . import Asset, EventFrame, dotnet
 
-SearchResultType = TypeVar(
-    "SearchResultType",
-    # PIAFBase.PIAFElement,
-    # PIAFBase.PIAFEventFrame,
-    # PIAFAttribute.PIAFAttribute,
-)
+SearchResultType = TypeVar("SearchResultType")
 AFSearchResultType = TypeVar("AFSearchResultType", covariant=True)
 
 
@@ -44,9 +39,15 @@ class SearchResult(Generic[AFSearchResultType, SearchResultType], abc.ABC):
     def one(self) -> SearchResultType:
         """Return the only item in the search result.
 
+        Returns
+        -------
+        SearchResultType
+            The only item in the search result.
+
         Raises
         ------
-            ValueError: If there are no results or more than one result.
+        ValueError
+            If there are no results or more than one result.
         """
         if self.count == 0:
             raise ValueError("No results found")
@@ -70,8 +71,10 @@ class AttributeSearchResult(SearchResult[dotnet.AF.Asset.AFAttribute, Asset.AFAt
         super().__init__(search)
         self.result_type = Asset.AFAttribute
 
-    def to_list(self) -> Asset.AFAttributeList:
-        """Return all items in the search result."""
+    def one(self) -> Asset.AFAttribute:  # noqa: D102
+        return super().one()
+
+    def to_list(self) -> Asset.AFAttributeList:  # noqa: D102
         return Asset.AFAttributeList(list(self))
 
 
@@ -85,8 +88,10 @@ class ElementSearchResult(SearchResult[dotnet.AF.Asset.AFElement, Asset.AFElemen
         super().__init__(search)
         self.result_type = Asset.AFElement
 
-    def to_list(self) -> Asset.AFElementList:
-        """Return all items in the search result."""
+    def one(self) -> Asset.AFElement:  # noqa: D102
+        return super().one()
+
+    def to_list(self) -> Asset.AFElementList:  # noqa: D102
         return Asset.AFElementList(list(self))
 
 
@@ -102,8 +107,10 @@ class EventFrameSearchResult(
         super().__init__(search)
         self.result_type = EventFrame.AFEventFrame
 
-    def to_list(self) -> EventFrame.AFEventFrameList:
-        """Return all items in the search result."""
+    def one(self) -> EventFrame.AFEventFrame:  # noqa: D102
+        return super().one()
+
+    def to_list(self) -> EventFrame.AFEventFrameList:  # noqa: D102
         return EventFrame.AFEventFrameList(list(self))
 
 
