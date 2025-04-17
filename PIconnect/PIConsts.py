@@ -1,6 +1,6 @@
 """Central location for all PI enumerations."""
 
-from Data import (
+from .Data import (
     BoundaryType,
     BufferMode,
     CalculationBasis,
@@ -10,8 +10,8 @@ from Data import (
     TimestampCalculation,
     UpdateMode,
 )
-from EventFrame import EventFrameSearchMode
-from PI import AuthenticationMode
+from .EventFrame import EventFrameSearchMode
+from .PI import AuthenticationMode
 
 __all__ = [
     "AuthenticationMode",
