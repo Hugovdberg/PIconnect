@@ -4,7 +4,7 @@ import abc
 import datetime
 import enum
 from collections.abc import Callable
-from typing import Any, Concatenate, Literal, ParamSpec, TypeVar, cast
+from typing import Any, Concatenate, Literal, ParamSpec, TypeVar, cast, overload
 
 import pandas as pd  # type: ignore
 
@@ -208,6 +208,57 @@ _DEFAULT_FILTER_EVALUATION = ExpressionSampleType.EXPRESSION_RECORDED_VALUES
 _DEFAULT_TIMESTAMP_CALCULATION = TimestampCalculation.AUTO
 
 
+T = TypeVar("T")
+
+
+class AFEnumerationValue:
+    """Representation of an AF enumeration value."""
+
+    def __init__(self, value: dotnet.AF.Asset.AFEnumerationValue) -> None:
+        self._value = value
+
+    def __str__(self) -> str:
+        """Return the string representation of the enumeration value."""
+        return self._value.Name
+
+    def __int__(self) -> int:
+        """Return the integer representation of the enumeration value."""
+        return self._value.Value
+
+    def __repr__(self):
+        """Return the string representation of the enumeration value."""
+        return f"{self.__class__.__qualname__}({self._value.Name})"
+
+    @property
+    def name(self) -> str:
+        """Return the name of the enumeration value."""
+        return self._value.Name
+
+    @property
+    def value(self) -> int:
+        """Return the integer value of the enumeration value."""
+        return self._value.Value
+
+    @overload
+    @staticmethod
+    def wrap_enumeration_value(
+        value: dotnet.AF.Asset.AFEnumerationValue,
+    ) -> "AFEnumerationValue": ...
+    @overload
+    @staticmethod
+    def wrap_enumeration_value(
+        value: T,
+    ) -> T: ...
+    @staticmethod
+    def wrap_enumeration_value(
+        value: T | dotnet.AF.Asset.AFEnumerationValue,
+    ) -> "T | AFEnumerationValue":
+        """Wrap the value in an AFEnumerationValue if it is an enumeration value."""
+        if isinstance(value, dotnet.lib.AF.Asset.AFEnumerationValue):
+            return AFEnumerationValue(value)
+        return value
+
+
 class DataContainer(abc.ABC):
     """Abstract base class for data containers."""
 
@@ -226,7 +277,7 @@ class DataContainer(abc.ABC):
     @property
     def current_value(self) -> Any:
         """Return the current value of the attribute."""
-        return self._current_value()
+        return AFEnumerationValue.wrap_enumeration_value(self._current_value())
 
     @abc.abstractmethod
     def _current_value(self) -> Any:
@@ -308,7 +359,10 @@ class DataContainer(abc.ABC):
             key = SummaryType(int(summary.Key)).name
             timestamps, values = zip(
                 *[
-                    (Time.timestamp_to_index(value.Timestamp.UtcTime), value.Value)
+                    (
+                        Time.timestamp_to_index(value.Timestamp.UtcTime),
+                        AFEnumerationValue.wrap_enumeration_value(value.Value),
+                    )
                     for value in summary.Value
                 ],
                 strict=True,
@@ -350,7 +404,7 @@ class DataContainer(abc.ABC):
         _time = Time.to_af_time(time)
         pivalue = self._interpolated_value(_time)
         result = pd.Series(
-            data=[pivalue.Value],
+            data=[AFEnumerationValue.wrap_enumeration_value(pivalue.Value)],
             index=[Time.timestamp_to_index(pivalue.Timestamp.UtcTime)],
             name=self.name,
         )
@@ -411,7 +465,7 @@ class DataContainer(abc.ABC):
         values: list[Any] = []
         for value in pivalues:
             timestamps.append(Time.timestamp_to_index(value.Timestamp.UtcTime))
-            values.append(value.Value)
+            values.append(AFEnumerationValue.wrap_enumeration_value(value.Value))
         result = pd.Series(
             data=values,
             index=timestamps,
@@ -457,7 +511,7 @@ class DataContainer(abc.ABC):
         _retrieval_mode = dotnet.lib.AF.Data.AFRetrievalMode(int(retrieval_mode))
         pivalue = self._recorded_value(_time, _retrieval_mode)
         result = pd.Series(
-            data=[pivalue.Value],
+            data=[AFEnumerationValue.wrap_enumeration_value(pivalue.Value)],
             index=[Time.timestamp_to_index(pivalue.Timestamp.UtcTime)],
             name=self.name,
         )
@@ -529,7 +583,7 @@ class DataContainer(abc.ABC):
         values: list[Any] = []
         for value in pivalues:
             timestamps.append(Time.timestamp_to_index(value.Timestamp.UtcTime))
-            values.append(value.Value)
+            values.append(AFEnumerationValue.wrap_enumeration_value(value.Value))
         result = pd.Series(
             data=values,
             index=timestamps,
@@ -596,7 +650,7 @@ class DataContainer(abc.ABC):
         df = pd.DataFrame()
         for summary in pivalues:
             key = SummaryType(int(summary.Key)).name
-            value = summary.Value
+            value = AFEnumerationValue.wrap_enumeration_value(summary.Value)
             timestamp = Time.timestamp_to_index(value.Timestamp.UtcTime)
             value = value.Value
             df = df.join(
@@ -667,7 +721,10 @@ class DataContainer(abc.ABC):
             key = SummaryType(int(summary.Key)).name
             timestamps, values = zip(
                 *[
-                    (Time.timestamp_to_index(value.Timestamp.UtcTime), value.Value)
+                    (
+                        Time.timestamp_to_index(value.Timestamp.UtcTime),
+                        AFEnumerationValue.wrap_enumeration_value(value.Value),
+                    )
                     for value in summary.Value
                 ],
                 strict=True,
@@ -777,6 +834,23 @@ class DataContainerCollection(_collections.NamedItemList[DataContainerType]):
                     df = result.to_frame()
             return add_name_to_index(df, element)
 
+        def add_rank_to_index(df: pd.DataFrame) -> pd.DataFrame:
+            rank: "pd.Series[int]" = (  # type: ignore
+                df.index.to_series().groupby(level=0).cumcount().rename("__rank__") + 1  # type: ignore
+            )
+            return df.set_index(rank, append=True)  # type: ignore
+
+        def concat_dfs(dfs: list[pd.DataFrame]) -> pd.DataFrame:
+            match len(dfs):
+                case 0:
+                    return pd.DataFrame()
+                case 1:
+                    return dfs[0]
+                case _:
+                    return pd.concat(
+                        [add_rank_to_index(df) for df in dfs], axis=1
+                    ).reset_index(level="__rank__", drop=True)
+
         def align(df: pd.DataFrame) -> pd.DataFrame:
             match _align:
                 case False:
@@ -801,12 +875,7 @@ class DataContainerCollection(_collections.NamedItemList[DataContainerType]):
                 case "time":
                     return df.interpolate(method="time", axis=0)  # type: ignore
 
-        return align(
-            pd.concat(
-                [pd.DataFrame()] + [apply_func(e) for e in self._elements],
-                axis=1,
-            )
-        )
+        return align(concat_dfs([apply_func(e) for e in self._elements]))
 
     @property
     def current_value(self) -> pd.Series:
