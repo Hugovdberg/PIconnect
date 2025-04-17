@@ -1,4 +1,4 @@
-"""AFSDK - Loads the .NET libraries from the OSIsoft AF SDK."""
+"""Loads the .NET libraries from the OSIsoft AF SDK."""
 
 import logging
 import os
@@ -43,7 +43,7 @@ class dotNET:
         return self.AF.PISystems().Version
 
     def load(self, assembly_path: StrPath | None = None) -> None:
-        """Return a new instance of the PI connector."""
+        """Load the AF SDK from the specified path."""
         full_path = _get_SDK_path(assembly_path)
         if full_path is None:
             if assembly_path:
@@ -57,6 +57,10 @@ class dotNET:
         logger.info("Loaded AF SDK version %s", self._af_sdk_version)
 
     def load_test_SDK(self) -> None:
+        """Load the test SDK.
+
+        This is used for testing purposes only and should not be used in production.
+        """
         self._af = AF
         self._system = System
         self._af_sdk_version = AF_SDK_VERSION
@@ -95,7 +99,10 @@ def _get_SDK_path(full_path: StrPath | None = None) -> pathlib.Path | None:
             return AF_dir
 
 
-lib = dotNET()
+#: Global variable containing the actual reference to the .NET libraries.
+#: The references are only loaded after calling :func:`.load_SDK` function or the
+#: :meth:`.load_test_SDK` method.
+lib: dotNET = dotNET()
 
 
 def load_SDK(assembly_path: StrPath | None = None) -> None:
@@ -103,12 +110,14 @@ def load_SDK(assembly_path: StrPath | None = None) -> None:
 
     Parameters
     ----------
-        assembly_path (str | Path, optional): Path to the AF SDK assembly. If None, the default
-            installation path will be used.
+    assembly_path : str | pathlib.Path, optional
+        Path to the directory containing the AF SDK assembly.
+        If None, the default installation path will be used.
 
     Raises
     ------
-        ImportError: If the AF SDK cannot be found or loaded.
+    ImportError
+        If the AF SDK cannot be found or loaded.
     """
     global lib
     lib.load(assembly_path)

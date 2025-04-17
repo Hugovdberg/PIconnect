@@ -11,7 +11,8 @@ Basics
 
 .. toctree::
    tutorials/piserver
-   tutorials/piaf
+   tutorials/af
+   tutorials/search
 
 Data extraction
 ---------------
@@ -19,7 +20,6 @@ Data extraction
 .. toctree::
    tutorials/recorded_values
    tutorials/interpolated_values
-   tutorials/summaries
    tutorials/timezones
    tutorials/event_frames
 

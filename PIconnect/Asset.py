@@ -10,6 +10,8 @@ from PIconnect import PI, Data, _collections, dotnet
 
 __all__ = [
     "AFDataReference",
+    "AFElement",
+    "AFElementList",
     "AFAttribute",
     "AFAttributeList",
 ]

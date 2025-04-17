@@ -1,7 +1,8 @@
-PIconnect.PIData module
+PIconnect.Asset module
 =======================
 
-.. automodule:: PIconnect.PIAFAttribute
+.. automodule:: PIconnect.Asset
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:

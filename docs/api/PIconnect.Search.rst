@@ -1,7 +1,8 @@
-PIconnect.PIData module
+PIconnect.Search module
 =======================
 
-.. automodule:: PIconnect.PIData
+.. automodule:: PIconnect.Search
     :members:
     :undoc-members:
+    :inherited-members:
     :show-inheritance:
