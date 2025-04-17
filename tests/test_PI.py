@@ -7,7 +7,7 @@ import pytz
 
 import PIconnect as PI
 import PIconnect.PI as PI_
-from PIconnect import dotnet
+from PIconnect import Data, dotnet
 
 from .fakes import VirtualTestCase, pi_point
 
@@ -58,7 +58,7 @@ class TestSearchPIPoints:
         """Test searching for PI points using a single string."""
         with PI.PIServer() as server:
             points = server.search("L_140_053*")
-            assert isinstance(points, list)
+            assert isinstance(points, Data.DataContainerCollection)
             for point in points:
                 assert isinstance(point, PI_.PIPoint)
 
@@ -66,7 +66,7 @@ class TestSearchPIPoints:
         """Tests searching for PI points using a list of strings."""
         with PI.PIServer() as server:
             points = server.search(["L_140_053*", "M_127*"])
-            assert isinstance(points, list)
+            assert isinstance(points, Data.DataContainerCollection)
             for point in points:
                 assert isinstance(point, PI_.PIPoint)
 
