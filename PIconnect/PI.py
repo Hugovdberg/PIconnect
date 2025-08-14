@@ -295,7 +295,7 @@ class PIServer:
                 )
                 self.connection = default_server
 
-        if bool(username) != bool(password):
+        if (username is not None) != (password is not None):
             raise ValueError(
                 "When passing credentials both the username and password must be specified."
             )
