@@ -27,6 +27,8 @@ that is returned by the server as it was 5 minutes ago.
 
     import PIconnect as PI
 
+    PI.load_SDK()
+
     with PI.PIServer() as server:
         point = server.search('*')[0]
         data = point.recorded_value('-5m')
@@ -45,6 +47,8 @@ the `retrieval_mode` argument to `recorded_value`:
     import PIconnect as PI
     from PIconnect.Data import RetrievalMode
 
+    PI.load_SDK()
+
     with PI.PIServer() as server:
         point = server.search('*')[0]
         data = point.recorded_value('-5m', retrieval_mode=RetrievalMode.AT_OR_BEFORE)
@@ -60,6 +64,8 @@ the `recorded_values` method, and pass a `start_time` and `end_time`:
 .. code-block:: python
 
     import PIconnect as PI
+
+    PI.load_SDK()
 
     with PI.PIServer() as server:
         points = server.search('*')[0]
@@ -80,6 +86,8 @@ the `boundary_type` to :attr:`BoundaryType.OUTSIDE`:
     import PIconnect as PI
     from PIconnect.Data import BoundaryType
 
+    PI.load_SDK()
+
     with PI.PIServer() as server:
         points = server.search('*')[0]
         data = points.recorded_values('*-48h', '*', boundary_type=BoundaryType.OUTSIDE)
@@ -92,6 +100,8 @@ boundaries such that a value is returned exactly at the requested timestamp:
 
     import PIconnect as PI
     from PIconnect.Data import BoundaryType
+
+    PI.load_SDK()
 
     with PI.PIServer() as server:
         points = server.search('*')[0]
@@ -107,7 +117,7 @@ Filtering values
 
 Sometimes it is desirable to exclude certain values from the returned data.
 This is possible using the `filter_expression` argument of the
-:any:`PIPoint.recorded_values` method. Only values matching the expression are
+:meth:`PIPoint.recorded_values` method. Only values matching the expression are
 returned.
 
 The simplest test is to only return values below a given value. To test if the
@@ -119,6 +129,8 @@ current tag name:
 .. code-block:: python
 
     import PIconnect as PI
+
+    PI.load_SDK()
 
     with PI.PIServer() as server:
         points = server.search('*')[0]
@@ -133,6 +145,8 @@ Multiple tests can be combined with the keywords `and` and `or`:
 .. code-block:: python
 
     import PIconnect as PI
+
+    PI.load_SDK()
 
     with PI.PIServer() as server:
         points = server.search('*')[0]
