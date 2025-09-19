@@ -235,7 +235,8 @@ class PIServer:
     username : str, optional
         Username to connect to the server, defaults to None
     password : str, optional
-        Password for the username, defaults to None
+        Password for the username, defaults to None. When a username is specified a
+        password must be passed in as well, but it can be empty.
     domain : str, optional
         Domain of the username, defaults to None
     authentication_mode : AuthenticationMode, optional
