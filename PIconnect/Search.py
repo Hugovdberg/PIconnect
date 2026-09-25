@@ -167,7 +167,7 @@ class Search:
             elem = self._descendant(splitpath[0])
             attribute = elem.attributes[splitpath[1]]
             if len(splitpath) > 2:
-                for x in range(len(splitpath) - 2):
-                    attribute = attribute.children[splitpath[x + 2]]
+                for part_index in range(len(splitpath) - 2):
+                    attribute = attribute.children[splitpath[part_index + 2]]
             attributelist.append(attribute)
         return attributelist
