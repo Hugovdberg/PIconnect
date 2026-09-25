@@ -37,7 +37,7 @@ class PISystem:
         """Mock class for the AF.PISystem.Databases property."""
 
         def __init__(self) -> None:
-            self.DefaultDatabase: AFDatabase | None = AFDatabase("TestDatabase")
+            self.DefaultDatabase: AFDatabase = AFDatabase("TestDatabase")
 
         def __iter__(self) -> Iterator[AFDatabase]:
             if self.DefaultDatabase is not None:
@@ -47,6 +47,7 @@ class PISystem:
             """Return the AFDatabase with the given name."""
             if self.DefaultDatabase and name == self.DefaultDatabase.Name:
                 return self.DefaultDatabase
+            return None
 
     def __init__(self, name: str) -> None:
         self.Name = name
@@ -78,3 +79,4 @@ class PISystems:
         """Return the PISystem with the given name."""
         if name == self.DefaultPISystem.Name:
             return self.DefaultPISystem
+        return None

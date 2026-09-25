@@ -42,7 +42,7 @@ class NamedItemList(MutableSequence[NamedItemType]):
             case slice():
                 return self.__class__(self._elements[index])
             case _:
-                raise TypeError("Index must be an int, string or slice of int.")  # type: ignore
+                raise TypeError("Index must be an int, string or slice of int.")
 
     def __len__(self) -> int:
         """Return the number of items in the list."""
@@ -75,7 +75,7 @@ class NamedItemList(MutableSequence[NamedItemType]):
                 else:
                     raise TypeError("Value must be an iterable.")
             case _:
-                raise TypeError("Index must be an int or string.")  # type: ignore
+                raise TypeError("Index must be an int or string.")
 
     def __delitem__(self, index: int | str | slice) -> None:
         """Delete the list item at the given index or the list item with the given name."""
@@ -91,7 +91,7 @@ class NamedItemList(MutableSequence[NamedItemType]):
                         return
                 raise KeyError(f"List item {index} not found.")
             case _:
-                raise TypeError("Index must be an int or string.")  # type: ignore
+                raise TypeError("Index must be an int or string.")
 
     def insert(self, index: int, value: NamedItemType) -> None:
         """Insert a new item at the given index."""

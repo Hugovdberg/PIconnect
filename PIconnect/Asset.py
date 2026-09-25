@@ -3,7 +3,7 @@
 import dataclasses
 from typing import Generic, Self, TypeVar
 
-import pandas as pd  # type: ignore
+import pandas as pd
 
 import PIconnect._typing.AF as _AFtyping
 from PIconnect import PI, Data, _collections, dotnet
@@ -40,6 +40,7 @@ class AFDataReference:
         """Return the PI Point associated with the data reference, if any."""
         if self.data_reference.PIPoint is not None:
             return PI.PIPoint(self.data_reference.PIPoint)
+        return None
 
 
 class AFAttribute(Data.DataContainer):

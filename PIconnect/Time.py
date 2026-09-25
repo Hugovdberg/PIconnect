@@ -2,14 +2,15 @@
 
 import datetime
 import zoneinfo
+from typing import TypeAlias
 
-import pandas as pd  # type: ignore
+import pandas as pd
 
 from PIconnect import dotnet
 from PIconnect.config import PIConfig
 
-TimeLike = str | datetime.datetime
-IntervalLike = str | datetime.timedelta | pd.Timedelta
+TimeLike: TypeAlias = str | datetime.datetime
+IntervalLike: TypeAlias = str | datetime.timedelta | pd.Timedelta
 
 
 def to_af_time_range(start_time: TimeLike, end_time: TimeLike) -> dotnet.AF.Time.AFTimeRange:

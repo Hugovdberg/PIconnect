@@ -17,6 +17,6 @@ class AFValue:
 
 
 class AFValues(list[AFValue]):
-    def __init__(self):
+    def __init__(self) -> None:
         self.Count: int
         self.Value: list[AFValue]

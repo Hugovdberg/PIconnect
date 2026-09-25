@@ -35,7 +35,7 @@ class TestAFDatabase:
 
     def test_unknown_database_name(self):
         """Test that the server reports a warning for an unknown database."""
-        server = cast(AF.PISystem, PI.AFDatabase.default_server())  # type: ignore
+        server = cast(AF.PISystem, PI.AFDatabase.default_server())
         databases = [db.Name for db in server.Databases]
         AFdatabase_name = "__".join(databases + ["UnkownDatabaseName"])
         with pytest.warns(UserWarning):

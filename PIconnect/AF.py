@@ -2,7 +2,7 @@
 
 import logging
 import warnings
-from typing import Any, Self
+from typing import Any, Literal, Self
 
 from PIconnect import Asset, EventFrame, Search, Time, dotnet
 
@@ -88,8 +88,8 @@ class AFDatabase:
 
     def __exit__(
         self,
-        *args: Any,  # type: ignore
-    ) -> bool:
+        *args: Any,
+    ) -> Literal[False]:
         """Close the PI AF server connection context."""
         _logger.log(0, f"Closing connection to {self} ({args=})")
         return False
