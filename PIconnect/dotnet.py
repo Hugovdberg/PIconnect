@@ -4,6 +4,7 @@ import logging
 import os
 import pathlib
 import sys
+from collections.abc import Iterable
 from typing import cast
 
 from ._typing import AF, AF_SDK_VERSION, AFType, System, SystemType
@@ -47,11 +48,15 @@ class dotNET:
         full_path = _get_SDK_path(assembly_path)
         if full_path is None:
             if assembly_path:
+                # Assembly path was specified but not found, raise an error with the path
                 raise ImportError(f"AF SDK not found at '{assembly_path}'")
-            raise ImportError(
-                "AF SDK not found, check installation "
-                "or pass valid path to directory containing SDK assembly."
-            )
+            else:
+                # Assembly path was not specified and default installation path not found,
+                # raise a generic error
+                raise ImportError(
+                    "AF SDK not found, check installation "
+                    "or pass valid path to directory containing SDK assembly."
+                )
         self._af, self._system = _get_dotnet_libraries(full_path)
         self._af_sdk_version = self.AF.PISystems().Version
         logger.info("Loaded AF SDK version %s", self._af_sdk_version)
@@ -61,16 +66,16 @@ class dotNET:
 
         This is used for testing purposes only and should not be used in production.
         """
-        self._af = AF
-        self._system = System
+        self._af = cast(AFType, AF)
+        self._system = cast(SystemType, System)
         self._af_sdk_version = AF_SDK_VERSION
 
 
 def _get_dotnet_libraries(full_path: StrPath) -> tuple[AFType, SystemType]:
-    import clr  # type: ignore
+    import clr  # type: ignore[import-untyped]
 
     sys.path.append(str(full_path))
-    clr.AddReference("OSIsoft.AFSDK")  # type: ignore ; pylint: disable=no-member
+    clr.AddReference("OSIsoft.AFSDK")  # type: ignore[ty:unresolved-attribute]
     import System  # type: ignore
     from OSIsoft import AF  # type: ignore
 
@@ -80,6 +85,7 @@ def _get_dotnet_libraries(full_path: StrPath) -> tuple[AFType, SystemType]:
 
 
 def _get_SDK_path(full_path: StrPath | None = None) -> pathlib.Path | None:
+    assembly_directories: Iterable[pathlib.Path]
     if full_path:
         assembly_directories = [pathlib.Path(full_path)]
     else:
@@ -97,6 +103,8 @@ def _get_SDK_path(full_path: StrPath | None = None) -> pathlib.Path | None:
         logging.debug("Full path to potential SDK location: '%s'", AF_dir)
         if AF_dir.is_dir():
             return AF_dir
+    else:
+        return None
 
 
 #: Global variable containing the actual reference to the .NET libraries.

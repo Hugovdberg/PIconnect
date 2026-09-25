@@ -58,6 +58,7 @@ class PIServers:
         """Stub to mock getting a server by name."""
         if server == self.DefaultPIServer.Name:
             return self.DefaultPIServer
+        return None
 
 
 class PIPoint:

@@ -74,8 +74,8 @@ class PIPoint(Data.DataContainer):
         super().__init__()
         self.pi_point = pi_point
         self.tag = pi_point.Name
-        self.__attributes_loaded = False
-        self.__raw_attributes = {}
+        self.__attributes_loaded: bool = False
+        self.__raw_attributes: dict[str, Any] = {}
 
     def __repr__(self):
         """Return the string representation of the PI Point."""
@@ -277,8 +277,8 @@ class PIServer:
         authentication_mode: AuthenticationMode = _DEFAULT_AUTH_MODE,
         timeout: int | None = None,
     ) -> None:
-        default_server = self.default_server()
         if server is None:
+            default_server = self.default_server()
             if default_server is None:
                 raise ValueError("No server was specified and no default server was found.")
             self.connection = default_server
@@ -286,6 +286,7 @@ class PIServer:
             if (_server := dotnet.lib.AF.PI.PIServers()[server]) is not None:
                 self.connection = _server
             else:
+                default_server = self.default_server()
                 if default_server is None:
                     raise ValueError(
                         f"Server '{server}' not found and no default server was found."
@@ -296,6 +297,10 @@ class PIServer:
                 )
                 self.connection = default_server
 
+        self._credentials: (
+            tuple[dotnet.System.Net.NetworkCredential, dotnet.AF.PI.PIAuthenticationMode]
+            | None
+        )
         if (username is not None) != (password is not None):
             raise ValueError(
                 "When passing credentials both the username and password must be specified."

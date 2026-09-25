@@ -2,7 +2,7 @@
 
 from typing import Protocol
 
-from . import Data, Net, Security
+from . import Collections, Data, Net, Security
 
 __all__ = [
     "Data",
@@ -10,6 +10,7 @@ __all__ = [
     "Net",
     "Security",
     "TimeSpan",
+    "Collections",
 ]
 
 
