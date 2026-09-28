@@ -3,13 +3,14 @@ Extracting recorded values
 ##########################
 
 The data in the PI archives are typically compressed [#compression]_. To get the exact values
-as they are stored in the archive, the `recorded_values` method should be
-used. It is also possible to extract a single historic value using `recorded_value`.
-This is available on both :class:`~PIconnect.PI.PIPoint`, and :any:`PIAFAttribute` objects.
+as they are stored in the archive, the :meth:`~DataContainer.recorded_values` method should be
+used. It is also possible to extract a single historic value using
+:meth:`~DataContainer.recorded_value`. This is available on both :class:`~PIPoint`,
+and :class:`AFAttribute` objects.
 
-For simplicity this tutorial only uses :class:`~PIconnect.PI.PIPoint` objects,
-see the tutorial on :doc:`PI AF</tutorials/piaf>` to find how to access
-:any:`PIAFAttribute` objects.
+For simplicity this tutorial only uses :class:`PIPoint` objects,
+see the tutorial on :doc:`PI AF</tutorials/af>` to find how to access
+:class:`AFAttribute` objects.
 
 .. [#compression] More information on the compression algorithm can be found in this youtube
     video:
@@ -19,7 +20,7 @@ see the tutorial on :doc:`PI AF</tutorials/piaf>` to find how to access
 Single vs Multiple values
 *************************
 
-We start of by extracting a the value from the first :class:`~PIconnect.PI.PIPoint`
+We start of by extracting a the value from the first :class:`PIPoint`
 that is returned by the server as it was 5 minutes ago.
 
 .. code-block:: python
@@ -31,7 +32,7 @@ that is returned by the server as it was 5 minutes ago.
         data = point.recorded_value('-5m')
         print(data)
 
-You will see :any:`PISeries` is printed containing a single row, with the PIPoint name
+You will see a :class:`pandas.Series` is printed containing a single row, with the PI tag
 as the Series name, the point value as the value, and the corresponding timestamp as
 the index.
 
@@ -42,7 +43,7 @@ the `retrieval_mode` argument to `recorded_value`:
 .. code-block:: python
 
     import PIconnect as PI
-    from PIconnect.PIConsts import RetrievalMode
+    from PIconnect.Data import RetrievalMode
 
     with PI.PIServer() as server:
         point = server.search('*')[0]
@@ -69,24 +70,20 @@ the `recorded_values` method, and pass a `start_time` and `end_time`:
 Boundary types
 **************
 
-By default only the data between the `start_time` and `end_time` is returned.
+By default only the data strictly between the `start_time` and `end_time` is returned.
 It is also possible to instead return the data from the last value before
 `start_time` up to and including the first value after `end_time`, by setting
-the `boundary_type` to `outside`:
+the `boundary_type` to :attr:`BoundaryType.OUTSIDE`:
 
 .. code-block:: python
 
     import PIconnect as PI
+    from PIconnect.Data import BoundaryType
 
     with PI.PIServer() as server:
         points = server.search('*')[0]
-        data = points.recorded_values('*-48h', '*', boundary_type='outside')
+        data = points.recorded_values('*-48h', '*', boundary_type=BoundaryType.OUTSIDE)
         print(data)
-
-.. warning:: The :py:data:`boundary_type` argument currently takes a string as
-             the key to the internal :py:data:`__boundary_types` dictionary.
-             This will change in a future version to an enumeration in
-             :any:`PIConsts`.
 
 Finally, it is also possible to interpolate the values surrounding both
 boundaries such that a value is returned exactly at the requested timestamp:
@@ -94,10 +91,11 @@ boundaries such that a value is returned exactly at the requested timestamp:
 .. code-block:: python
 
     import PIconnect as PI
+    from PIconnect.Data import BoundaryType
 
     with PI.PIServer() as server:
         points = server.search('*')[0]
-        data = points.recorded_values('*-48h', '*', boundary_type='interpolate')
+        data = points.recorded_values('*-48h', '*', boundary_type=BoundaryType.INTERPOLATED)
         print(data)
 
 

@@ -2,7 +2,7 @@ PIconnect.config module
 =======================
 
 .. automodule:: PIconnect.config
-    :members:
+    :members: PIConfigContainer, PIConfig
     :undoc-members:
     :inherited-members:
     :show-inheritance:

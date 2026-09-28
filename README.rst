@@ -35,9 +35,9 @@ allow opening a connection using a with statement.
     :target: https://www.codacy.com/app/Hugovdberg/PIconnect?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Hugovdberg/PIconnect&amp;utm_campaign=Badge_Grade
     :alt: Automated code review
 
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-    :target: https://github.com/psf/black
-    :alt: Code style: black
+.. image:: https://img.shields.io/badge/code%20style-ruff-000000.svg
+    :target: https://astral.sh/ruff
+    :alt: Code style: ruff
 
 Python connector to OSIsoft PI SDK
 

@@ -26,4 +26,5 @@ class PIConfigContainer:
         self._default_timezone = value
 
 
+#: Global configuration object for PIconnect package.
 PIConfig = PIConfigContainer()

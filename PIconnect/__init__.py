@@ -1,21 +1,28 @@
 """PIconnect - Connector to the OSISoft PI and PI-AF databases."""
 
-# pragma pylint: disable=unused-import
-from PIconnect.AFSDK import AF, AF_SDK_VERSION
-from PIconnect.config import PIConfig
+from PIconnect.config import PIConfig  # noqa: I001 isort: skip
+from PIconnect.AF import AFDatabase, PIAFDatabase
+from PIconnect.dotnet import lib, load_SDK
 from PIconnect.PI import PIServer
-from PIconnect.PIAF import PIAFDatabase
 
-# pragma pylint: enable=unused-import
+from . import _version
 
-__version__ = "0.12.1"
-__sdk_version = tuple(int(x) for x in AF.PISystems().Version.split("."))
+
+def __getattr__(name: str):
+    """Lazy load the AF SDK."""
+    match name:
+        case "__sdk_version":
+            return tuple(int(x) for x in lib.AF_SDK_VERSION.split("_")[0].split("."))
+        case _:
+            raise AttributeError(f"module {__name__} has no attribute {name}")
+
+
+__version__ = _version.get_versions()["version"]
 
 __all__ = [
-    "AF",
-    "AF_SDK_VERSION",
+    "AFDatabase",
     "PIAFDatabase",
     "PIConfig",
     "PIServer",
-    "__sdk_version",
+    "load_SDK",
 ]

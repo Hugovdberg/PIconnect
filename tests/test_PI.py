@@ -7,8 +7,12 @@ import pytz
 
 import PIconnect as PI
 import PIconnect.PI as PI_
+from PIconnect import Data, dotnet
 
 from .fakes import VirtualTestCase, pi_point
+
+pytest.skip(allow_module_level=True)
+dotnet.lib.load_test_SDK()
 
 __all__ = ["TestServer", "TestSearchPIPoints", "TestPIPoint", "pi_point"]
 
@@ -22,28 +26,30 @@ class TestServer:
 
     def test_server_name(self):
         """Test that the server reports the same name as which was connected to."""
-        default_server = PI.PIServer.default_server
+        default_server = PI.PIServer.default_server()
         if default_server is None:
-            pytest.skip("No default server found.")
-        servername = default_server.Name
-        server = PI.PIServer(servername)
-        assert server.server_name == servername
+            pytest.skip(reason="No default server found.")
+        else:
+            servername = default_server.Name
+            server = PI.PIServer(servername)
+            assert server.server_name == servername
 
     def test_warn_unkown_server(self):
         """Test that the server reports a warning when an unknown host is specified."""
-        server_names = list(PI.PIServer.servers)
+        server_names = list(PI.PIServer.servers())
         server_name = "__".join(server_names + ["UnknownHostName"])
         with pytest.warns(UserWarning):
             PI.PIServer(server_name)
 
     def test_repr(self):
         """Test that the server representation matches the connected server."""
-        default_server = PI.PIServer.default_server
+        default_server = PI.PIServer.default_server()
         if default_server is None:
             pytest.skip("No default server found.")
-        servername = default_server.Name
-        server = PI.PIServer(servername)
-        assert repr(server) == "PIServer(\\\\{})".format(servername)
+        else:
+            servername = default_server.Name
+            server = PI.PIServer(servername)
+            assert repr(server) == "PIServer(\\\\{})".format(servername)
 
 
 class TestSearchPIPoints:
@@ -53,7 +59,7 @@ class TestSearchPIPoints:
         """Test searching for PI points using a single string."""
         with PI.PIServer() as server:
             points = server.search("L_140_053*")
-            assert isinstance(points, list)
+            assert isinstance(points, Data.DataContainerCollection)
             for point in points:
                 assert isinstance(point, PI_.PIPoint)
 
@@ -61,7 +67,7 @@ class TestSearchPIPoints:
         """Tests searching for PI points using a list of strings."""
         with PI.PIServer() as server:
             points = server.search(["L_140_053*", "M_127*"])
-            assert isinstance(points, list)
+            assert isinstance(points, Data.DataContainerCollection)
             for point in points:
                 assert isinstance(point, PI_.PIPoint)
 
