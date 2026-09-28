@@ -1,5 +1,6 @@
-"""Contains interfaces and classes that define generic collections,
-which allow users to create strongly typed collections that provide
+"""Contains interfaces and classes that define generic collections.
+
+This allow users to create strongly typed collections that provide
 better type safety and performance than non-generic strongly typed
 collections.
 """
@@ -17,7 +18,11 @@ class Dictionary(Protocol[TKey, TValue]):
     """Represents a collection of keys and values."""
 
     def __init__(self, items: Iterable[tuple[TKey, TValue]] | None = None, /) -> None:
-        """Initializes a new instance of the Dictionary class that contains elements copied from the specified IDictionary and uses the default equality comparer for the key type."""
+        """Initialize a new instance of the Dictionary class.
+
+        This contains elements copied from the specified IDictionary and uses the
+        default equality comparer for the key type.
+        """
         ...
 
 
