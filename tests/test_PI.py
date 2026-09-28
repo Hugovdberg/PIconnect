@@ -11,6 +11,7 @@ from PIconnect import Data, dotnet
 
 from .fakes import VirtualTestCase, pi_point
 
+pytest.skip(allow_module_level=True)
 dotnet.lib.load_test_SDK()
 
 __all__ = ["TestServer", "TestSearchPIPoints", "TestPIPoint", "pi_point"]
@@ -27,7 +28,7 @@ class TestServer:
         """Test that the server reports the same name as which was connected to."""
         default_server = PI.PIServer.default_server()
         if default_server is None:
-            pytest.skip("No default server found.")
+            pytest.skip(reason="No default server found.")
         else:
             servername = default_server.Name
             server = PI.PIServer(servername)

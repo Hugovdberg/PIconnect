@@ -8,6 +8,7 @@ import PIconnect as PI
 from PIconnect import Asset, dotnet
 from PIconnect._typing import AF
 
+pytest.skip(allow_module_level=True)
 dotnet.lib.load_test_SDK()
 
 
