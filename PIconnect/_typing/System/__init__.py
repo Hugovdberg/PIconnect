@@ -15,7 +15,8 @@ __all__ = [
 
 
 class Exception:
-    pass
+    def GetBaseException(self) -> "Exception":
+        return self
 
 
 class TimeSpan:
