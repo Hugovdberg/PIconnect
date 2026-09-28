@@ -31,7 +31,7 @@ Documentation = "https://piconnect.readthedocs.io/en/stable/"
 requires = ["setuptools>=75", "versioneer[toml]>=0.28"]
 build-backend = "setuptools.build_meta"
 
-[tool.pixi.project]
+[tool.pixi.workspace]
 name = "PIconnect"
 channels = ["conda-forge"]
 platforms = ["win-64", "linux-64"]
@@ -57,6 +57,7 @@ ruff = "*"
 
 [tool.pixi.feature.lint.tasks]
 lint = "ruff check ."
+ty_check = "ty check ."
 format = { cmd = "ruff format --check .", depends-on = ["lint"] }
 
 [tool.pixi.feature.test.dependencies]
@@ -102,12 +103,15 @@ jupyterlab = "*"
 [tool.pixi.environments]
 build = { features = ["build"], no-default-feature = true }
 test = { features = ["test"], solve-group = "default" }
-lint = ["lint"]
 docs = { features = ["docs"], solve-group = "default" }
 py311 = ["py311", "test"]
 py313 = ["py313", "test"]
 py312 = ["py312", "test"]
 debug = { features = ["debug"], solve-group = "default" }
+
+[tool.pixi.environments.lint]
+features = ["lint", "test"]
+# solve-group = "default"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
@@ -152,3 +156,16 @@ style = "pep440"
 versionfile_source = "PIconnect/_version.py"
 versionfile_build = "PIconnect/_version.py"
 tag_prefix = "v"
+
+[dependency-groups]
+lint = ["mypy>=2.3.1,<3", "ty>=0.0.83,<0.0.84", "pandas-stubs>=3.0.5.260914,<4"]
+
+[tool.ty.src]
+include = ["PIconnect", "tests"]
+exclude = ["PIconnect/_version.py"]
+
+[[tool.ty.overrides]]
+include = ["PIconnect/_typing/__init__.py"]
+
+[tool.ty.overrides.rules]
+ambiguous-protocol-member = "ignore"

@@ -2,6 +2,7 @@
 
 import enum
 from collections.abc import Iterable
+from typing import Self
 
 from PIconnect._typing import AF
 from PIconnect._typing.AF import Asset, Time
@@ -20,7 +21,7 @@ class AFEventFrameSearchMode(enum.IntEnum):
 class AFEventFrame(Asset.AFBaseElement):
     """Mock class of the AF.EventFrame.AFEventFrame class."""
 
-    def __init__(self, name: str, parent: "AFEventFrame | None" = None) -> None:
+    def __init__(self, name: str, parent: Self | None = None) -> None:
         self.Name = name
         self.Parent = parent
         self.EventFrames: AFEventFrames

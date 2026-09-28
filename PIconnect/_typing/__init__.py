@@ -8,24 +8,24 @@ from . import AF, System
 class AFType(Protocol):
     # Modules
     # Analysis = AF.Analysis
-    Asset = AF.Asset
+    Asset = AF.Asset  # type: ignore[misc]
     # Collective = AF.Collective
-    Data = AF.Data
+    Data = AF.Data  # type: ignore[misc]
     # Diagnostics = AF.Diagnostics
-    EventFrame = AF.EventFrame
+    EventFrame = AF.EventFrame  # type: ignore[misc]
     # Modeling = AF.Modeling
     # Notification = AF.Notification
-    PI = AF.PI
-    Search = AF.Search
+    PI = AF.PI  # type: ignore[misc]
+    Search = AF.Search  # type: ignore[misc]
     # Support = AF.Support
-    Time = AF.Time
+    Time = AF.Time  # type: ignore[misc]
     # UI = AF.UI
-    UnitsOfMeasure = AF.UnitsOfMeasure
+    UnitsOfMeasure = AF.UnitsOfMeasure  # type: ignore[misc]
 
     # Classes
     # AFActiveDirectoryProperties = AF.AFActiveDirectoryProperties
-    AFCategory = AF.AFCategory
-    AFCategories = AF.AFCategories
+    AFCategory = AF.AFCategory  # type: ignore[misc]
+    AFCategories = AF.AFCategories  # type: ignore[misc]
     # AFChangedEventArgs = AF.AFChangedEventArgs
     # AFCheckoutInfo = AF.AFCheckoutInfo
     # AFClientRegistration = AF.AFClientRegistration
@@ -35,7 +35,7 @@ class AFType(Protocol):
     # AFContact = AF.AFContact
     # AFCsvColumn = AF.AFCsvColumn
     # AFCsvColumns = AF.AFCsvColumns
-    AFDatabase = AF.AFDatabase
+    AFDatabase = AF.AFDatabase  # type: ignore[misc]
     # AFDatabases = AF.AFDatabases
     # AFErrors = AF.AFErrors
     # AFEventArgs = AF.AFEventArgs
@@ -63,21 +63,21 @@ class AFType(Protocol):
     # AFSecurityMappings = AF.AFSecurityMappings
     # AFSecurityRightsExtension = AF.AFSecurityRightsExtension
     # NumericStringComparer = AF.NumericStringComparer
-    PISystem = AF.PISystem
-    PISystems = AF.PISystems
+    PISystem = AF.PISystem  # type: ignore[misc]
+    PISystems = AF.PISystems  # type: ignore[misc]
     # UniversalComparer = AF.UniversalComparer
 
 
 class SystemType(Protocol):
     # Modules
-    Data = System.Data
-    Net = System.Net
-    Security = System.Security
+    Data = System.Data  # type: ignore[misc]
+    Net = System.Net  # type: ignore[misc]
+    Security = System.Security  # type: ignore[misc]
 
     # Classes
-    DateTime = System.DateTime
-    Exception = System.Exception
-    TimeSpan = System.TimeSpan
+    DateTime = System.DateTime  # type: ignore[misc]
+    Exception = System.Exception  # type: ignore[misc]
+    TimeSpan = System.TimeSpan  # type: ignore[misc]
 
 
 AF_SDK_VERSION = "2.7_compatible"

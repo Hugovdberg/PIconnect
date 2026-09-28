@@ -1,7 +1,7 @@
 """Mock classes for the AF.Asset module."""
 
 from collections.abc import Iterator
-from typing import cast
+from typing import Self, cast
 
 from PIconnect._typing import AF, System
 
@@ -68,7 +68,7 @@ class AFAttributes(list[AFAttribute]):
 
 
 class AFBaseElement:
-    def __init__(self, name: str, parent: "AFElement | None" = None) -> None:
+    def __init__(self, name: str, parent: Self | None = None) -> None:
         self.Attributes = AFAttributes(
             [
                 AFAttribute("Attribute1", _element=self),

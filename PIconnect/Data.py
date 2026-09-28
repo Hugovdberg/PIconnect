@@ -6,7 +6,7 @@ import enum
 from collections.abc import Callable
 from typing import Any, Concatenate, Literal, ParamSpec, TypeVar, cast, overload
 
-import pandas as pd  # type: ignore
+import pandas as pd
 
 import PIconnect._typing.AF as _AFtyping
 from PIconnect import Time, _collections, dotnet
@@ -256,7 +256,7 @@ class AFEnumerationValue:
         """Wrap the value in an AFEnumerationValue if it is an enumeration value."""
         if isinstance(value, dotnet.lib.AF.Asset.AFEnumerationValue):
             return AFEnumerationValue(value)
-        return value
+        return cast(T, value)
 
 
 class DataContainer(abc.ABC):
@@ -368,7 +368,7 @@ class DataContainer(abc.ABC):
                 strict=True,
             )
             df = df.join(
-                pd.DataFrame(data={key: values}, index=timestamps),  # type: ignore
+                pd.DataFrame(data={key: values}, index=timestamps),  # type: ignore[invalid-argument-type]
                 how="outer",
             )
         return df
@@ -654,7 +654,7 @@ class DataContainer(abc.ABC):
             timestamp = Time.timestamp_to_index(value.Timestamp.UtcTime)
             value = value.Value
             df = df.join(
-                pd.DataFrame(data={key: value}, index=[timestamp]),  # type: ignore
+                pd.DataFrame(data={key: value}, index=[timestamp]),  # type: ignore[invalid-argument-type]
                 how="outer",
             )
         return df
@@ -730,7 +730,7 @@ class DataContainer(abc.ABC):
                 strict=True,
             )
             df = df.join(
-                pd.DataFrame(data={key: values}, index=timestamps),  # type: ignore
+                pd.DataFrame(data={key: values}, index=timestamps),
                 how="outer",
             )
         return df
@@ -820,7 +820,7 @@ class DataContainerCollection(_collections.NamedItemList[DataContainerType]):
 
         def add_name_to_index(df: pd.DataFrame, element: DataContainerType) -> pd.DataFrame:
             if _add_name_to_index:
-                return df.set_axis(  # type: ignore
+                return df.set_axis(
                     pd.MultiIndex.from_product([[element.name], df.columns]), axis=1
                 )
             return df
@@ -835,10 +835,10 @@ class DataContainerCollection(_collections.NamedItemList[DataContainerType]):
             return add_name_to_index(df, element)
 
         def add_rank_to_index(df: pd.DataFrame) -> pd.DataFrame:
-            rank: "pd.Series[int]" = (  # type: ignore
-                df.index.to_series().groupby(level=0).cumcount().rename("__rank__") + 1  # type: ignore
+            rank: pd.Series = (
+                df.index.to_series().groupby(level=0).cumcount().rename("__rank__") + 1
             )
-            return df.set_index(rank, append=True)  # type: ignore
+            return df.set_index(rank, append=True)
 
         def concat_dfs(dfs: list[pd.DataFrame]) -> pd.DataFrame:
             match len(dfs):
@@ -856,24 +856,24 @@ class DataContainerCollection(_collections.NamedItemList[DataContainerType]):
                 case False:
                     return df
                 case "auto":
-                    for col in df.columns.get_level_values(0):  # type: ignore
-                        if self[str(col)].stepped_data:  # type: ignore
-                            df[col] = df[col].ffill(axis=0)  # type: ignore
+                    for col in df.columns.get_level_values(0):
+                        if self[str(col)].stepped_data:
+                            df[col] = df[col].ffill(axis=0)
                         else:
                             df[col] = (
                                 df[col]
-                                .apply(pd.to_numeric, errors="coerce", by_row=False)  # type: ignore
-                                .interpolate(method="time", axis=0)  # type: ignore
+                                .apply(pd.to_numeric, errors="coerce", by_row=False)
+                                .interpolate(method="time", axis=0)
                             )
                     return df
                 case "ffill":
-                    return df.ffill(axis=0)  # type: ignore
+                    return df.ffill(axis=0)
                 case "bfill":
-                    return df.bfill(axis=0)  # type: ignore
+                    return df.bfill(axis=0)
                 case "nearest":
-                    return df.interpolate(method="nearest", axis=0)  # type: ignore
+                    return df.interpolate(method="nearest", axis=0)
                 case "time":
-                    return df.interpolate(method="time", axis=0)  # type: ignore
+                    return df.interpolate(method="time", axis=0)
 
         return align(concat_dfs([apply_func(e) for e in self._elements]))
 
@@ -886,7 +886,7 @@ class DataContainerCollection(_collections.NamedItemList[DataContainerType]):
                 strict=True,
             )
         else:
-            idx, value = [], []
+            idx, value = (), ()
         return pd.Series(value, index=idx)
 
     def filtered_summaries(

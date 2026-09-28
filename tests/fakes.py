@@ -9,6 +9,7 @@ import pytest
 import pytz
 
 import PIconnect._typing.AF as AF
+import PIconnect._typing.AF.Generic as Generic_
 import PIconnect.PI as PI
 
 
@@ -81,7 +82,9 @@ class FakePIPoint_(Generic[_a]):
             FakeAFValue(value, timestamp)
             for value, timestamp in zip(values, timestamps, strict=True)
         ]
-        self.attributes = [FakeKeyValue(*att) for att in attributes.items()]
+        self.attributes = Generic_.PropertyDict(
+            [FakeKeyValue(*att) for att in attributes.items()]
+        )
 
 
 class FakePIPoint(AF.PI.PIPoint, Generic[_a]):
@@ -101,7 +104,7 @@ class FakePIPoint(AF.PI.PIPoint, Generic[_a]):
         """Load the attributes of the PI Point."""
         self.call_stack.append("LoadAttributes called")
 
-    def GetAttributes(self, *args: Any, **kwargs: Any) -> list[FakeKeyValue[str, Any]]:
+    def GetAttributes(self, names: list[str], /) -> Generic_.PropertyDict:
         """Return the attributes of the PI Point."""
         self.call_stack.append("GetAttributes called")
         return self.pi_point.attributes
