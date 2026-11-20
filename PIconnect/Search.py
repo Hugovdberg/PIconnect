@@ -3,11 +3,18 @@
 import abc
 import warnings
 from collections.abc import Iterator, Sequence
-from typing import Generic, TypeVar
+from typing import Generic, Protocol, TypeVar
 
 from . import Asset, EventFrame, dotnet
 
-SearchResultType = TypeVar("SearchResultType")
+_T = TypeVar("_T", covariant=True)
+
+
+class _SearchResultType(Protocol[_T]):
+    def __init__(self, obj: _T) -> None: ...
+
+
+SearchResultType = TypeVar("SearchResultType", bound=_SearchResultType)
 AFSearchResultType = TypeVar("AFSearchResultType", covariant=True)
 
 
@@ -31,10 +38,15 @@ class SearchResult(Generic[AFSearchResultType, SearchResultType], abc.ABC):
         """Return the number of items in the search result."""
         return self.search.GetTotalCount()
 
+    def __len__(self) -> int:
+        """Return the number of items in the search result."""
+        return self.count
+
     def __iter__(self) -> Iterator[SearchResultType]:
         """Return an iterator over the items in the search result."""
-        for item in self.search.FindObjects():
-            yield self.result_type(item)  # type: ignore
+        for index in range(self.count):
+            item = self.search.FindObjects(index, True, 1)
+            yield self.result_type(item)
 
     def one(self) -> SearchResultType:
         """Return the only item in the search result.
@@ -71,10 +83,11 @@ class AttributeSearchResult(SearchResult[dotnet.AF.Asset.AFAttribute, Asset.AFAt
         super().__init__(search)
         self.result_type = Asset.AFAttribute
 
-    def one(self) -> Asset.AFAttribute:  # noqa: D102
-        return super().one()
+    # def one(self) -> Asset.AFAttribute:  # noqa: D102
+    #     return super().one()
 
-    def to_list(self) -> Asset.AFAttributeList:  # noqa: D102
+    def to_list(self) -> Asset.AFAttributeList:
+        """Return all items in the search result in a sequence."""
         return Asset.AFAttributeList(list(self))
 
 
